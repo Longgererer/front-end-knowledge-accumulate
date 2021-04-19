@@ -1,0 +1,16 @@
+{
+  "name": "feka",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Longgererer/front-end-knowledge-accumulate.git",
+  "author": "xiaolong Hao <2072451919@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs",
+    "d": "bash deploy.sh"
+  },
+  "devDependencies": {
+    "vuepress": "^1.8.2"
+  }
+}
