@@ -37,14 +37,27 @@ module.exports = {
         {
           title: 'JS',
           children: [
-            '/basement/JS/14种JavaScript设计模式',
             '/basement/JS/Object常用API和原理',
+            '/basement/JS/this指向',
+            '/basement/JS/DOM事件',
+            '/basement/JS/正则表达式',
+            '/basement/JS/深拷贝与浅拷贝',
+            '/basement/JS/async-await',
+            '/basement/JS/Generator',
+            '/basement/JS/Promise',
+            '/basement/JS/TypeScript',
+            '/basement/JS/Webpack生命周期',
+            '/basement/JS/WebWorker',
+            '/basement/JS/防抖与节流',
+            '/basement/JS/函数柯里化',
           ],
         },
         {
           title: 'CSS',
           children: [
-            '/basement/CSS/test'
+            '/basement/CSS/BFC',
+            '/basement/CSS/Sass',
+            '/basement/CSS/Grid',
           ],
         },
         {
@@ -59,7 +72,8 @@ module.exports = {
         {
           title: '算法',
           children: [
-            '/algorithm/test'
+            '/algorithm/深度优先和广度优先',
+            '/algorithm/最短路径算法',
           ]
         }
       ],
@@ -68,13 +82,16 @@ module.exports = {
         {
           title: 'Vue',
           children: [
-            '/framework/vue/index'
+            '/framework/vue/简单梳理vue3新特性'
           ],
         },
         {
           title: 'React',
           children: [
-            '/framework/react'
+            '/framework/react/context',
+            '/framework/react/React生命周期',
+            '/framework/react/ReactRouter',
+            '/framework/react/ReactHook',
           ]
         }
       ],
@@ -83,7 +100,12 @@ module.exports = {
         {
           title: '技术专题',
           children: [
-            '/technicalTopics/test'
+            '/technicalTopics/EventLoop',
+            '/technicalTopics/浏览器渲染原理',
+            '/technicalTopics/状态管理',
+            '/technicalTopics/浏览器缓存机制',
+            '/technicalTopics/Git详解',
+            '/technicalTopics/14种JavaScript设计模式',
           ]
         }
       ]

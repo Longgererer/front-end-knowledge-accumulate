@@ -248,6 +248,6 @@ for (var prop in obj) {
 
 ## 参考资料
 
-[Object.assign vs Object Spread in Node.js](https://thecodebarbarian.com/object-assign-vs-object-spread.html)  
-[Object.create in JavaScript](https://medium.com/@happymishra66/object-create-in-javascript-fa8674df6ed2)  
-[Understanding the difference between Object.create() and new SomeFunction()](https://stackoverflow.com/questions/4166616/understanding-the-difference-between-object-create-and-new-somefunction)
+- [Object.assign vs Object Spread in Node.js](https://thecodebarbarian.com/object-assign-vs-object-spread.html)  
+- [Object.create in JavaScript](https://medium.com/@happymishra66/object-create-in-javascript-fa8674df6ed2)  
+- [Understanding the difference between Object.create() and new SomeFunction()](https://stackoverflow.com/questions/4166616/understanding-the-difference-between-object-create-and-new-somefunction)
