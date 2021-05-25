@@ -56,6 +56,7 @@ module.exports = {
             'JS/WebWorker',
             'JS/防抖与节流',
             'JS/函数柯里化',
+            'JS/WebSocket'
           ],
         },
         {
@@ -69,7 +70,8 @@ module.exports = {
         {
           title: 'HTML',
           children: [
-            'HTML/test'
+            'HTML/HTML标签及说明',
+            'HTML/HTML5新特性',
           ]
         }
       ],
