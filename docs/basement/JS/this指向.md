@@ -91,7 +91,7 @@ window.func();
 
 因为`a`和`func`都是在全局声明的，所以它们都属于`window`对象，只是在调用的时候可以省略掉`window`而已，这样`this`指向的实际就是调用它的对象`window`
 
-::: tip Notice
+:::tip Notice
 注意：这里我是用`var`声明`a`的，如果替换成`let`或者`const`，那么输出的就会是`undefined`，因为它们的顶层对象不是`window`
 :::
 

@@ -1,7 +1,7 @@
 ---
 home: true
-heroImage: /logo.jpg
-actionText: 开始学习 →
+heroImage: /logo.gif
+actionText: 开始学习 👉
 actionLink: /basement/
 features:
 - title: 基础

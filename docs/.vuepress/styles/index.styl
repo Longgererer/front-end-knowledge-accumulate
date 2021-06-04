@@ -1,3 +1,15 @@
+$deep = #20232a;
+$secondDeep = #262626;
+$thirdDeep = #333333;
+$main = #61dafb;
+$codeBgColor = #282c34;
+$codeColor = #46a0d4;
+$badgeWarningColor = darken(#ffe564, 35%);
+$noticeBgc = #f3f5f733;
+$sidebarColor = #a8a8a8;
+$textShadow = 0px -2px 0px rgba(0, 0, 0, 0.3);
+$white = #F8F8F8;
+
 * {
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
 }
@@ -5,6 +17,282 @@
 pre code span {
   font-family: Fira code, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
 }
+
 code {
   font-family: Fira code, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+}
+
+html, body, #app {
+  min-height: 100vh;
+  background-color: $deep;
+}
+
+table {
+  tr:nth-child(2n) {
+    background-color: $secondDeep;
+  }
+
+  th, td {
+    border: 1px solid $thirdDeep;
+  }
+}
+
+.theme-container {
+  min-height: 100vh;
+  background-color: $deep;
+
+  .home {
+    min-height: 100vh;
+    max-width: 100%;
+    position: relative;
+    z-index: 1;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      background: url('http://picstore.lliiooiill.cn/firewatch-ps4-playstation-4-1.original.jpg') center center no-repeat;
+      filter: blur(4px);
+    }
+
+    .hero {
+      // transform: translateZ(px);
+      img {
+        max-height: 300px;
+      }
+
+      #main-title, .description {
+        text-shadow: $textShadow;
+      }
+
+      .action-button {
+        box-shadow: 0 -3px 0 $codeColor;
+      }
+    }
+
+    .features {
+      margin: 0 auto;
+      max-width: 960px;
+      margin-top: 2.5rem;
+      border: none;
+
+      .feature {
+        padding: 15px;
+        box-sizing: border-box;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        box-shadow: -2px -2px 4px rgba(25, 106, 212, 0.2), 0 0 10px 10px rgba(25, 106, 212, 0.05), 2px 2px 8px rgba(40, 40, 40, 0.25);
+        transition: all 0.3s ease;
+        background-color: rgba(25, 70, 212, 0);
+
+        &:hover {
+          box-shadow: -4px -4px 8px rgba(25, 70, 212, 0.25), 0 0 10px 10px rgba(25, 70, 212, 0.15), 4px 4px 8px rgba(40, 40, 40, 0.25);
+          background-color: rgba(25, 70, 212, 0.1);
+        }
+
+        h2 {
+          color: $main;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+
+    .footer {
+      border: none;
+    }
+  }
+
+  .navbar {
+    border-bottom: 1px solid $thirdDeep;
+    background-color: $deep;
+
+    .site-name {
+      color: $main;
+    }
+
+    .links {
+      background-color: $deep;
+
+      .search-box {
+        input {
+          background-color: $deep;
+          border: 1px solid $thirdDeep;
+          transition: all 0.3s ease;
+        }
+
+        .focused {
+          border: 1px solid $main !important;
+        }
+
+        .suggestions {
+          border: 1px solid $thirdDeep;
+          background-color: $deep;
+
+          li {
+            border: none;
+            background-color: $deep;
+          }
+
+          li:hover {
+            border: none;
+            background-color: $thirdDeep;
+          }
+        }
+      }
+
+      .nav-links {
+        .nav-item {
+          .nav-link {
+            &:hover {
+              color: $main;
+            }
+          }
+
+          .router-link-active {
+            color: $main;
+          }
+        }
+      }
+    }
+  }
+
+  .sidebar {
+    background-color: $deep;
+    border-right: 1px solid $thirdDeep;
+
+    .sidebar-link {
+      color: $sidebarColor;
+
+      &:hover {
+        color: $main;
+      }
+    }
+
+    .active {
+      color: $main;
+    }
+
+    .sidebar-heading {
+      color: $sidebarColor;
+    }
+  }
+
+  .page {
+    h2 {
+      border-bottom: 1px solid $thirdDeep;
+    }
+
+    .tip, .warning, .error {
+      background-color: $noticeBgc;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+    }
+
+    .tip {
+      color: #42b983;
+    }
+
+    .warning {
+      color: $badgeWarningColor;
+    }
+
+    .error {
+    }
+
+    .page-nav {
+      .inner {
+        span.prev {
+          position: relative;
+          padding-left: 10px;
+
+          &::after {
+            position: absolute;
+            content: '🔙';
+            top: -5px;
+            left: 6px;
+          }
+        }
+
+        .next {
+          position: relative;
+          padding-right: 10px;
+
+          &::after {
+            position: absolute;
+            content: '💨';
+            top: 0;
+            right: 6px;
+          }
+        }
+      }
+    }
+  }
+
+  li code {
+    background-color: $codeBgColor;
+    color: $codeColor;
+  }
+
+  p {
+    code {
+      background-color: $codeBgColor;
+      color: $codeColor;
+    }
+
+    img {
+      background-color: #FFF;
+      border-radius: 5px;
+    }
+  }
+}
+
+.no-sidebar header {
+  background-color: transparent !important;
+  border: none !important;
+
+  .site-name {
+    color: $white !important;
+  }
+
+  .links {
+    background-color: transparent !important;
+  }
+
+  .nav-links {
+    background-color: transparent !important;
+    color: $white !important;
+  }
+
+  .search-box {
+    input {
+      background-color: transparent !important;
+      border-color: $sidebarColor !important;
+    }
+  }
+}
+
+@media (min-width: 719px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #555;
+  }
+
+  ::-webkit-scrollbar-track-piece {
+    background-color: $thirdDeep;
+    -webkit-border-radius: 3px;
+  }
 }

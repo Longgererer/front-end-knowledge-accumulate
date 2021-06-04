@@ -24,7 +24,7 @@ HTML5 的头部声明显然要简洁许多：
 - **`aside`**：表示一个和其余页面内容几乎无关的部分，被认为是独立于该内容的一部分并且可以被单独的拆分出来而不会使整体受影响。其通常表现为侧边栏等。
 - **`hgroup`**：代表文档章节所属的多级别的目录，它将多个`<h1>`至`<h6>`的子元素组装到一起。
 
-::: tip Notice
+:::tip Notice
 事实上 `hgroup` 元素已经从 HTML5(W3C) 规范中删除，但大部分浏览器都实现了这个标签，因此仍然可以使用。
 :::
 
@@ -91,7 +91,7 @@ HTML5 对表单添加了新的表单校验，可以在不写一行脚本代码�
 
   - 支持：`text`、`search`、`url`、`tel`、`email`、`password` 类型的 `input`；也支持 `textarea` 元素。
 
-::: warning Notice
+:::warning Notice
 永远不要相信从客户端传递到服务器的数据。 即使您的表单正确验证并防止输入格式错误，恶意用户仍然可以更改网络请求。
 :::
 
@@ -109,7 +109,7 @@ MathML(Mathematical Markup Language) 是一个用于描述数学公式、符号�
 
 ## WebSocket
 
-有关 WebSocket 的介绍可以看 [WebSocket](../JS/WebSocket.md)
+WebSocket 我在其他文章中已经讨论过，有关 WebSocket 的介绍可以看 [WebSocket](../JS/WebSocket.md)
 
 ## Server-Sent Events
 
@@ -119,10 +119,39 @@ MathML(Mathematical Markup Language) 是一个用于描述数学公式、符号�
 
 WebRTC 中的 RTC 是实时通信的简称，这是一种支持在浏览器客户端之间语音/视频交流和数据分享的技术。WebRTC 作为一项标准,使得所有浏览器无需安装插件或第三方软件，就可以点对点地分享应用数据和进行电话会议。
 
-具体功能请看
+具体功能请看 [WebRTC-MDN](https://developer.mozilla.org/zh-CN/docs/conflicting/Web/API/WebRTC_API_d8621144cbc61520339c3b10c61731f0)
+
+:::tip Notice
+不要因为 WebSocket 可以实现实时通信就代替 WebRTC 进行语音/数据交流，要知道，WebSocket 是一个 TCP 协议，在严苛的网络条件下无法进行流畅的通信。
+:::
+
+## Storage
+
+HTML5 提供了新的方式来代替 cookie 存储一些数据在浏览器中。
+
+### sessionStorage
+
+`sessionStorage` 维护着在页面会话期间有效的存储空间，除非当前标签页关闭，否则即使刷新页面，会话也会一直持续；每在新标签或者新窗口中打开一个新页面，都会初始化一个新的会话。
+
+用法请看 [Window.sessionStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/sessionStorage)
+
+### localStorage
+
+`localStorage` 类似于 `sessionStorage` 将数据存储在浏览器会话中，但 `localStorage` 是持久的，即使标签页关闭，也不会消失，这意味着如果不主动删除 `localStorage` 中的数据，数据将永久存在。
+
+用法请看 [Window.localStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/localStorage)
+
+## IndexedDB
+
+IndexedDB 是存储在客户端本地的 NoSQL 数据库，相对于 `localStorage`，IndexedDB 可以存储大量的数据，因此对于大量结构化存储，IndexedDB 的优势更加明显。
+
+使用 IndexedDB 执行的操作是异步执行的，以免阻塞应用程序。
+
+IndexedDB 的使用方式类似于 MongoDB，具体用法可以参考[indexedDB](https://zhuanlan.zhihu.com/p/26639553)。
 
 ## 参考文章
 
 - [28 HTML5 Features, Tips, and Techniques you Must Know](https://code.tutsplus.com/tutorials/28-html5-features-tips-and-techniques-you-must-know--net-13520)
 - [HTML5-MDN](https://developer.mozilla.org/zh-CN/docs/Web/Guide/HTML/HTML5)
 - [Server-Sent Events 的协议细节和实现](https://zhuanlan.zhihu.com/p/21308648)
+- [HTML5 进阶系列：indexedDB 数据库](https://zhuanlan.zhihu.com/p/26639553)

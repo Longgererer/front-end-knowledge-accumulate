@@ -13,7 +13,7 @@ Connection: Upgrade
 Upgrade: websocket
 ```
 
-::: tip Notice
+:::tip Notice
 Upgrade 是 HTTP 协议提供的一种特殊机制，允许将已建立的连接升级成新的、不相容的协议；目前最常升级的协议就是 WebSocket。
 :::
 
@@ -23,7 +23,7 @@ Upgrade 是 HTTP 协议提供的一种特殊机制，允许将已建立的连接
 
 早期，很多网站为了实现推送技术，都采用**轮询**的方式，这种方式需要客户端不断地像服务端发出请求来查看是否有新的推送，这种方式带来的结果常常是消耗大量带宽只得到很少的数据。
 
-::: tip Notice
+:::tip Notice
 所谓轮询指的是浏览器每隔一段时间向服务器发送 HTTP 请求，服务器返回数据给客户端。
 :::
 
@@ -35,7 +35,7 @@ Upgrade 是 HTTP 协议提供的一种特殊机制，允许将已建立的连接
 const socket = new WebSocket('ws://websocket.example.com')
 ```
 
-::: tip Notice
+:::tip Notice
 WebSocket 的 url 采用 ws 方案，这是 WebSocket 连接的新网址架构，还有 wss 用于安全的 WebSocket 连接，等效于 HTTPS。ws 未加密默认端口为 80；wss 加密，默认端口为 443。
 :::
 
@@ -101,7 +101,7 @@ connection.on('message', (event) => {
 })
 ```
 
-::: warning Notice
+:::warning Notice
 `send` 方法默认只能发送字符串、ArrayBuffer、Blob 和 ArrayBufferView，不能直接发送数组，键值对等等数据类型。
 :::
 

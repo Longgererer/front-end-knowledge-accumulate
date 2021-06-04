@@ -290,7 +290,7 @@ const count = ref(0)
 
 通过 `RefImpl` 类的 `get value()` 方法可以看出，调用 `value` 属性返回的其实就是 `_value` 属性。
 
-::: tip Notice
+:::tip Notice
 Vue3 建议在定义基本类型的响应式数据时使用 `ref` 是因为基本类型不存在引用效果，这样一来在其他地方改变该值便不会触发响应，因此 `ref` 将数据包裹在对象中以实现引用效果。
 :::
 
@@ -556,7 +556,7 @@ console.log(isReactive(dynamicObj3.value)) // false
 
 我们可以发现，`shallowRef` 和 `shallowReactive` 类型的响应式数据，在改变其深层次属性时候是不会触发 ui 更新的。
 
-::: tip Notice
+:::tip Notice
 `shallowRef` 的第一层是 `value` 属性所在的那一层，而 `a` 是在第二层，因此只有当 `value` 改变的时候，才会触发 ui 更新
 :::
 
@@ -961,7 +961,7 @@ watchEffect(
 count.value++
 ```
 
-::: tip Notice
+:::tip Notice
 `onTrack` 和 `onTrigger` 只能在开发模式下进行调试时使用，不能再生产模式下使用。
 :::
 

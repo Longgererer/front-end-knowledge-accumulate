@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>深拷贝与浅拷贝 | lliiooiill&#39;s FEKA</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
+    <meta name="description" content="Record the front-end knowledge I learned">
+    
+    <link rel="preload" href="/assets/css/0.styles.e5ba03e8.css" as="style"><link rel="preload" href="/assets/js/app.885b26e3.js" as="script"><link rel="preload" href="/assets/js/2.692c3beb.js" as="script"><link rel="preload" href="/assets/js/32.d80a16cb.js" as="script"><link rel="prefetch" href="/assets/js/10.eabc2033.js"><link rel="prefetch" href="/assets/js/11.852c2495.js"><link rel="prefetch" href="/assets/js/12.6197085c.js"><link rel="prefetch" href="/assets/js/13.ef35da76.js"><link rel="prefetch" href="/assets/js/14.d84c0509.js"><link rel="prefetch" href="/assets/js/15.c5441e5d.js"><link rel="prefetch" href="/assets/js/16.e4e43e48.js"><link rel="prefetch" href="/assets/js/17.4307fa0b.js"><link rel="prefetch" href="/assets/js/18.99b3ee40.js"><link rel="prefetch" href="/assets/js/19.9bb34e4e.js"><link rel="prefetch" href="/assets/js/20.84b25e8e.js"><link rel="prefetch" href="/assets/js/21.3711e51f.js"><link rel="prefetch" href="/assets/js/22.5c9d1b7c.js"><link rel="prefetch" href="/assets/js/23.b0ee9d2d.js"><link rel="prefetch" href="/assets/js/24.293031ca.js"><link rel="prefetch" href="/assets/js/25.5584dfc0.js"><link rel="prefetch" href="/assets/js/26.a9d66acf.js"><link rel="prefetch" href="/assets/js/27.534d24a1.js"><link rel="prefetch" href="/assets/js/28.bdece682.js"><link rel="prefetch" href="/assets/js/29.394c7e82.js"><link rel="prefetch" href="/assets/js/3.c8bb3f07.js"><link rel="prefetch" href="/assets/js/30.8218b081.js"><link rel="prefetch" href="/assets/js/31.c6123d15.js"><link rel="prefetch" href="/assets/js/33.b7ac09aa.js"><link rel="prefetch" href="/assets/js/34.1275fa42.js"><link rel="prefetch" href="/assets/js/35.b067dae6.js"><link rel="prefetch" href="/assets/js/36.569ef093.js"><link rel="prefetch" href="/assets/js/37.ea86a562.js"><link rel="prefetch" href="/assets/js/38.63b4824b.js"><link rel="prefetch" href="/assets/js/39.689eed98.js"><link rel="prefetch" href="/assets/js/4.21b71712.js"><link rel="prefetch" href="/assets/js/40.32a4295d.js"><link rel="prefetch" href="/assets/js/41.8e986adc.js"><link rel="prefetch" href="/assets/js/42.a9005023.js"><link rel="prefetch" href="/assets/js/43.313b4f6f.js"><link rel="prefetch" href="/assets/js/44.1921ef3f.js"><link rel="prefetch" href="/assets/js/45.c2d78992.js"><link rel="prefetch" href="/assets/js/46.958c27d1.js"><link rel="prefetch" href="/assets/js/47.16232762.js"><link rel="prefetch" href="/assets/js/48.bf46a043.js"><link rel="prefetch" href="/assets/js/5.d74c5fa6.js"><link rel="prefetch" href="/assets/js/6.66855d3c.js"><link rel="prefetch" href="/assets/js/7.6d0d98da.js"><link rel="prefetch" href="/assets/js/8.1398ffee.js"><link rel="prefetch" href="/assets/js/9.90d435d0.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.e5ba03e8.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">lliiooiill's FEKA</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/basement/" class="nav-link router-link-active">
+  基础
+</a></div><div class="nav-item"><a href="/algorithm/" class="nav-link">
+  算法
+</a></div><div class="nav-item"><a href="/framework/" class="nav-link">
+  框架
+</a></div><div class="nav-item"><a href="/technicalTopics/" class="nav-link">
+  技术专题
+</a></div><div class="nav-item"><a href="https://longgererer.github.io/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  博客
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <a href="https://github.com/Longgererer/front-end-knowledge-accumulate" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/basement/" class="nav-link router-link-active">
+  基础
+</a></div><div class="nav-item"><a href="/algorithm/" class="nav-link">
+  算法
+</a></div><div class="nav-item"><a href="/framework/" class="nav-link">
+  框架
+</a></div><div class="nav-item"><a href="/technicalTopics/" class="nav-link">
+  技术专题
+</a></div><div class="nav-item"><a href="https://longgererer.github.io/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  博客
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <a href="https://github.com/Longgererer/front-end-knowledge-accumulate" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav>  <ul class="sidebar-links"><li><a href="/basement/" aria-current="page" class="sidebar-link">前端基础</a></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>JS</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/basement/JS/Object常用API和原理.html" class="sidebar-link">Object 常用 API 和原理</a></li><li><a href="/basement/JS/this指向.html" class="sidebar-link">this指向</a></li><li><a href="/basement/JS/apply-call-bind实现.html" class="sidebar-link">apply，call，bind 的实现</a></li><li><a href="/basement/JS/理解数组及其部分API的实现.html" class="sidebar-link">理解数组及其部分 API 的实现</a></li><li><a href="/basement/JS/DOM事件.html" class="sidebar-link">DOM 事件</a></li><li><a href="/basement/JS/正则表达式.html" class="sidebar-link">正则表达式</a></li><li><a href="/basement/JS/深拷贝与浅拷贝.html" class="active sidebar-link">深拷贝与浅拷贝</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/basement/JS/深拷贝与浅拷贝.html#浅拷贝" class="sidebar-link">浅拷贝</a></li><li class="sidebar-sub-header"><a href="/basement/JS/深拷贝与浅拷贝.html#深拷贝" class="sidebar-link">深拷贝</a></li><li class="sidebar-sub-header"><a href="/basement/JS/深拷贝与浅拷贝.html#object-assign" class="sidebar-link">Object.assign</a></li><li class="sidebar-sub-header"><a href="/basement/JS/深拷贝与浅拷贝.html#对象扩展符" class="sidebar-link">对象扩展符</a></li><li class="sidebar-sub-header"><a href="/basement/JS/深拷贝与浅拷贝.html#结论" class="sidebar-link">结论</a></li></ul></li><li><a href="/basement/JS/async-await.html" class="sidebar-link">async/await</a></li><li><a href="/basement/JS/Generator.html" class="sidebar-link">Generator</a></li><li><a href="/basement/JS/Promise.html" class="sidebar-link">Promise</a></li><li><a href="/basement/JS/TypeScript.html" class="sidebar-link">TypeScript基础</a></li><li><a href="/basement/JS/Webpack生命周期.html" class="sidebar-link">Webpack 生命周期</a></li><li><a href="/basement/JS/WebWorker.html" class="sidebar-link">Web Workers</a></li><li><a href="/basement/JS/防抖与节流.html" class="sidebar-link">防抖与节流</a></li><li><a href="/basement/JS/函数柯里化.html" class="sidebar-link">函数柯里化</a></li><li><a href="/basement/JS/WebSocket.html" class="sidebar-link">WebSocket</a></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>CSS</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>HTML</span> <span class="arrow right"></span></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="深拷贝与浅拷贝"><a href="#深拷贝与浅拷贝" class="header-anchor">#</a> 深拷贝与浅拷贝</h1> <h2 id="浅拷贝"><a href="#浅拷贝" class="header-anchor">#</a> 浅拷贝</h2> <p>什么是浅拷贝？举个例子：</p> <div class="language-javascript line-numbers-mode"><pre class="language-javascript"><code><span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token punctuation">{</span>
+  b<span class="token operator">:</span> <span class="token number">1</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">const</span> c <span class="token operator">=</span> a
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>c <span class="token operator">===</span> a<span class="token punctuation">)</span> <span class="token comment">// true</span>
+
+c<span class="token punctuation">.</span>b <span class="token operator">=</span> <span class="token number">2</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">.</span>b<span class="token punctuation">)</span> <span class="token comment">// 2</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br></div></div><p>我们先将 a 赋值给 c，实际上是将 a 的内存地址分享给 c，两个变量引用的实际上是同一个对象</p> <p>所以当改变 c 的 b 属性时，a 的 b 属性也会跟着改变</p> <p>由上可得：浅拷贝只复制对象的第一层属性</p> <h2 id="深拷贝"><a href="#深拷贝" class="header-anchor">#</a> 深拷贝</h2> <p>由于浅拷贝所得到的值的内存地址是一样的，所以要想改变属性值而不影响其他对象，就需要深拷贝</p> <p>深拷贝可以将对象的属性进行递归复制</p> <div class="language-javascript line-numbers-mode"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">deepCopy</span><span class="token punctuation">(</span><span class="token parameter">oldObj<span class="token punctuation">,</span> newObj</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 判断newObj是否传入，如果没有初始化一个空对象</span>
+  newObj <span class="token operator">=</span> newObj <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  <span class="token comment">// for...in循环遍历oldObj的key</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> item <span class="token keyword">in</span> oldObj<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 判断是否为对象</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> oldObj<span class="token punctuation">[</span>item<span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token string">'object'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 判断属性值是否为数组</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>objObj<span class="token punctuation">[</span>item<span class="token punctuation">]</span><span class="token punctuation">.</span>constructor <span class="token operator">===</span> Array<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        newObj<span class="token punctuation">[</span>item<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+      <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 如果不是数组，那就是对象</span>
+        newObj<span class="token punctuation">[</span>item<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+      <span class="token comment">// 递归调用deepCopy</span>
+      <span class="token function">deepCopy</span><span class="token punctuation">(</span>oldObj<span class="token punctuation">[</span>item<span class="token punctuation">]</span><span class="token punctuation">,</span> newObj<span class="token punctuation">[</span>item<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      newObj<span class="token punctuation">[</span>item<span class="token punctuation">]</span> <span class="token operator">=</span> oldObj<span class="token punctuation">[</span>item<span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> newObj
+<span class="token punctuation">}</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br></div></div><p>这种方法比较麻烦，实际项目中可以使用序列化反序列化的方式实现深拷贝：</p> <div class="language-javascript line-numbers-mode"><pre class="language-javascript"><code><span class="token keyword">const</span> <span class="token function-variable function">deepCopy</span> <span class="token operator">=</span> <span class="token parameter">oldObj</span> <span class="token operator">=&gt;</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>oldObj<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token punctuation">{</span>
+  b<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  c<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  d<span class="token operator">:</span> <span class="token punctuation">{</span>
+    e<span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> f <span class="token operator">=</span> <span class="token function">deepCopy</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+f<span class="token punctuation">.</span>b <span class="token operator">=</span> <span class="token number">2</span>
+f<span class="token punctuation">.</span>c<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">4</span>
+f<span class="token punctuation">.</span>d<span class="token punctuation">.</span>e <span class="token operator">=</span> <span class="token number">5</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+<span class="token comment">// {</span>
+<span class="token comment">//   b: 1,</span>
+<span class="token comment">//   c: [1, 2, 3],</span>
+<span class="token comment">//   d: {</span>
+<span class="token comment">//     e: 1</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+<span class="token comment">// {</span>
+<span class="token comment">//   b: 2,</span>
+<span class="token comment">//   c: [4, 2, 3],</span>
+<span class="token comment">//   d: {</span>
+<span class="token comment">//     e: 5</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br></div></div><p>可以看到这种方法也可以实现深拷贝</p> <h2 id="object-assign"><a href="#object-assign" class="header-anchor">#</a> Object.assign</h2> <p>Object.assign 是 ES6 规范中的一个新方法</p> <p>也可以实现对象的拷贝，但仅限于第一层的深拷贝，第一层之后一律是浅拷贝：</p> <div class="language-javascript line-numbers-mode"><pre class="language-javascript"><code><span class="token keyword">const</span> <span class="token function-variable function">deepCopy</span> <span class="token operator">=</span> <span class="token parameter">oldObj</span> <span class="token operator">=&gt;</span> Object<span class="token punctuation">.</span><span class="token function">assign</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> oldObj<span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token punctuation">{</span>
+  b<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  c<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  d<span class="token operator">:</span> <span class="token punctuation">{</span>
+    e<span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> f <span class="token operator">=</span> <span class="token function">deepCopy</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+f<span class="token punctuation">.</span>b <span class="token operator">=</span> <span class="token number">2</span>
+f<span class="token punctuation">.</span>c<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">4</span>
+f<span class="token punctuation">.</span>d<span class="token punctuation">.</span>e <span class="token operator">=</span> <span class="token number">5</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+<span class="token comment">// {</span>
+<span class="token comment">//   b: 1,</span>
+<span class="token comment">//   c: [4, 2, 3],</span>
+<span class="token comment">//   d: {</span>
+<span class="token comment">//     e: 5</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+<span class="token comment">// {</span>
+<span class="token comment">//   b: 2,</span>
+<span class="token comment">//   c: [4, 2, 3],</span>
+<span class="token comment">//   d: {</span>
+<span class="token comment">//     e: 5</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br></div></div><p>使用 Object.assign 方法并不能达到严格意义上的深拷贝，只能深拷贝第一层的属性而已，因此，如果对象有多层嵌套，就不要用 Object.assign 进行深拷贝</p> <h2 id="对象扩展符"><a href="#对象扩展符" class="header-anchor">#</a> 对象扩展符</h2> <p>对象扩展符是 ES7 的标准</p> <p>还是一样的例子，来看看对象扩展符能否实现深拷贝：</p> <div class="language-javascript line-numbers-mode"><pre class="language-javascript"><code><span class="token keyword">const</span> <span class="token function-variable function">deepCopy</span> <span class="token operator">=</span> <span class="token parameter">oldObj</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token operator">...</span>oldObj <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token punctuation">{</span>
+  b<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  c<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  d<span class="token operator">:</span> <span class="token punctuation">{</span>
+    e<span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> f <span class="token operator">=</span> <span class="token function">deepCopy</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+f<span class="token punctuation">.</span>b <span class="token operator">=</span> <span class="token number">2</span>
+f<span class="token punctuation">.</span>c<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">4</span>
+f<span class="token punctuation">.</span>d<span class="token punctuation">.</span>e <span class="token operator">=</span> <span class="token number">5</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+<span class="token comment">// {</span>
+<span class="token comment">//   b: 1,</span>
+<span class="token comment">//   c: [4, 2, 3],</span>
+<span class="token comment">//   d: {</span>
+<span class="token comment">//     e: 5</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+<span class="token comment">// {</span>
+<span class="token comment">//   b: 2,</span>
+<span class="token comment">//   c: [4, 2, 3],</span>
+<span class="token comment">//   d: {</span>
+<span class="token comment">//     e: 5</span>
+<span class="token comment">//   }</span>
+<span class="token comment">// }</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br></div></div><p>结果和 Object.assign 一模一样，同样也只是实现了第一层的深拷贝</p> <h2 id="结论"><a href="#结论" class="header-anchor">#</a> 结论</h2> <ul><li>JSON.parse(JSON.stringify(oldObj)) 这种方法可以实现严格意义上的深拷贝</li> <li>Object.assign 和对象扩展符只能对第一层属性深拷贝，更深层的属性只能浅拷贝</li></ul></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">5/18/2021, 9:59:56 AM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/basement/JS/正则表达式.html" class="prev">
+        正则表达式
+      </a></span> <span class="next"><a href="/basement/JS/async-await.html">
+        async/await
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.885b26e3.js" defer></script><script src="/assets/js/2.692c3beb.js" defer></script><script src="/assets/js/32.d80a16cb.js" defer></script>
+  </body>
+</html>

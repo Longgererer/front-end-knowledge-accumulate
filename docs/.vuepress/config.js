@@ -6,7 +6,7 @@ module.exports = {
     ['link', { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css' }],
     ['link', { rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css" }]
   ],
-  base: '/front-end-knowledge-accumulate/', // 这是部署到github相关的配置 下面会讲
+  base: '', // 这是部署到github相关的配置 下面会讲
   markdown: {
     lineNumbers: true, // 代码块显示行号
     extendMarkdown: md => {
@@ -14,7 +14,27 @@ module.exports = {
       md.use(require("markdown-it-katex"))
     }
   },
+  // plugins: ['@vuepress/medium-zoom', '@vuepress/back-to-top', '@vuepress/active-header-links', {
+  //   sidebarLinkSelector: '.sidebar-link',
+  //   headerAnchorSelector: '.header-anchor'
+  // }],
+  plugins: {
+    '@vuepress/medium-zoom': {
+      selector: 'img.zoom-custom-imgs',
+      // medium-zoom options here
+      // See: https://github.com/francoischalifour/medium-zoom#options
+      options: {
+        margin: 16
+      }
+    },
+    '@vuepress/active-header-links': {
+      sidebarLinkSelector: '.sidebar-link',
+      headerAnchorSelector: '.header-anchor'
+    },
+    '@vuepress/back-to-top': {},
+  },
   themeConfig: {
+    smoothScroll: true,
     sidebarDepth: 2, // e'b将同时提取markdown中h2 和 h3 标题，显示在侧边栏上。
     lastUpdated: 'Last Updated', // 文档更新时间：每个文件git最后提交的时间
     repo: 'https://github.com/Longgererer/front-end-knowledge-accumulate',
@@ -45,6 +65,8 @@ module.exports = {
           children: [
             'JS/Object常用API和原理',
             'JS/this指向',
+            'JS/apply-call-bind实现',
+            'JS/理解数组及其部分API的实现',
             'JS/DOM事件',
             'JS/正则表达式',
             'JS/深拷贝与浅拷贝',
@@ -56,7 +78,7 @@ module.exports = {
             'JS/WebWorker',
             'JS/防抖与节流',
             'JS/函数柯里化',
-            'JS/WebSocket'
+            'JS/WebSocket',
           ],
         },
         {

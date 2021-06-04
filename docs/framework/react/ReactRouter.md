@@ -2,7 +2,7 @@
 
 ## 安装
 
-```dash
+```bash
 npm i react-router --save
 ```
 

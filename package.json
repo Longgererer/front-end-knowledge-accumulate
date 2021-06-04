@@ -11,9 +11,13 @@
     "d": "bash deploy.sh"
   },
   "devDependencies": {
+    "@vuepress/plugin-active-header-links": "^1.8.2",
+    "@vuepress/plugin-back-to-top": "^1.8.2",
+    "@vuepress/plugin-medium-zoom": "^1.8.2",
     "vuepress": "^1.8.2"
   },
   "dependencies": {
-    "markdown-it-katex": "^2.0.3"
+    "markdown-it-katex": "^2.0.3",
+    "vuepress-theme-vuescroll": "0.0.44"
   }
 }

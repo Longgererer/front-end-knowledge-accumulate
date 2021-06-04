@@ -32,7 +32,7 @@ git 仓库目录时 git 用来保存项目的元数据核对像数据库的地�
 
 在目录中初始化仓库。
 
-```git
+```bash
 git init
 ```
 
@@ -40,31 +40,31 @@ git init
 
 `git add` 既可以追踪文件，也可以把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等，所以这个命令的作用应该是**精确地将内容添加到下一次提交中**。
 
-```git
+```bash
 git add 文件路径
 ```
 
 克隆现有的仓库
 
-```git
+```bash
 git clone 仓库链接
 ```
 
 可以查看哪些文件处于什么状态，不外乎两种：已跟踪或未跟踪。
 
-```git
+```bash
 git status
 ```
 
 运行 commit 提交，注意：**commit 提交的是最后一次运行 add 时暂存的版本，而不是当前工作目录的版本，如果想提交最新版本，需要再使用 add 重新暂存**。
 
-```git
+```bash
 git commit
 ```
 
 如果想要 git 忽略一些不需要提交的文件，创建 `.gitignore`。
 
-```git
+```bash
 cat .gitignore
 *.[oa] // 忽略所有以.o或.a结尾的文件
 *~ // 忽略所有~结尾的文件
@@ -74,19 +74,19 @@ cat .gitignore
 
 `git diff` 本身只显示尚未暂存的改动，而不是自提交以来所做的所有改动，如果你用 add 暂存了改动的文件，使用 diff 将不会看到结果。
 
-```git
+```bash
 git diff
 ```
 
 mv 命令可以改动文件名。
 
-```git
+```bash
 git mv 改动前名字 改动后名字
 ```
 
 运行 mv 等同于：
 
-```git
+```bash
 mv 改动前名字 改动后名字
 git rm 改动前名字
 git add 改动后名字
@@ -94,13 +94,13 @@ git add 改动后名字
 
 使用 log 命令查看提交历史，在不输入任何参数的条件下默认按时间顺序输出所有提交历史，包含作者名字，邮件地址等等。
 
-```git
+```bash
 git log
 ```
 
 如果只是想快速浏览某个搭档的提交所带来的变化，可以使用 patch 参数。
 
-```git
+```bash
 git log --patch
 ```
 
@@ -118,13 +118,13 @@ git log --patch
 
 有的时候提交完才发现有几个文件没有添加，或者提交信息写错了，可以使用 amend 重新提交。
 
-```git
+```bash
 git commit --amend
 ```
 
 可以推送自己的项目到远程仓库。
 
-```git
+```bash
 git push origin master
 ```
 
@@ -144,7 +144,7 @@ git 的分支实质上是一个**指向提交对象的可变指针**，git 的�
 
 创建新分支：
 
-```git
+```bash
 git branch test
 ```
 
@@ -152,13 +152,13 @@ git branch test
 
 可以使用 checkout 切换分支
 
-```git
+```bash
 git checkout test
 ```
 
 创建并切换分支
 
-```git
+```bash
 git checkout -b test
 ```
 
@@ -170,7 +170,7 @@ git checkout -b test
 
 想要合并分支的话，先切换到 master 上，再合并分支：
 
-```git
+```bash
 git checkout master // 单人开发
 git pull origin master // 如果是多人开发，可能需要把远程master的代码pull下来
 git merge test // 把test合并到master上
@@ -178,7 +178,7 @@ git merge test // 把test合并到master上
 
 删除分支：
 
-```git
+```bash
 git push origin -d test // 删除远程分支
 git branch -d test // 删除本地分支
 ```
@@ -191,13 +191,13 @@ git branch -d test // 删除本地分支
 
 fetch 命令可以更新你的远程追踪分支。
 
-```git
+```bash
 git fetch
 ```
 
 remote 可以查看已存在的远程分支
 
-```git
+```bash
 git remote
 ```
 
@@ -233,7 +233,7 @@ git 可以使用四种不同的协议传输资料：**本地协议**，**HTTP �
 
 创建裸存储库
 
-```git
+```bash
 git init --bare
 ```
 
@@ -256,13 +256,13 @@ git rebase 会把分支优先合并到主分支，然后把本地分支的 commi
 
 先连接远程仓库：
 
-```git
+```bash
 git remote add origin 远程仓库地址
 ```
 
 如果是第一次推送，则进行下面命令，-u 是指定 origin 为默认主分支
 
-```git
+```bash
 git push -u origin master
 ```
 

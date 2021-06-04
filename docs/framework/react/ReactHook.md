@@ -185,7 +185,7 @@ useEffect 返回的函数就是 componentWillUnmount 中要执行的函数，这
 
 可以安装 eslint-plugin-react-hooks 来强制执行这条规则
 
-```dash
+```bash
 npm install eslint-plugin-react-hooks --save-dev
 ```
 

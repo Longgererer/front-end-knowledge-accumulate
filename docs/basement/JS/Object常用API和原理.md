@@ -96,7 +96,7 @@ const obj = Object.create(null, {
 obj // {c: 'c'}
 ```
 
-::: warning
+:::warning
 不要认为 `Object.create` 可以继承原型就可以替代 `new` 操作符，因为 `new` 操作符可不仅仅是继承原型而已，还会执行 `constructor`。
 :::
 
@@ -173,7 +173,7 @@ Object.defineProperty(obj, 'a', { value: 2 }) // success
 
 该方法返回一个布尔值，表示对象是否**直接**含有该名称的属性，名称可以是字符串或 `symbol`。
 
-::: tip Notice
+:::tip Notice
 `hasOwnProperty` 只会遍历查找直接子属性而忽略 `__proto__` 上的属性。
 :::
 
@@ -229,7 +229,7 @@ for (var prop in obj) {
 
 1. **`Object.defineProperty(obj:Object, prop:string|symbol, descriptor:Object)`**  
    通过 `Object.defineProperty` 将所有属性的 `configurable` 和 `writable` 设置为 `false`，这种方法可以让属性**不可修改、配置和删除**。
-   ::: tip Notice
+   :::tip Notice
    如果想要对一个已经含有若干属性的对象进行处理，需要遍历对象来对每个属性进行配置，`enumerable` 为 `false` 的属性不会被遍历到，因此仍然可以被修改。
    :::
 
@@ -242,7 +242,7 @@ for (var prop in obj) {
 4. **`Object.freeze(obj:Object)`**  
    `seal` 的升级版，它会在对象上调用 `seal` 并把每个属性的 `writable` 置为 `false`，是级别最高的不可变性。
 
-::: tip Notice
+:::tip Notice
 `Object.freeze` 是**浅冻结**，如果对象中包含了其他嵌套的子对象，那么你需要遍历到这些引用的对象并执行 `Object.freeze` 以实现深冻结。
 :::
 
