@@ -89,7 +89,7 @@ ReactDOM.render(<Parent />, document.getElementById('root1'))
 
 上述代码执行结果：
 
-![截图未命名.jpg](https://i.loli.net/2019/09/08/nlay1BmiPsg6KIf.jpg)
+![截图未命名.jpg](http://picstore.lliiooiill.cn/nlay1BmiPsg6KIf.jpg)
 
 可以看到 `a` 的值 `1`，而 `b` 的值则获取不到
 

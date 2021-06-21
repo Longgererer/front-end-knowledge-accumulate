@@ -100,17 +100,17 @@ b.next(6) //12
 什么意思呢？  
 `next`方法会返回一个对象，这个对象的`value`属性就是当前`yield`表达式的值，也就是当前内部状态值，对象还有一个属性是`done`，表示迭代是否结束。上述代码在执行第一个`next`的时候就返回了一个对象：
 
-![截图未命名.jpg](https://i.loli.net/2019/03/19/5c90980fe374b.jpg)
+![截图未命名.jpg](http://picstore.lliiooiill.cn/5c90980fe374b.jpg)
 
 这个时候因为`yield`没有值，所以是`undefined`。
 
 执行第二个`next`的时候：
 
-![截图未命名.jpg](https://i.loli.net/2019/03/19/5c9098b18c1c9.jpg)
+![截图未命名.jpg](http://picstore.lliiooiill.cn/5c9098b18c1c9.jpg)
 
 还是`undefined`,因为现在`value`并不是第一个`yield`的值了，那是什么值呢？  
 把`console.log(y)`改成`return(y)`试试：
 
-![截图未命名.jpg](https://i.loli.net/2019/03/19/5c90999320af7.jpg)
+![截图未命名.jpg](http://picstore.lliiooiill.cn/5c90999320af7.jpg)
 
 原来最后一个`next`返回的对象`value`值是最后`return`的值，如果生成器中没有`return`，那么会自动生成一个隐式的`return`返回`undefined`，这样就能解释`next`比`yield`多一个的原因了。

@@ -369,7 +369,7 @@ export default {
 }
 ```
 
-![1613874843_1_.png](https://i.loli.net/2021/02/21/DSwGQxqmNXgcIkW.png)
+![1613874843_1_.png](http://picstore.lliiooiill.cn/v2-3c3dc0eec8098ec4282443a7eb2e0062_720w.jpg)
 
 可以看到 `ref` 对象的 `_value` 属性和 `reactive` 一样都被代理了。
 
@@ -522,7 +522,7 @@ class ObjectRefImpl {
 </script>
 ```
 
-![GIF.gif](https://i.loli.net/2021/02/21/RcdSLJEahomsjGz.gif)
+![GIF.gif](http://picstore.lliiooiill.cn/v2-92a39d5de931426d3d130ce26ae8eb89_b.webp)
 
 可以看到，点击 addA 按钮不会触发界面渲染，而点击 addB 会更新界面。虽然 `attrB.value` 的改变确实会触发 ui 更新，但这是因为 `attrB.value` 的改变触发了 `obj2.b` 的改变，而 `obj2` 本身就是响应式数据，所以 **`attrB.value` 的改变是间接触发了 ui 更新，而不是直接原因**。
 
@@ -1091,7 +1091,7 @@ render() {
 </script>
 ```
 
-![GIF.gif](https://i.loli.net/2021/02/23/bWBj13Aney7pdI5.gif)
+![GIF.gif](http://picstore.lliiooiill.cn/v2-c0d0a4352695394c00ee1752b1b8d881_b.webp)
 
 这样在一开始会显示 1 秒的 Loading...，然后才会显示 `AsyncComponent`，因此在做加载动画的时候可以用 `Suspense` 来处理。
 

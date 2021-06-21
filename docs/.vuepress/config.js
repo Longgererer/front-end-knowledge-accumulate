@@ -65,6 +65,7 @@ module.exports = {
           children: [
             'JS/Object常用API和原理',
             'JS/this指向',
+            'JS/原型链',
             'JS/apply-call-bind实现',
             'JS/理解数组及其部分API的实现',
             'JS/DOM事件',
@@ -106,6 +107,7 @@ module.exports = {
             '排序算法',
             '深度优先和广度优先',
             '最短路径算法',
+            '贪婪动态规划'
           ]
         }
       ],
@@ -133,11 +135,13 @@ module.exports = {
           title: '技术专题',
           children: [
             'EventLoop',
+            '前端模块化发展',
             '浏览器渲染原理',
             '状态管理',
             '浏览器缓存机制',
             'Git详解',
             '14种JavaScript设计模式',
+            'Vite是什么？'
           ]
         }
       ]
