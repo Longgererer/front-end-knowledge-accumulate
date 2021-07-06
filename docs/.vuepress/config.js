@@ -80,6 +80,7 @@ module.exports = {
             'JS/防抖与节流',
             'JS/函数柯里化',
             'JS/WebSocket',
+            'JS/JS垃圾回收机制'
           ],
         },
         {
