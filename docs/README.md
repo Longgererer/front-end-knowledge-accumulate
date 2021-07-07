@@ -12,5 +12,8 @@ features:
   details: 记录前端所学框架的相关知识，提升对框架的掌握程度。
 - title: 技术专题
   details: 专门用于探索一些前端技术的长篇文章。
-footer: MIT Licensed | Copyright © 2021-present lliiooiill
+footer: MIT Licensed | Copyright © 2021-present ❤lliiooiill❤
+pageClass: home-page-class
 ---
+
+🌟**近期更新**：[JS 垃圾回收机制](./basement/JS/JS%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6.html) 👉

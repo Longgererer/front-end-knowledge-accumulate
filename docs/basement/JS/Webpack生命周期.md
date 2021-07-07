@@ -69,7 +69,7 @@ optimist 可以对 node 命令行进行解析，**用于激活 webpack 的加载
 
 假如我在命令行输入：
 
-```dash
+```bash
 webpack --hot -w
 ```
 

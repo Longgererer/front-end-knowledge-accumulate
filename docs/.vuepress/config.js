@@ -32,6 +32,21 @@ module.exports = {
       headerAnchorSelector: '.header-anchor'
     },
     '@vuepress/back-to-top': {},
+    '@vuepress/google-analytics': {
+      'ga': 'G-WHDRXHWKPV'
+    },
+    // 'vuepress-plugin-comment': {
+    //   choosen: 'valine',
+    //   // options选项中的所有参数，会传给Valine的配置
+    //   options: {
+    //     el: '#valine-vuepress-comment',
+    //     appId: 'YgqOaVYU7mANDprMIzk65ojL-gzGzoHsz',
+    //     appKey: 'ltQrdwSx1cefu87liG294cr4'
+    //   }
+    // },
+    '@vuepress/register-components': {
+      componentsDir: './components'
+    }
   },
   themeConfig: {
     smoothScroll: true,

@@ -261,7 +261,7 @@ console.log('end')
 
 完整的输出为：
 
-```dash
+```bash
 start
 promise2
 end

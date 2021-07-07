@@ -110,7 +110,7 @@ console.log(a);
 
 返回值出乎意料,是一个`promise`对象：
 
-```dash
+```bash
 Promise {<resolved>: "hello"}
 ```
 
@@ -131,6 +131,6 @@ test().then(v => {
 - 如果`await`最后等到的不是一个`promise`对象，那么`await`的运算结果就是表达式返回的东西。
 - 如果`await`最后等到的是一个`promise`对象，那么他会等待`promise`的状态变成`resolve`，然后得到`resolve`的值，作为`await`表达式的运算结果。
 
-::: warning
+:::warning
 `await`命令后面的`Promise`对象，运行结果可能是`rejected`，所以最好把`await`命令放在`try...catch`代码块中。
 :::

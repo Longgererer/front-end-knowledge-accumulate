@@ -43,7 +43,7 @@ getMime();
 
 这是一段 Node 代码，我想读取一个文件的信息，于是在读取文件信息的时候将它输出，然而结果却不是这样的：
 
-```dash
+```bash
 依次输出：
 1
 undefined
@@ -75,7 +75,7 @@ getMime(function(data) {
 
 这次传递了一个 callback 参数，等到执行 readFile 方法的时候再调用 callback 函数，这样就可以成功获取到数据了：
 
-```dash
+```bash
 依次输出：
 1
 3

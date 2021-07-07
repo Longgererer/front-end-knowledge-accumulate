@@ -153,4 +153,5 @@ IE6，7 中的 GC 采用的就是这种方式对 DOM 对象进行 GC，处理循
 ## 参考文章
 
 - [内存管理-MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Memory_Management)
-- [垃圾回收](https://zh.javascript.info/garbage-collection) -[JavaScript 内部原理：垃圾收集](https://blog.appsignal.com/2020/10/21/garbage-collection-in-javascript.html)
+- [垃圾回收](https://zh.javascript.info/garbage-collection)
+- [JavaScript 内部原理：垃圾收集](https://blog.appsignal.com/2020/10/21/garbage-collection-in-javascript.html)

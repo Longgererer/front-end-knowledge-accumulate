@@ -1,6 +1,4 @@
-@charset "utf-8";
-
-$deep = #20232a;
+@charset 'utf-8'$deep = #20232a;
 $secondDeep = #262626;
 $thirdDeep = #333333;
 $main = #61dafb;
@@ -10,7 +8,7 @@ $badgeWarningColor = darken(#ffe564, 35%);
 $noticeBgc = #f3f5f733;
 $sidebarColor = #a8a8a8;
 $textShadow = 0px -2px 0px rgba(0, 0, 0, 0.3);
-$shallowWhite = #F2F2F2
+$shallowWhite = #F2F2F2;
 $white = #F8F8F8;
 
 * {
@@ -210,12 +208,14 @@ table {
     .error {
     }
 
-    strong{
+    strong {
       color: $main;
     }
 
     .page-nav {
       .inner {
+        border-top: 1px dashed $sidebarColor;
+
         span.prev {
           position: relative;
           padding-left: 10px;
@@ -241,6 +241,50 @@ table {
         }
       }
     }
+
+    &>section {
+      max-width: 740px;
+      box-sizing: border-box;
+      margin: 0 auto;
+
+      h3 {
+        color: $main;
+      }
+
+      #valine-vuepress-comment {
+        max-width: 740px;
+        box-sizing: border-box;
+        margin: 0 auto;
+
+        .vpanel {
+          .vwrap {
+            .vheader {
+              input {
+                &:placeholder {
+                  color: $sidebarColor;
+                }
+
+                &:focus {
+                  border-bottom-color: $main;
+                }
+              }
+            }
+          }
+        }
+
+        .vcards {
+          img {
+            background-color: transparent;
+          }
+
+          .vmeta {
+            .vat {
+              color: $main;
+            }
+          }
+        }
+      }
+    }
   }
 
   li code {
@@ -261,27 +305,44 @@ table {
   }
 }
 
-.no-sidebar header {
-  background-color: transparent !important;
-  border: none !important;
-
-  .site-name {
-    color: $white !important;
-  }
-
-  .links {
+.home-page-class {
+  header {
     background-color: transparent !important;
-  }
+    border: none !important;
 
-  .nav-links {
-    background-color: transparent !important;
-    color: $white !important;
-  }
+    .site-name {
+      color: $white !important;
+    }
 
-  .search-box {
-    input {
+    .links {
       background-color: transparent !important;
-      border-color: $sidebarColor !important;
+    }
+
+    .nav-links {
+      background-color: transparent !important;
+      color: $white !important;
+    }
+
+    .search-box {
+      input {
+        background-color: transparent !important;
+        border-color: $sidebarColor !important;
+      }
+    }
+  }
+
+  .custom {
+    margin: 0 auto;
+    max-width: 960px;
+    padding: 15px !important;
+    box-sizing: border-box;
+    border-radius: 5px;
+    box-shadow: -2px -2px 4px rgba(25, 106, 212, 0.2), 0 0 10px 10px rgba(25, 106, 212, 0.05), 2px 2px 8px rgba(40, 40, 40, 0.25);
+    transition: all 0.3s ease;
+    background-color: rgba(25, 70, 212, 0);
+
+    h2 {
+      border: none;
     }
   }
 }
