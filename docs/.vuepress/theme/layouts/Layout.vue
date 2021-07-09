@@ -4,7 +4,7 @@
 
     <div class="sidebar-mask" @click="toggleSidebar(false)" />
 
-    <Sidebar :items="sidebarItems" @toggle-sidebar="toggleSidebar">
+    <Sidebar :items="sidebarItems" @toggle-sidebar="toggleSidebar" class="sidebar" :class="isSidebarFold?'sidebar-fold':'sidebar-unfold'">
       <template #top>
         <slot name="sidebar-top" />
       </template>
@@ -13,9 +13,11 @@
       </template>
     </Sidebar>
 
+    <SidebarButton class="sidebar-button" @click.native="foldSidebar" :class="isSidebarFold?'sidebar-button-fold':''"/>
+
     <Home v-if="$page.frontmatter.home" />
 
-    <Page v-else :sidebar-items="sidebarItems">
+    <Page v-else :sidebar-items="sidebarItems" :class="isSidebarFold?'page-fold':''">
       <template #top>
         <slot name="page-top" />
       </template>
@@ -31,6 +33,7 @@ import Home from '@theme/components/Home.vue'
 import Navbar from '@theme/components/Navbar.vue'
 import Page from '@theme/components/Page.vue'
 import Sidebar from '@theme/components/Sidebar.vue'
+import SidebarButton from '@theme/components/SidebarButton.vue'
 import { resolveSidebarItems } from '../util'
 
 export default {
@@ -38,14 +41,16 @@ export default {
 
   components: {
     Home,
-      Page,
+    Page,
     Sidebar,
     Navbar,
+    SidebarButton,
   },
 
   data() {
     return {
       isSidebarOpen: false,
+      isSidebarFold: false,
     }
   },
 
@@ -88,6 +93,9 @@ export default {
   },
 
   methods: {
+    foldSidebar() {
+      this.isSidebarFold = !this.isSidebarFold
+    },
     toggleSidebar(to) {
       this.isSidebarOpen = typeof to === 'boolean' ? to : !this.isSidebarOpen
       this.$emit('toggle-sidebar', this.isSidebarOpen)
@@ -115,3 +123,42 @@ export default {
   },
 }
 </script>
+
+<style lang="stylus" scoped>
+$main = #61dafb;
+$white = #F8F8F8;
+$textShadow = 0px -2px 0px rgba(0, 0, 0, 0.3);
+.sidebar
+  left 0
+  transition all 0.3s ease
+.sidebar-fold
+  left -320px
+.sidebar-button
+  position fixed
+  left 16rem
+  top 5rem
+  z-index 1000
+  transition all 0.3s ease
+  border-radius 50%
+  &:hover
+    color $white
+    background-color $main
+    text-shadow $textShadow
+    box-shadow 0 0 5px $main
+.sidebar-button-fold
+  left 10px
+.page-fold
+  padding-left 0rem
+@media (max-width: $MQNarrow)
+  .sidebar-button
+    left 13.5rem
+  .sidebar-button-fold
+    left 10px
+@media (max-width: $MQMobile)
+  .sidebar
+    transform none
+  .sidebar-button
+    top 0.6rem
+    left 0.6rem !important
+    
+</style>

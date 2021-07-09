@@ -1,60 +1,46 @@
 <template>
-  <main
-    class="home"
-    :aria-labelledby="data.heroText !== null ? 'main-title' : null"
-  >
+  <main class="home" :aria-labelledby="data.heroText !== null ? 'main-title' : null">
     <header class="hero">
-      <img
-        v-if="data.heroImage"
-        :src="$withBase(data.heroImage)"
-        :alt="data.heroAlt || 'hero'"
-      >
+      <img v-if="data.heroImage" :src="$withBase(data.heroImage)" :alt="data.heroAlt || 'hero'" />
 
-      <h1
-        v-if="data.heroText !== null"
-        id="main-title"
-      >
+      <h1 v-if="data.heroText !== null" id="main-title">
         {{ data.heroText || $title || 'Hello' }}
       </h1>
 
-      <p
-        v-if="data.tagline !== null"
-        class="description"
-      >
+      <p v-if="data.tagline !== null" class="description">
         {{ data.tagline || $description || 'Welcome to your VuePress site' }}
       </p>
 
-      <p
-        v-if="data.actionText && data.actionLink"
-        class="action"
-      >
-        <NavLink
-          class="action-button"
-          :item="actionLink"
-        />
+      <p v-if="data.actionText && data.actionLink" class="action">
+        <NavLink class="action-button" :item="actionLink" />
       </p>
     </header>
 
-    <div
-      v-if="data.features && data.features.length"
-      class="features"
-    >
-      <div
-        v-for="(feature, index) in data.features"
-        :key="index"
-        class="feature"
-      >
-        <h2>{{ feature.title }}</h2>
+    <div v-if="data.features && data.features.length" class="features">
+      <div v-for="(feature, index) in data.features" :key="index" class="feature">
+        <div class="title-box">
+          <h2>{{ feature.title }}</h2>
+          <div class="title-bar"></div>
+        </div>
         <p>{{ feature.details }}</p>
+      </div>
+      <div class="feature new-blog">
+        <div class="title-box">
+          <h2>🌟近期更新</h2>
+          <div class="title-bar"></div>
+        </div>
+        <p>
+          👉<a href="../../../basement/JS/JS%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6.html"
+            >基础/JavaScript: JS 垃圾回收机制 发布于2021/7/6</a
+          >👈
+        </p>
+        <p></p>
       </div>
     </div>
 
     <Content class="theme-default-content custom" />
 
-    <div
-      v-if="data.footer"
-      class="footer"
-    >
+    <div v-if="data.footer" class="footer">
       {{ data.footer }}
     </div>
   </main>
@@ -69,17 +55,17 @@ export default {
   components: { NavLink },
 
   computed: {
-    data () {
+    data() {
       return this.$page.frontmatter
     },
 
-    actionLink () {
+    actionLink() {
       return {
         link: this.data.actionLink,
-        text: this.data.actionText
+        text: this.data.actionText,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -120,24 +106,41 @@ export default {
   .features
     border-top 1px solid $borderColor
     padding 1.2rem 0
+    max-width 960px
     margin-top 2.5rem
-    display flex
-    flex-wrap wrap
-    align-items flex-start
-    align-content stretch
-    justify-content space-between
+    display grid
+    grid-template-columns 1fr 1fr 1fr
+    grid-gap 20px
+    grid-auto-flow row dense
+    border none
+    margin 0 auto
   .feature
-    flex-grow 1
-    flex-basis 30%
-    max-width 30%
-    h2
-      font-size 1.4rem
-      font-weight 500
-      border-bottom none
-      padding-bottom 0
-      color lighten($textColor, 10%)
-    p
-      color lighten($textColor, 25%)
+    // flex-grow 1
+    // flex-basis 30%
+    // max-width 30%
+    filter grayscale(100%)
+    .title-box
+      display inline-block
+      h2
+        font-size 1.4rem
+        font-weight 700
+        padding-bottom 0
+        color lighten($textColor, 10%)
+        border none
+        margin-bottom 5px
+      p
+        color lighten($textColor, 25%)
+      .title-bar
+        width 0
+        border-bottom 2px solid transparent
+        transition all 0.3s ease
+    &:hover
+      filter none
+      .title-bar
+        width 100%
+  .new-blog
+    grid-column-start 2
+    grid-column-end 4
   .footer
     padding 2.5rem
     border-top 1px solid $borderColor

@@ -8,7 +8,7 @@
         v-if="prev"
         class="prev"
       >
-        ←
+        🔙
         <a
           v-if="prev.type === 'external'"
           class="prev"
@@ -29,7 +29,7 @@
           {{ prev.title || prev.path }}
         </RouterLink>
       </span>
-
+      <span class="position-blank"></span>
       <span
         v-if="next"
         class="next"
@@ -51,7 +51,7 @@
         >
           {{ next.title || next.path }}
         </RouterLink>
-        →
+        💨
       </span>
     </p>
   </div>
@@ -147,7 +147,8 @@ function flatten (items, res) {
 
 <style lang="stylus">
 @require '../styles/wrapper.styl'
-
+$main = #61dafb;
+$white = #F8F8F8;
 .page-nav
   @extend $wrapper
   padding-top 1rem
@@ -157,7 +158,30 @@ function flatten (items, res) {
     margin-top 0
     border-top 1px solid $borderColor
     padding-top 1rem
-    overflow auto // clear float
+    display flex
+    justify-content space-between
+    text-align right
+    .position-blank
+      flex: 1
   .next
     float right
+.next
+  border-top-left-radius 5px
+  border-bottom-left-radius 5px
+  border-top-right-radius 22px
+  border-bottom-right-radius 22px
+span.prev
+  border-top-left-radius 22px
+  border-bottom-left-radius 22px
+  border-top-right-radius 5px
+  border-bottom-right-radius 5px
+span.prev, span.next
+  padding: 0.5rem 0.5rem
+  cursor pointer
+  flex-shrink 0
+  &:hover
+    background-color $main
+    box-shadow 0 0 5px $main
+    a
+      color $white
 </style>

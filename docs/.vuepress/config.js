@@ -51,7 +51,7 @@ module.exports = {
   themeConfig: {
     smoothScroll: true,
     sidebarDepth: 2, // e'b将同时提取markdown中h2 和 h3 标题，显示在侧边栏上。
-    lastUpdated: 'Last Updated', // 文档更新时间：每个文件git最后提交的时间
+    lastUpdated: '最后修改于', // 文档更新时间：每个文件git最后提交的时间
     repo: 'https://github.com/Longgererer/front-end-knowledge-accumulate',
     nav: [
       { text: '基础', link: '/basement/' },

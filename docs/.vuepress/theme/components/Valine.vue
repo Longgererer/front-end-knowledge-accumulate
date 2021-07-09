@@ -1,9 +1,10 @@
 <template>
   <section style="border-top: 2px solid #eaecef;padding-top:1rem;margin-top:2rem;">
-    <div>
+    <div class="line"></div>
+    <div class="read-count">
       <!-- id 将作为查询条件 -->
       <span class="leancloud-visitors" data-flag-title="Your Article Title">
-        <span class="post-meta-item-text">阅读量📖： </span>
+        <span class="post-meta-item-text">👁️‍🗨️ </span>
         <span class="leancloud-visitors-count"></span>
       </span>
     </div>
@@ -52,10 +53,20 @@ export default {
         verify: false,
         path: path,
         visitor: true,
-        avatar: 'mm',
+        avatar: 'retro',
         placeholder: '谈谈你的看法😁',
       })
     },
   },
 }
 </script>
+<style lang="stylus" scoped>
+.read-count
+  text-align right
+.line
+  border-top 1px dashed
+  margin-bottom 1rem
+@media (max-width: $MQMobile)
+  section
+    padding 0 2rem
+</style>
