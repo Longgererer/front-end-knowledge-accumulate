@@ -66,7 +66,7 @@ export default {
 .line
   border-top 1px dashed
   margin-bottom 1rem
-@media (max-width: $MQMobile)
+@media (max-width: $MQNarrow)
   section
-    padding 0 2rem
+      padding 0 2rem
 </style>

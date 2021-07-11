@@ -30,9 +30,15 @@
           <div class="title-bar"></div>
         </div>
         <p>
-          👉<a href="../../../basement/JS/JS%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6.html"
-            >基础/JavaScript: JS 垃圾回收机制 发布于2021/7/6</a
-          >👈
+          <ul>
+            <li>
+              👉<a href="../../../basement/JS/JS%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6.html">基础/JavaScript: JS 垃圾回收机制 发布于2021/7/6</a>👈
+            </li>
+            <li>
+              👉<a href="../../../basement/CSS/CSS常用样式.html">基础/CSS: CSS 常用样式 发布于2021/7/10</a>👈
+            </li>
+          </ul>
+
         </p>
         <p></p>
       </div>

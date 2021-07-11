@@ -46,7 +46,8 @@ module.exports = {
     // },
     '@vuepress/register-components': {
       componentsDir: './components'
-    }
+    },
+    'vuepress-plugin-element-tabs':{}
   },
   themeConfig: {
     smoothScroll: true,
@@ -101,9 +102,11 @@ module.exports = {
         {
           title: 'CSS',
           children: [
+            'CSS/选择器',
             'CSS/BFC',
             'CSS/Sass',
             'CSS/Grid',
+            'CSS/CSS常用样式'
           ],
         },
         {

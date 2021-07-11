@@ -35,5 +35,5 @@
 
 @media (max-width: $MQMobile)
   .sidebar-button
-    display block
+    display block !important
 </style>
