@@ -96,7 +96,9 @@ module.exports = {
             'JS/防抖与节流',
             'JS/函数柯里化',
             'JS/WebSocket',
-            'JS/JS垃圾回收机制'
+            'JS/JS垃圾回收机制',
+            'JS/模板字符串',
+            'JS/Class'
           ],
         },
         {
@@ -106,7 +108,10 @@ module.exports = {
             'CSS/BFC',
             'CSS/Sass',
             'CSS/Grid',
-            'CSS/CSS常用样式'
+            'CSS/CSS常用样式',
+            'CSS/水平垂直居中',
+            'CSS/瀑布流布局',
+            'CSS/近年来CSS新特性'
           ],
         },
         {
