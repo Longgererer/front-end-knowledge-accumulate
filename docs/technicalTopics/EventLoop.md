@@ -42,7 +42,7 @@ a()
 
 配合 gif 食用更好理解：
 
-![GIF.gif](http://picstore.lliiooiill.cn/FdoiGN4ckPnzxVO.gif)
+<a data-fancybox title="GIF.gif" href="http://picstore.lliiooiill.cn/FdoiGN4ckPnzxVO.gif">![GIF.gif](http://picstore.lliiooiill.cn/FdoiGN4ckPnzxVO.gif)</a>
 
 以上的结果是在执行同步代码的情况下，如果是执行异步代码就不是这样子了，因为异步是非阻塞的，所以它们会被挂起放到特定队列中，也就是**事件队列**，继续执行执行栈中的其他同步任务，等待同步任务执行完毕，执行栈空了，才会将队列中的异步事件依次取出入栈执行。
 
@@ -74,7 +74,7 @@ console.log('end')
 - 1000 毫秒计时结束，将回调函数放到事件队列中
 - 检查执行栈中是否为空，执行栈为空，将事件队列中的回调函数取出放入执行栈执行，执行完出栈
 
-![GIF.gif](http://picstore.lliiooiill.cn/qD3ioK21lHRxVbz.gif)
+<a data-fancybox title="GIF.gif" href="http://picstore.lliiooiill.cn/qD3ioK21lHRxVbz.gif">![GIF.gif](http://picstore.lliiooiill.cn/qD3ioK21lHRxVbz.gif)</a>
 
 综上所述，我们可以得知这个定时器里的 1000，并不代表程序运行 1000 毫秒后会准时执行回调函数，而是将回调放到事件队列中而已，真正执行回调的延迟时间肯定大于 1000 毫秒。
 
@@ -136,7 +136,7 @@ console.log('end')
 - 执行所有宏任务
 - 输出 setTimeout
 
-![GIF.gif](http://picstore.lliiooiill.cn/sBJuhIkD8Wv9XoK.gif)
+<a data-fancybox title="GIF.gif" href="http://picstore.lliiooiill.cn/sBJuhIkD8Wv9XoK.gif">![GIF.gif](http://picstore.lliiooiill.cn/sBJuhIkD8Wv9XoK.gif)</a>
 
 由此可得知，宏任务先于微任务执行，注意：**每执行完一个宏任务，都要检查微任务队列是否为空，否则执行所有微任务**，也就是说，微任务是一个接一个执行的，宏任务是一个一个分开执行的(这样说可能有点别扭，但我一时想不出更好的解释(＠\_＠;))。
 
@@ -171,7 +171,7 @@ setImmediate(() => {
 
 按照优先级排序，答案很明显是先输出 789，后输出 end，然鹅：
 
-![1606192520.png](http://picstore.lliiooiill.cn/GIDE7RPl4MUKAJy.png)
+<a data-fancybox title="1606192520.png" href="http://picstore.lliiooiill.cn/GIDE7RPl4MUKAJy.png">![1606192520.png](http://picstore.lliiooiill.cn/GIDE7RPl4MUKAJy.png)</a>
 
 没错，我运行了两遍，因为第一次执行得出的结果和我预想的不同，执行第二次我发现 setImmediate 和 setTimeout 的回调执行顺序完全是随机的！
 

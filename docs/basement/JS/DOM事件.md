@@ -10,7 +10,7 @@ DOM 一共分为四个级别：DOM0 级，DOM1 级，DOM2 级和 DOM3 级
 DOM 事件有三种：DOM0 级事件处理，DOM2 级事件处理和 DOM3 级事件处理  
 如下图：
 
-![1.jpg](https://images2015.cnblogs.com/blog/775838/201610/775838-20161006202354035-607305606.png)
+<a data-fancybox title="1.jpg" href="https://images2015.cnblogs.com/blog/775838/201610/775838-20161006202354035-607305606.png">![1.jpg](https://images2015.cnblogs.com/blog/775838/201610/775838-20161006202354035-607305606.png)</a>
 
 ## DOM0 级事件
 
@@ -70,7 +70,7 @@ DOM3 级事件并没有新增绑定事件的方法，而是添加了许多事件
 `true`代表事件在捕获阶段执行，`false`代表事件在冒泡阶段执行。
 
 事件捕获和事件冒泡如下图所示：
-![1.jpg](https://upload-images.jianshu.io/upload_images/2133637-649b6d42c4df498b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+<a data-fancybox title="1.jpg" href="https://upload-images.jianshu.io/upload_images/2133637-649b6d42c4df498b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">![1.jpg](https://upload-images.jianshu.io/upload_images/2133637-649b6d42c4df498b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</a>
 
 ### 事件捕获
 

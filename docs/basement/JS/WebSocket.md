@@ -109,7 +109,7 @@ connection.on('message', (event) => {
 
 数据帧由控制帧和数据帧组成，协议如下：
 
-![](http://picstore.lliiooiill.cn/ws_data_frame.png)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/ws_data_frame.png">![](http://picstore.lliiooiill.cn/ws_data_frame.png)</a>
 
 至于这里面的详细信息可以看看[websocket 协议帧解析](https://zhuanlan.zhihu.com/p/72289051)，这里只讲控制帧。
 

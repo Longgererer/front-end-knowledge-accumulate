@@ -49,7 +49,7 @@ BFC（Block formatting context）就是块级格式化上下文，它是一个�
 
 效果：
 
-![截图未命名.jpg](http://picstore.lliiooiill.cn/SekgUuoIrvlX5x1.jpg)
+<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/SekgUuoIrvlX5x1.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/SekgUuoIrvlX5x1.jpg)</a>
 
 可以看到 aside 浮动之后，main 的左边依然会和 aside 的左边相接触，而 BFC 区域不会和 float box 区域重叠，可以将 main 变为 BFC 布局：
 
@@ -63,7 +63,7 @@ BFC（Block formatting context）就是块级格式化上下文，它是一个�
 
 效果：
 
-![截图未命名.jpg](http://picstore.lliiooiill.cn/NZFdrI8AYvGPw2E.jpg)
+<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/NZFdrI8AYvGPw2E.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/NZFdrI8AYvGPw2E.jpg)</a>
 
 成功实现自适应两栏布局
 
@@ -91,7 +91,7 @@ BFC（Block formatting context）就是块级格式化上下文，它是一个�
 
 效果：
 
-![截图未命名.jpg](http://picstore.lliiooiill.cn/7GcmXgTaHyjYlz9.jpg)
+<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/7GcmXgTaHyjYlz9.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/7GcmXgTaHyjYlz9.jpg)</a>
 
 假如我想将两个盒子浮动变成一行，就会出现因为浮动元素不会撑开父元素导致的布局问题：
 
@@ -106,7 +106,7 @@ BFC（Block formatting context）就是块级格式化上下文，它是一个�
 
 效果：
 
-![截图未命名.jpg](http://picstore.lliiooiill.cn/SkfVv1Pj6T4c89t.jpg)
+<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/SkfVv1Pj6T4c89t.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/SkfVv1Pj6T4c89t.jpg)</a>
 
 根据 BFC 规则，计算 BFC 的高度时，float 元素也参与计算：
 
@@ -120,7 +120,7 @@ BFC（Block formatting context）就是块级格式化上下文，它是一个�
 
 效果：
 
-![截图未命名.jpg](http://picstore.lliiooiill.cn/5Eou4mSR1IBQAWV.jpg)
+<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/5Eou4mSR1IBQAWV.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/5Eou4mSR1IBQAWV.jpg)</a>
 
 ### 防止垂直外边距重叠
 
@@ -141,7 +141,7 @@ BFC（Block formatting context）就是块级格式化上下文，它是一个�
 
 效果：
 
-![截图未命名.jpg](http://picstore.lliiooiill.cn/gUW59qHtymds2R8.jpg)
+<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/gUW59qHtymds2R8.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/gUW59qHtymds2R8.jpg)</a>
 
 可以明显地看到两个子元素的垂直外边距重合了，只有 50px，根据 BFC 规则：Box 的垂直方向由 margin 决定，属于同一个 BFC 的两个相邻 Box 的 margin 会发生重叠
 
@@ -182,7 +182,7 @@ BFC（Block formatting context）就是块级格式化上下文，它是一个�
 
 效果都为：
 
-![截图未命名.jpg](http://picstore.lliiooiill.cn/jhpQ2dAb3DqSkG9.jpg)
+<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/jhpQ2dAb3DqSkG9.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/jhpQ2dAb3DqSkG9.jpg)</a>
 
 > BFC 就是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素。反之也如此。
 

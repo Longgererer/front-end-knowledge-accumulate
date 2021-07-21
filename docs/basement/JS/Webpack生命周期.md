@@ -2,7 +2,7 @@
 
 Webpack 整体流程图如下：
 
-![webpack生命周期.jpg](http://picstore.lliiooiill.cn/DHi8YULbw1fzcMW.jpg)
+<a data-fancybox title="webpack生命周期.jpg" href="http://picstore.lliiooiill.cn/DHi8YULbw1fzcMW.jpg">![webpack生命周期.jpg](http://picstore.lliiooiill.cn/DHi8YULbw1fzcMW.jpg)</a>
 
 下面将注意说明整个流程。
 

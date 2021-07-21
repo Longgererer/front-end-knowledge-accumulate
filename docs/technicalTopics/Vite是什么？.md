@@ -20,7 +20,7 @@ npm init @vitejs/app
 
 项目创建好，安装好了依赖，运行项目，我们在控制台中可以看到 `index.html` 中的代码：
 
-![](http://picstore.lliiooiill.cn/1623728773%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1623728773%281%29.jpg">![](http://picstore.lliiooiill.cn/1623728773%281%29.jpg)</a>
 
 可以看到 Vite 确实是依赖 ESM 进行模块化的。
 
@@ -44,7 +44,7 @@ Vite 配置并启动了一个 Koa 和 WebSocket 服务。WebSocket 服务是用�
 
 我们在浏览器控制台查看各个模块的请求路径时会发现，Vite 会对我们请求的依赖进行路径处理：
 
-![](http://picstore.lliiooiill.cn/1623748694%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1623748694%281%29.jpg">![](http://picstore.lliiooiill.cn/1623748694%281%29.jpg)</a>
 
 比如高亮的这一行 Vue，Vite 会将依赖 Vue 的路径改成 `node_modules/.vite/vue.js?v=hash`，`node_module/.vite` 也就是 Vite 的预构建缓存的位置。除了 `node_module` 中的依赖项，其他路径都是正常的项目路径。
 
@@ -144,13 +144,13 @@ import.meta.hot.prune(() => removeStyle(id))
 
 在我们修改样式的时候，WebSocket 服务检测到改变，发送消息给客户端，浏览器会重新请求新的样式，请看下图：
 
-![](http://picstore.lliiooiill.cn/1623750858%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1623750858%281%29.jpg">![](http://picstore.lliiooiill.cn/1623750858%281%29.jpg)</a>
 
 可以看到更新样式后，WebSocket 发送了一个 message，里面包含了更新的路径以及时间戳。浏览器会发送这样的请求：`http://localhost:3000/src/App.vue?import&t=1623750496994&vue&type=style&index=0&lang.css` 里面就包含了路径和时间戳，时间戳可以确保唯一性。
 
 但如果我们修改的是 HTML 或 JS，则会直接请求 `App.vue`:
 
-![](http://picstore.lliiooiill.cn/1623751155%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1623751155%281%29.jpg">![](http://picstore.lliiooiill.cn/1623751155%281%29.jpg)</a>
 
 因此，在我们修改了 `App.vue` 的 HTML 或 JS 代码后，浏览器会发送两个请求：`/src/App.vue` 和 `'/src/App.vue?vue&type=style&index=0&lang.css'`。
 
@@ -178,7 +178,7 @@ Vite 在开发环境下使用的是 `ESBuild` 进行依赖预构建，最大的�
 
 ### ESBuild 为什么那么快？
 
-![](http://picstore.lliiooiill.cn/1623808034%281%29.png)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1623808034%281%29.png">![](http://picstore.lliiooiill.cn/1623808034%281%29.png)</a>
 
 根据这张图的数据不难发现，无论是构建 TS 还是 JS，`ESBuild` 都有着一骑绝尘的优势。
 

@@ -59,7 +59,7 @@ b(20)
 
 这里我们写了一个闭包函数，那么在函数 `sum` 中哪些变量会被回收呢？我们可以用 Chrome 进行断点调试查看：
 
-![](http://picstore.lliiooiill.cn/1625539348%281%29.png)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625539348%281%29.png">![](http://picstore.lliiooiill.cn/1625539348%281%29.png)</a>
 
 我们可以看到，在返回的闭包(`Closure`)函数内只有引用了变量 `a`，而没有 `b`，这说明变量 `b` 已经被回收了，**JavaScript 不会回收闭包内引用到的外部函数的变量，反之则会进行 GC**。
 
@@ -120,25 +120,25 @@ IE6，7 中的 GC 采用的就是这种方式对 DOM 对象进行 GC，处理循
 
 例如，使我们的对象有如下的结构：
 
-![](http://picstore.lliiooiill.cn/1625542504%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625542504%281%29.jpg">![](http://picstore.lliiooiill.cn/1625542504%281%29.jpg)</a>
 
 我们可以清楚地看到右侧有一个“无法到达的岛屿”。现在我们来看看“标记和清除”垃圾收集器如何处理它。
 
 第一步标记所有的根
 
-![](http://picstore.lliiooiill.cn/1625542524%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625542524%281%29.jpg">![](http://picstore.lliiooiill.cn/1625542524%281%29.jpg)</a>
 
 然后它们的引用被标记了：
 
-![](http://picstore.lliiooiill.cn/1625542548%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625542548%281%29.jpg">![](http://picstore.lliiooiill.cn/1625542548%281%29.jpg)</a>
 
 ……如果还有引用的话，继续标记：
 
-![](http://picstore.lliiooiill.cn/1625545819%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625545819%281%29.jpg">![](http://picstore.lliiooiill.cn/1625545819%281%29.jpg)</a>
 
 现在，无法通过这个过程访问到的对象被认为是不可达的，并且会被删除。
 
-![](http://picstore.lliiooiill.cn/1625545836%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625545836%281%29.jpg">![](http://picstore.lliiooiill.cn/1625545836%281%29.jpg)</a>
 
 相对于引用计数法，标记清除不会受困于循环引用，因此许多 JavaScript 引擎选择使用该算法进行 GC。
 

@@ -184,8 +184,12 @@ table {
   .page {
     transition: all 0.3s ease;
 
+    h1, h2, h3, h4 {
+      color: $codeColor;
+    }
+
     h2 {
-      border-bottom: 1px solid $thirdDeep;
+      border-bottom: 2px solid $thirdDeep;
     }
 
     .tip, .warning, .error {
@@ -338,6 +342,7 @@ table {
   border-radius: 5px !important;
   border: none !important;
   overflow: hidden;
+
   .el-tabs__header {
     border-radius: 5px 5px 0 0;
     background-color: transparent !important;

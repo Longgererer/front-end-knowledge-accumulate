@@ -23,4 +23,4 @@
 
 ### 时间复杂度对照表
 
-![时间复杂度对照表](http://picstore.lliiooiill.cn/1_5ZLci3SuR0zM_QlZOADv8Q.jpeg)
+<a data-fancybox title="时间复杂度对照表" href="http://picstore.lliiooiill.cn/1_5ZLci3SuR0zM_QlZOADv8Q.jpeg">![时间复杂度对照表](http://picstore.lliiooiill.cn/1_5ZLci3SuR0zM_QlZOADv8Q.jpeg)</a>

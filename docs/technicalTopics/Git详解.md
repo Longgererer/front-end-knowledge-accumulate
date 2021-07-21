@@ -166,7 +166,7 @@ git checkout -b test
 
 这会使提交历史产生分叉：
 
-![](https://git-scm.com/book/en/v2/images/advance-master.png)
+<a data-fancybox title="" href="https://git-scm.com/book/en/v2/images/advance-master.png">![](https://git-scm.com/book/en/v2/images/advance-master.png)</a>
 
 想要合并分支的话，先切换到 master 上，再合并分支：
 

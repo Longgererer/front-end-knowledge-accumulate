@@ -25,7 +25,7 @@ p::first-letter {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626004829%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626004829%281%29.jpg">![](http://picstore.lliiooiill.cn/1626004829%281%29.jpg)</a>
 :::
 ::::
 
@@ -88,7 +88,7 @@ div {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626017220%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626017220%281%29.jpg">![](http://picstore.lliiooiill.cn/1626017220%281%29.jpg)</a>
 :::
 ::::
 
@@ -127,7 +127,7 @@ div {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626017890%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626017890%281%29.jpg">![](http://picstore.lliiooiill.cn/1626017890%281%29.jpg)</a>
 :::
 ::::
 
@@ -153,7 +153,7 @@ img {
 
 `scroll-snap-type` 设置 `x mandatory` 则为横向滚动时进行捕捉，而 `y proximity` 为纵向滚动时进行捕捉。设为 `both mandatory` 则为横纵滚动都捕捉。
 
-![](http://picstore.lliiooiill.cn/GIF123.gif)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/GIF123.gif">![](http://picstore.lliiooiill.cn/GIF123.gif)</a>
 
 [具体效果](https://codepen.io/airen/full/mdRpboo)
 
@@ -169,7 +169,7 @@ img {
 
 如图
 
-![](http://picstore.lliiooiill.cn/CSStechniquesFig5.png)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/CSStechniquesFig5.png">![](http://picstore.lliiooiill.cn/CSStechniquesFig5.png)</a>
 
 ## 使用 CSS 测试浏览器支持
 
@@ -249,7 +249,7 @@ h1 {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626059537%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626059537%281%29.jpg">![](http://picstore.lliiooiill.cn/1626059537%281%29.jpg)</a>
 :::
 ::::
 
@@ -275,7 +275,7 @@ h1 {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626060123%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626060123%281%29.jpg">![](http://picstore.lliiooiill.cn/1626060123%281%29.jpg)</a>
 :::
 ::::
 
@@ -308,7 +308,7 @@ p {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626061683%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626061683%281%29.jpg">![](http://picstore.lliiooiill.cn/1626061683%281%29.jpg)</a>
 :::
 ::::
 
@@ -340,7 +340,7 @@ p {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626065244%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626065244%281%29.jpg">![](http://picstore.lliiooiill.cn/1626065244%281%29.jpg)</a>
 :::
 ::::
 
@@ -368,7 +368,7 @@ div {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626081507%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626081507%281%29.jpg">![](http://picstore.lliiooiill.cn/1626081507%281%29.jpg)</a>
 :::
 ::::
 
@@ -411,7 +411,7 @@ div {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626087877%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626087877%281%29.jpg">![](http://picstore.lliiooiill.cn/1626087877%281%29.jpg)</a>
 :::
 ::::
 
@@ -454,7 +454,7 @@ li::after {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626088888%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626088888%281%29.jpg">![](http://picstore.lliiooiill.cn/1626088888%281%29.jpg)</a>
 :::
 ::::
 
@@ -679,7 +679,7 @@ h2 {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626141702%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626141702%281%29.jpg">![](http://picstore.lliiooiill.cn/1626141702%281%29.jpg)</a>
 :::
 ::::
 
@@ -715,7 +715,7 @@ h2 {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626144055%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626144055%281%29.jpg">![](http://picstore.lliiooiill.cn/1626144055%281%29.jpg)</a>
 :::
 ::::
 
@@ -761,7 +761,7 @@ h2 {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1626145915%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626145915%281%29.jpg">![](http://picstore.lliiooiill.cn/1626145915%281%29.jpg)</a>
 :::
 ::::
 

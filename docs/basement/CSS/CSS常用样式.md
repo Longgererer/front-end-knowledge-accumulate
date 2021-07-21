@@ -239,7 +239,7 @@ a {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1625835463%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625835463%281%29.jpg">![](http://picstore.lliiooiill.cn/1625835463%281%29.jpg)</a>
 :::
 ::::
 
@@ -327,7 +327,7 @@ div{
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/GIF.gif)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/GIF.gif">![](http://picstore.lliiooiill.cn/GIF.gif)</a>
 :::
 ::::
 
@@ -365,7 +365,7 @@ a::after {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1625880180%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625880180%281%29.jpg">![](http://picstore.lliiooiill.cn/1625880180%281%29.jpg)</a>
 :::
 ::::
 
@@ -410,7 +410,7 @@ h1:before {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/1625881038%281%29.jpg)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1625881038%281%29.jpg">![](http://picstore.lliiooiill.cn/1625881038%281%29.jpg)</a>
 :::
 ::::
 
@@ -568,7 +568,7 @@ div::before {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/GIF2.gif)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/GIF2.gif">![](http://picstore.lliiooiill.cn/GIF2.gif)</a>
 :::
 ::::
 
@@ -649,7 +649,7 @@ div::before {
 
 :::
 ::: tab 效果
-![](http://picstore.lliiooiill.cn/GIF1.gif)
+<a data-fancybox title="" href="http://picstore.lliiooiill.cn/GIF1.gif">![](http://picstore.lliiooiill.cn/GIF1.gif)</a>
 :::
 ::::
 

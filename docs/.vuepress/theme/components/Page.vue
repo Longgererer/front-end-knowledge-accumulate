@@ -33,7 +33,7 @@ export default {
   padding-bottom 2rem
   display block
 .theme-default-content
-  background-image linear-gradient(90deg,#333333 3%,#0000 0),linear-gradient(1turn,#333333 3%,#0000 0)
+  background-image linear-gradient(90deg,#272727 3%,#0000 0),linear-gradient(1turn,#272727 3%,#0000 0)
   background-size 20px 20px
-  background-position -10% 10%
+  background-position 8% 10%
 </style>
