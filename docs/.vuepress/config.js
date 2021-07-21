@@ -120,6 +120,12 @@ module.exports = {
             'HTML/HTML标签及说明',
             'HTML/HTML5新特性',
           ]
+        },
+        {
+          title: '其他',
+          children: [
+            'OTHER/浏览器进程与线程'
+          ]
         }
       ],
       '/algorithm/': [

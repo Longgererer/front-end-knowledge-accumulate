@@ -36,6 +36,8 @@ const tom = new User('Tom', 'male')
 class User {}
 // 类表达式
 const User = class {}
+// 类也是函数
+console.log(typeof User) // function
 ```
 
 :::tip Notice
@@ -222,7 +224,95 @@ console.log(rectangle.#height) // error: Private field '#height' must be declare
 console.log(rectangle.getHeight()) // log: 12
 ```
 
+## `new.target`
+
+`new.target` 属性允许你检测函数和或者构造方法是否是通过 `new` 被调用的，如果是 `new` 调用的，`new.target` 就会返回一个指向构造方法或函数的引用。在普通函数调用中，`new.target` 的值是 `undefined`。
+
+```js
+function User() {
+  if (new.target === undefined) {
+    console.log('没有使用new调用')
+  } else {
+    console.log(new.target === User) // true
+  }
+}
+```
+
+但在有子类继承父类时，实例化子类时 `new.target` 会返回子类，因此可以用来写出不能独立使用、必须继承后才能使用的类：
+
+```js
+class Parent {
+  constructor(){
+    if(new.target === Parent) {
+      throw new Error('本类不能被实例化！')
+    }
+  }
+}
+class Child extends Parent {
+  constructor{
+    super()
+  }
+}
+
+new Parent() // 报错：本类不能被实例化！
+new Child() // 正确
+```
+
+## 内部实现
+
+我们知道 JavaScript 中所谓的 `class` 不过是一个语法糖而已，与 Java 的 `class` 完全不同。那么 JavaScript 的 `class` 是如何实现的呢？
+
+在此之前，如果不明白 `new` 做了什么，可以看 [new 绑定](./this指向.html#new-绑定)。
+
+我们知道在 ES5 中经过 `new` 调用的构造函数产生的实例会把 `__proto__` 指向构造函数的 `prototype`，如果是 ES6 的 `class` 呢？
+
+```js
+class User {
+  constructor(name) {
+    this.name = name
+  }
+}
+const tom = new User('Tom')
+console.log(tom.__proto__ === User.prototype) // true
+console.log(tom.__proto__.constructor === User) // true
+```
+
+因此，`new` 调用构造函数和类产生的结果都是相同的。只是一个指向构造函数本身，一个指向类。
+
+我们在 ES5 中可以使用原型链继承属性和方法：
+
+```js
+function User(name) {
+  this.name = name
+}
+User.prototype.getName = function() {
+  return this.name
+}
+const tom = new User('tom')
+console.log(tom.getName()) // log: tom
+```
+
+上面的代码在 ES6 `class` 中可以等同于：
+
+```js
+class User {
+  constructor(name) {
+    this.name = name
+  }
+  getName() {
+    return this.name
+  }
+}
+const tom = new User('tom')
+```
+
+## 总结
+
+`class` 的本质还是 ES5 的原型链和构造函数，但是比原来的语法更加方便。`class` 没有声明提升，也不能覆写，但是函数有声明提升，也可以覆写。
+
 ## 参考文章
 
 - [class-MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes)
 - [理解 es6 class 中 constructor 方法 和 super 的作用](https://juejin.cn/post/6844903638674980872)
+- [阮一峰 ECMAScript 6 (ES6) 标准入门教程 第三版](https://www.bookstack.cn/read/es6-3rd/spilt.6.docs-class.md)
+- [详解 ES6 关键字 Class](https://zhuanlan.zhihu.com/p/365598749)
