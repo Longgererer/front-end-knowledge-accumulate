@@ -109,6 +109,7 @@ module.exports = {
           children: [
             'CSS/选择器',
             'CSS/BFC',
+            'CSS/CSS权重',
             'CSS/Sass',
             'CSS/Grid',
             'CSS/CSS常用样式',

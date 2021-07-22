@@ -32,10 +32,10 @@
         <p>
           <ul>
             <li>
-              👉<a href="../../../basement/JS/JS%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6.html">基础/JavaScript: JS 垃圾回收机制 发布于2021/7/6</a>👈
+              👉<a href="../../../basement/CSS/近年来CSS新特性.html">基础/CSS: 近年来 CSS 的那些新特性 发布于2021/7/12</a>👈
             </li>
             <li>
-              👉<a href="../../../basement/CSS/CSS常用样式.html">基础/CSS: CSS 常用样式 发布于2021/7/10</a>👈
+              👉<a href="../../../basement/CSS/CSS权重.html">基础/CSS:CSS 权重 发布于2021/7/22</a>👈
             </li>
           </ul>
 
