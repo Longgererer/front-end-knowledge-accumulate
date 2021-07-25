@@ -128,7 +128,8 @@ module.exports = {
         {
           title: '其他',
           children: [
-            'OTHER/浏览器进程与线程'
+            'OTHER/浏览器进程与线程',
+            'OTHER/常用正则表达式'
           ]
         }
       ],
