@@ -133,7 +133,7 @@ p.then(function(text) {
 })
 ```
 
-在上述代码中，同样封装了一个 `ajax` 方法，不同的是函数中返回了一个 `promise` 实例，成功和失败执行的操作由 `resolve` 和 `reject` 代替
+在上述代码中，同样封装了一个 `ajax` 方法，不同的是函数中返回了一个 Promise 实例，成功和失败执行的操作由 `resolve` 和 `reject` 代替。
 
 可见 `promise` 最大的好处是将执行代码和处理结果的代码分离开，以链式的形式展现，不用再去写难看的嵌套代码了。
 
@@ -164,7 +164,7 @@ timer()
 
 > 上述代码的结果是：在一秒钟之后输出`'hello world'`。
 
-`promise` 实例的参数是一个函数，这个函数又有两个参数**resolve**, **reject**，分别对应成功执行的操作和失败执行的操作。
+Promise 实例的参数是一个函数，这个函数又有两个参数**resolve**, **reject**，分别对应成功执行的操作和失败执行的操作。
 
 `setTimeout` 调用了 `resolve`，`resolve` 方法传递了一个参数`hello world`，传递参数与什么用呢？
 
@@ -174,9 +174,9 @@ timer()
 
 那么就会执行 `else` 中的命令，`reject` 传递了一个参数`ERROR`，在下面有一个 `catch` 方法，它的参数是一个函数，函式的参数 `err` 就是通过 `reject` 传递的。
 
-在上述代码中,`timer` 返回的是一个 `promise` 对象，过一秒之后才会执行 `resolve` 方法，`then` 会等到执行 `resolve` 方法的时候才会开始执行。
+在上述代码中,`timer` 返回的是一个 Promise 对象，过一秒之后才会执行 `resolve` 方法，`then` 会等到执行 `resolve` 方法的时候才会开始执行。
 
-当然，`then` 和 `catch` 方法最后返回的都是一个新的 `promise`。
+当然，`then` 和 `catch` 方法最后返回的都是一个新的 Promise。
 
 注意：
 
@@ -397,7 +397,7 @@ Promise.reject()
 
 ## Promise.all()
 
-如果想要实现当所有 `promise` 状态都为 `fulfilled` 或者 `rejected` 的时候再执行下一个 `then` 或者 `catch`，那就要用到 `Promise.all()`。
+如果想要实现当所有 Promise 对象状态都为 `fulfilled` 的时候再执行下一个 `then` 或者 `catch`，那就要用到 `Promise.all()`。
 
 ```javascript
 let start = Date.now()
@@ -455,7 +455,6 @@ Promise.all([timer(100), timer(200), timer(300)]).catch((res) => {
 `Promise.race()`和 `Promise.all()`其实非常相似，不同的地方在于 `all` 要求的是所有 `Promise` 的状态都要变为 `fulfilled` 或者 `rejected` 的时候才会执行下一步的 `then` 或者 `catch`,但是 `race` 要求的是只要有一个 `Promise` 状态变为 `fulfilled` 或 `rejected` 就会进行后续操作，在进行后续操作的同时，如果前面传入的一些 `Promise` 的状态还没有变为 `fulfilled` 或 `rejected`，不会阻止这些 `Promise` 的执行。
 
 ```javascript
-let start = Date.now()
 function timer(num) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -474,9 +473,9 @@ Promise.race([timer(100), timer(200), timer(300)]).then((num) => {
 
 因为 `timer(100)`最先执行完，`Promise` 状态变为 `fulfilled`，执行 `then` 操作，最后输出的是 `100`。
 
-## Promise.finally
+## Promise.finally()
 
-该方法返回一个 Promise 对象，在当前 promise 结束时，无论结果是 `fulfilled` 还是 `rejected`，都会执行指定的回调函数。
+该方法返回一个 Promise 对象，在当前 Promise 结束时，无论结果是 `fulfilled` 还是 `rejected`，都会执行指定的回调函数。
 
 考虑如下情况：
 
@@ -512,6 +511,60 @@ Promise.resolve().then(
   }
 )
 ```
+
+## Promise.allSettled()
+
+该方法返回一个在所有给定的 Promise 对象 都已经 `fulfilled` 或 `rejected` 后的 Promise 对象。只有等到所有的 Promise 都返回了结果，才会进行下一步。
+
+相比于 `Promise.all()`，`Promise.allSettled()` 不会因为其中一个 Promise 对象被 `rejected` 就立即结束。
+
+`Promise.allSettled()` 可以告诉你每个 Promise 对象的结果：
+
+```js
+function timer(num) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(num)
+    }, num)
+  })
+}
+Promise.allSettled([timer(100), timer(200), timer(300)]).then((res) => {
+  res.forEach((item) => {
+    console.log(item.reason, item.status)
+  })
+})
+```
+
+输出结果如下：
+
+```bash
+100 rejected
+200 rejected
+300 rejected
+```
+
+## Promise.any()
+
+该方法接收一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只要参数实例有一个变成 `fulfilled` 状态，结果就变为 `fulfilled`。如果所有实例都变成 `rejected`，结果就为 `rejected`。
+
+```js
+function timer(num) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(num)
+    }, num)
+  })
+}
+Promise.any([timer(100), timer(200), timer(300)]).then((res) => {
+  console.log(res) // 100
+})
+```
+
+当所有 Promise 实例都被拒绝，`Promise.any` 会抛出一个 `AggregateError` 错误：`All promises were rejected`。
+
+:::tip Notice
+`AggregateError` 不是一般的错误，而是相当于一种数组，包含着每一个 Promise 实例被拒绝时所抛出的错误。
+:::
 
 ## 参考文章
 
