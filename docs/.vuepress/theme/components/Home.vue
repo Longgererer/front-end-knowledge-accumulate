@@ -32,13 +32,12 @@
         <p>
           <ul>
             <li>
-              👉<a href="../../../basement/CSS/近年来CSS新特性.html">基础/CSS: 近年来 CSS 的那些新特性 发布于2021/7/12</a>👈
+              👉<a href="../../../basement/JS/源码映射.html">基础/JS: Source map 发布于2021/7/29</a>👈
             </li>
             <li>
-              👉<a href="../../../basement/CSS/CSS权重.html">基础/CSS:CSS 权重 发布于2021/7/22</a>👈
+              👉<a href="../../../technicalTopics/AST详解.html">技术专题: AST详解 发布于2021/7/29</a>👈
             </li>
           </ul>
-
         </p>
         <p></p>
       </div>
