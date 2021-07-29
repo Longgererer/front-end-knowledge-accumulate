@@ -17,10 +17,6 @@ module.exports = {
       md.use(require("markdown-it-katex"))
     }
   },
-  // plugins: ['@vuepress/medium-zoom', '@vuepress/back-to-top', '@vuepress/active-header-links', {
-  //   sidebarLinkSelector: '.sidebar-link',
-  //   headerAnchorSelector: '.header-anchor'
-  // }],
   plugins: {
     '@vuepress/medium-zoom': {
       selector: 'img.zoom-custom-imgs',
@@ -38,15 +34,6 @@ module.exports = {
     '@vuepress/google-analytics': {
       'ga': 'G-WHDRXHWKPV'
     },
-    // 'vuepress-plugin-comment': {
-    //   choosen: 'valine',
-    //   // options选项中的所有参数，会传给Valine的配置
-    //   options: {
-    //     el: '#valine-vuepress-comment',
-    //     appId: 'YgqOaVYU7mANDprMIzk65ojL-gzGzoHsz',
-    //     appKey: 'ltQrdwSx1cefu87liG294cr4'
-    //   }
-    // },
     '@vuepress/register-components': {
       componentsDir: './components'
     },
@@ -101,7 +88,8 @@ module.exports = {
             'JS/WebSocket',
             'JS/JS垃圾回收机制',
             'JS/模板字符串',
-            'JS/Class'
+            'JS/Class',
+            'JS/源码映射'
           ],
         },
         {
@@ -136,13 +124,21 @@ module.exports = {
       '/algorithm/': [
         '/algorithm/',
         {
-          title: '算法',
+          title: '常见算法',
           children: [
-            '搜索算法',
-            '排序算法',
-            '深度优先和广度优先',
-            '最短路径算法',
-            '贪婪动态规划'
+            '常见算法/搜索算法',
+            '常见算法/排序算法',
+            '常见算法/深度优先和广度优先',
+            '常见算法/最短路径算法',
+            '常见算法/贪婪动态规划'
+          ]
+        },
+        {
+          title: 'LeetCode算法题',
+          children: [
+            'LeetCode算法题/简单难度',
+            'LeetCode算法题/中等难度',
+            'LeetCode算法题/困难难度'
           ]
         }
       ],
@@ -176,7 +172,8 @@ module.exports = {
             '浏览器缓存机制',
             'Git详解',
             '14种JavaScript设计模式',
-            'Vite是什么？'
+            'Vite是什么？',
+            'AST详解'
           ]
         }
       ]
