@@ -173,7 +173,8 @@ module.exports = {
             'Git详解',
             '14种JavaScript设计模式',
             'Vite是什么？',
-            'AST详解'
+            'AST详解',
+            '从输入URL到页面加载完毕'
           ]
         }
       ]
