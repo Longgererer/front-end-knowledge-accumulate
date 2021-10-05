@@ -73,6 +73,7 @@ module.exports = {
             'JS/this指向',
             'JS/原型链',
             'JS/apply-call-bind实现',
+            'JS/一些重要API的实现',
             'JS/理解数组及其部分API的实现',
             'JS/DOM事件',
             'JS/正则表达式',
@@ -117,7 +118,10 @@ module.exports = {
           title: '其他',
           children: [
             'OTHER/浏览器进程与线程',
-            'OTHER/常用正则表达式'
+            'OTHER/常用正则表达式',
+            'OTHER/常见原生JS基础问题积累',
+            'OTHER/常见CSS和HTML基础问题积累',
+            'OTHER/常见网络基础问题积累'
           ]
         }
       ],
@@ -176,7 +180,8 @@ module.exports = {
             '14种JavaScript设计模式',
             'Vite是什么？',
             'AST详解',
-            '从输入URL到页面加载完毕'
+            '从输入URL到页面加载完毕',
+            '跨域'
           ]
         }
       ]

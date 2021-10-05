@@ -285,7 +285,7 @@ a.then(null, (reason) => {
 
 `reject` 方法不会将参数转换为 Promise，而是会原封不动的作为拒绝的原因。
 
-## Promise.prototype.then()
+## Promise.then()
 
 `then` 方法返回一个**新的** Promise 对象，因此可以链式调用。
 
@@ -330,7 +330,7 @@ Promise.resolve('info')
   })
 ```
 
-## Promise.prototype.catch()
+## Promise.catch()
 
 `catch` 方法用于捕获 Promise 执行时所产生的错误。
 
@@ -394,6 +394,20 @@ Promise.reject()
     console.log('This is then2') // 继续执行，输出This is then2
   })
 ```
+
+## 值穿透
+
+需要注意的是，`then` 和 `catch` 方法期望的参数是函数，如果你传入的是非函数则会造成值穿透：
+
+```javascript
+Promise.resolve(123)
+  .then(true)
+  .then((res) => {
+    console.log(res) // 123
+  })
+```
+
+这并不意味着传入了非函数的 `then` 会被直接跳过，该 `then` 方法仍然会返回一个新的 `Promise`，但会不做任何处理直接返回上一个 `Promise` 传过来的值。
 
 ## Promise.all()
 
@@ -566,8 +580,170 @@ Promise.any([timer(100), timer(200), timer(300)]).then((res) => {
 `AggregateError` 不是一般的错误，而是相当于一种数组，包含着每一个 Promise 实例被拒绝时所抛出的错误。
 :::
 
+## 深入实现一个 Promise
+
+[深入 Promise(一)——Promise 实现详解](https://zhuanlan.zhihu.com/p/25178630)
+
+```javascript
+function Promise1(fn) {
+  let state = 'pending' // fulfilled | rejected
+  let value = null
+  const callbacks = []
+  function resolve(newValue) {
+    const fn = () => {
+      if (state !== 'pending') return
+      if (newValue && ['function', 'object'].includes(typeof newValue)) {
+        const { then } = newValue
+        if (typeof then === 'function') {
+          then.call(newValue, resolve)
+          return
+        }
+      }
+      state = 'fulfilled'
+      value = newValue
+      handleCb()
+    }
+    setTimeout(fn, 0)
+  }
+  function reject(error) {
+    const fn = () => {
+      if (state !== 'pending') return
+      if (error && ['function', 'object'].includes(typeof error)) {
+        const { then } = error
+        if (typeof then === 'function') {
+          then.call(error, resolve, reject)
+          return
+        }
+      }
+      state = 'rejected'
+      value = error
+      handleCb()
+    }
+    setTimeout(fn, 0)
+  }
+  function handleCb() {
+    while (callbacks.length) {
+      const fulfilled = callbacks.shift()
+      handle(fulfilled)
+    }
+  }
+  function handle(callback) {
+    if (state === 'pending') {
+      callbacks.push(callback)
+      return
+    }
+    try {
+      if (state === 'fulfilled') {
+        if (!callback.onFulfilled) {
+          callback.resolve(value)
+          return
+        }
+        const ret = callback.onFulfilled(value)
+        callback.resolve(ret) // 处理下一个promise的resolve
+      }
+      if (state === 'rejected') {
+        if (!callback.onRejected) {
+          callback.reject(value)
+          return
+        }
+        const ret = callback.onRejected(value)
+        callback.reject(ret)
+      }
+    } catch (error) {
+      callback.reject(error)
+    }
+  }
+  this.then = function(onFulfilled, onRejected) {
+    return new Promise1((resolve, reject) => {
+      handle({
+        onFulfilled,
+        resolve,
+        onRejected,
+        reject,
+      })
+    })
+  }
+  this.catch = function(onError) {
+    this.then(null, onError)
+  }
+  this.finally = function(onDone) {
+    this.then(onDone, onDone)
+  }
+  this.resolve = function(value) {
+    if (value && value instanceof Promise1) {
+      return value
+    } else if (value && typeof value === 'object' && typeof value.then === 'function') {
+      let { then } = value
+      return new Promise1((resolve) => {
+        then(resolve)
+      })
+    } else if (value) {
+      return new Promise1((resolve) => resolve(value))
+    } else {
+      return new Promise1((resolve) => resolve())
+    }
+  }
+  this.reject = function(value) {
+    return new Promise1((resolve, reject) => {
+      reject(value)
+    })
+  }
+  this.all = function(arr) {
+    let args = Array.prototype.slice.call(arr)
+    return new Promise1((resolve, reject) => {
+      if (args.length === 0) return resolve([])
+      let remaining = args.length
+      function res(i, value) {
+        try {
+          if (value && ['object', 'function'].includes(typeof value)) {
+            const { then } = value
+            if (typeof then === 'function') {
+              then.call(
+                value,
+                function(val) {
+                  res(i, val)
+                },
+                reject
+              )
+
+              return
+            }
+          }
+          args[i] = value
+          if (--remaining === 0) {
+            resolve(args)
+          }
+        } catch (error) {
+          reject(error)
+        }
+      }
+      for (let i = 0; i < args.length; i++) {
+        res(i, args[i])
+      }
+    })
+  }
+  this.race = function(values) {
+    return new Promise1((resolve, reject) => {
+      for (let i = 0, len = values.length; i < len; i++) {
+        values[i].then(resolve, reject)
+      }
+    })
+  }
+  fn(resolve, reject)
+}
+new Promise1(() => {})
+  .all([new Promise1((resolve) => resolve('2')), new Promise1((resolve) => test())])
+  .then((res) => {
+    console.log('res', res)
+  })
+  .catch((error) => {
+    console.log('all', error)
+  })
+```
+
 ## 参考文章
 
 - [Promises/A+](https://promisesaplus.com/)
 - [阮一峰 ECMAScript 6 (ES6) 标准入门教程 第三版](https://www.bookstack.cn/read/es6-3rd/spilt.11.docs-promise.md)
 - [ES6 之 promise(resolve 与 reject)](https://www.jianshu.com/p/b511bfc58ae9)
+- [深入 Promise(一)——Promise 实现详解](https://zhuanlan.zhihu.com/p/25178630)
