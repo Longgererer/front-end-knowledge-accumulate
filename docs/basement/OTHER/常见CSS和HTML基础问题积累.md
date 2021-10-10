@@ -151,4 +151,87 @@ IFC 的行框由其包含行内元素中最高的实际高度来计算，不受�
 
 计算行框中每个行内级盒的高度时，对于替换元素，`inline-block` 元素和 `inline-table` 元素，这个值就是其外边距框的高度；对于行内元素，这个值是其 `line-height` 决定的。当元素 B 的高度小于它所在的行框的高度时，行框中 B 的垂直对齐方式由 `vertical-align` 属性决定。当一行的行内元素的总宽度小于它们所在的行框的宽度时，它们在行框里的水平分布由 `text-align` 属性决定。行框高度是最高的盒的顶端与最低的盒的底端之间的距离。
 
-## 
+## 如何画一条 0.5px 的线
+
+使用 meta viewport 缩放 0.5 倍。**viewport 只针对于移动端，只在移动端上才能看到效果**。
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.5, maximum-scale=0.5" />
+```
+
+采用 `transform: scale()` 的方式。
+
+```css
+transform: scale(0.5, 0.5);
+```
+
+## zoom 和 transform:scale() 的区别？
+
+`transform` 的值是基于坐标系统的，`transform` 的变换过程实际上是矩阵变换的过程，被 `transform` 的元素要经过一系列的矩阵运算最终确定其坐标。
+
+`zoom` 缩放**会改变元素真实空间大小**。因此 `zoom` 的改版会引发浏览器回流和重绘。而 `scale` 的缩放占据的原始尺寸不变，页面布局不会发生变化，浏览器只会进行重绘。
+
+`scale` 并**不支持百分比值和 normal 关键字**，只能是数值，并且**支持负数**，**可以只控制一个维度**。
+
+`zoom` 相反，支持百分比值，`normal` 关键字和数字，但**不支持负数**，且**只能等比例控制**。
+
+`zoom` 的缩放以**左上角为中心**，无论如何缩放，元素的左上角坐标不变。
+
+`scale` 默认是**居中**缩放。可以通过 `transform-origin` 属性改变缩放中心。
+
+`zoom` **受浏览器最小字号限制**，文字只能缩小到最小字号；而 `scale` 是纯粹地进行文字缩小。
+
+## CSS 定位
+
+- `fixed`：元素的位置相对于浏览器窗口是固定位置，即使窗口是滚动的它也不会移动。`fixed` 定位会使得元素脱离当前文档流，因此不占据空间。
+- `absolute`：绝对定位的元素的位置相对于最近的已定位父元素，`absolute` 定位会使得元素脱离当前文档流，因此不占据空间。
+- `sticky`：元素先按照普通文档流定位，然后相对于该元素在流中的 flow root(BFC) 和最近的块级元素祖先定位。而后定位表现为在跨越特定阈值之前为相对定位，之后就变为固定定位。
+
+## relative 相对于谁进行定位?
+
+定位为 `relative` 的元素脱离正常的文档流，但其在文档流中的位置依然存在，只是视觉上相对原来的位置有移动。
+
+他是默认参照父级的原始点为原始点（父级不是必须设定 `position` 属性），无论父级存在不存在，无论有没有 TRBL(`Top`、`Right`、`Bottom`、`Left`)，均是以父级的左上角进行定位，但是父级的 `Padding` 属性会对其影响。
+
+无父级则以文本流的顺序在上一个元素的底部为原始点。
+
+## 布局和包含块
+
+一个元素的尺寸和位置经常受其**包含块**的影响。包含块就是这个元素**最近的祖先块元素的内容区**，但也不是总是这样。
+
+当一个客户端代理（比如说浏览器）展示一个文档的时候，对于每一个元素，它都产生了一个盒子。每一个盒子都被划分为四个区域：
+
+1. 内容区
+2. 内边距区
+3. 边框区
+4. 外边距区
+
+![](https://mdn.mozillademos.org/files/16558/box-model.png)
+
+确定一个元素的包含块完全依赖于这个元素的 `position` 属性：
+
+1. 如果 `position` 属性为 `static` 、 `relative` 或 `sticky`，包含块可能由它的**最近的祖先块元素**的内容区的边缘组成，也可能会建立格式化上下文。
+2. 如果 `position` 属性为 `absolute` ，包含块就是由它的最近的 `position` 的值不是 `static` （也就是值为 `fixed`, `absolute`, `relative` 或 `sticky`）的祖先元素的**内边距区的边缘**组成。
+3. 如果 `position` 属性是 `fixed`，在连续媒体的情况下(continuous media)包含块是 **viewport**(可视视口) ,在分页媒体(paged media)下的情况下包含块是分页区域(page area)。
+4. 如果 `position` 属性是 `absolute` 或 `fixed`，包含块也可能是由满足以下条件的最近父级元素的内边距区的边缘组成的。
+   - `transform` 或 `perspective` 的值不是 `none`。
+   - `will-change` 的值是 `transform` 或 `perspective`。
+   - `filter` 的值不是 `none` 或 `will-change` 的值是 `filter`(只在 Firefox 下生效)。
+   - `contain` 的值是 `paint` (例如: `contain: paint;`)。
+
+## 幽灵空白节点怎么产生的，如何解决？
+
+幽灵空白节点和行内元素有关。
+
+![](https://pic2.zhimg.com/80/fa1bef7a27a3c235a2e9bd8de5ba5448_720w.jpg)
+
+行内元素的 `vertical-align` 默认是基线对齐的，而幽灵红白节点的大小正是 `baseline` 和 `bottom` 之间的距离，这段距离是为了容纳 `pqgj` 等等有小尾巴的西文字符而存在的。
+
+另外，`top` 与 `bottom` 之间的距离是由 `line-height` 决定的。而如果没有设置 `line-height`，`line-height` 的默认值是基于 `font-size` 的。
+
+综上所述，我们有几种方法可以解决这个问题：
+
+1. 将行内元素转换为块元素。
+2. 将 `vertical-align` 设置为其他值。
+3. 将 `line-height` 设置为 0。
+4. 将 `font-size` 设置为 0。

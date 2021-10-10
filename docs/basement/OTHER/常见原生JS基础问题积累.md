@@ -593,5 +593,154 @@ arr.filter((item, index, arr) => {
 arr.reduce((prev, cur) => (prev.includes(cur) ? prev : [...prev, cur]), [])
 ```
 
-## 重绘与回流是什么
+## 判断一个数据是 NaN 的方法
 
+设 `x` 的值就是 `NaN`：
+
+1. `Object.is(x, NaN)`。
+2. `x !== x` 只有 `NaN` 不等于自身。
+3. `Number.isNaN(x)`。
+4. `typeof(n) === 'number' && window.isNaN(n)`。
+
+## 什么是事件委托
+
+事件委托是利用事件冒泡，注册一个事件在父元素上就可以管理子元素某一类型的所有事件。
+
+## cookie，localStorage，sessionStorage 的区别
+
+`cookie` 可设置**失效时间**，没有设置的话，默认是关闭浏览器后失效；数据**大小为 4kb 左右并且有个数限制**；每次请求都会**携带在 HTTP 头中**，如果使用 `cookie` 保存过多数据会带来性能问题。`cookie` **不可跨域**，只有绑定的域名才能访问。
+
+`localStorage` 除非被手动清除，否则将会永久保存；有专门的监听变化事件：`setItemEvent`，可以用 `addEventListener` 监听。
+
+`sessionStorage` 仅在当前网页会话下有效，关闭页面或浏览器后就会被清除；
+
+`localStorage` 和 `sessionStorage` 可以保存 5MB 的信息；仅在客户端（即浏览器）中保存，不参与和服务器的通信；会将任何数据转换成字符串存储。因此存储时最好用 JSON 序列化一下。
+
+## 前端如何实现并发请求数量限制？
+
+假设最大并发量为 4。
+
+我们将请求列表分割成粒度为 4 的子列表，等待第一个子列表中的任务都执行完，再传入下个子列表就好了：
+
+```javascript
+// 接收请求url列表，最大并发数，回调函数
+function handleFetchQueue(urls = [], max = 1, callback = () => {}) {
+  const urlLen = urls.length
+  const reqQueue = [] // 存储临时请求队列
+  const results = [] // 存储请求结果
+  let i = 0
+  const handleReq = (url) => {
+    const req = fetch(url)
+      .then((res) => {
+        console.log('当前并发：' + reqQueue)
+        const len = results.push(res)
+        // 如果结果集长度小于请求列表长度
+        if (len < urlLen && i + 1 < urlLen) {
+          // 请求完成，取出请求队列头部请求
+          reqQueue.shift()
+          // 进行新的请求
+          handleReq(urls[++i])
+        } else if (len === urlLen) {
+          // 全部请求完毕
+          callback(results)
+        }
+      })
+      .catch((e) => {
+        results.push(e)
+      })
+    if (reqQueue.push(req) < max) {
+      handleReq(urls[++i])
+    }
+  }
+  handleReq(urls[i])
+}
+const fetch = function(idx) {
+  return new Promise((resolve) => {
+    console.log(`start request ${idx}`)
+    const timeout = parseInt(Math.random() * 1e4)
+    setTimeout(() => {
+      console.log(`end request ${idx}`)
+      resolve(idx)
+    }, timeout)
+  })
+}
+const urls = Array.from({ length: 10 }, (v, k) => k)
+handleFetchQueue(urls, 4, () => {
+  console.log('run callback')
+})
+```
+
+## Set，Map，WeakMap，WeakSet 区别
+
+### Set
+
+`Set` 对象存储的值总是唯一的，所以需要判断两个值是否恒等。有几个需要注意的地方：
+
+- `+0` 和 `-0` 视为恒等，所以重复。
+- `NaN` 与 `NaN` 是不恒等的，但是在 `Set` 中认为 `NaN` 与 `NaN` 相等，所以重复。
+
+`Set` 对象的属性和方法：
+
+- `size`：返回集合所包含元素的数量。
+- `add(value)`：添加值，返回 `Set` 本身，也就是说可以链式调用。
+- `delete(value)`：删除值，删除成功返回 `true`，否则返回 `false`。
+- `has(value)`：返回一个布尔值，表示该值是否为 `Set` 的成员。
+- `clear()`：消除所有成员，没有返回值。
+- `keys()`：返回键名的遍历器。
+- `values()`：返回键值的遍历器。
+- `entries()`：返回键值对的遍历器。
+- `forEach()`：使用回调函数遍历每个成员。
+
+由于 `Set` 结构没有键名，只有键值，所以键名和键值是同一个值，`keys()` 和 `values()` 的返回值是一样的。
+
+### WeakSet
+
+`WeakSet` 结构与 `Set` 类似，但成员都是数组和类似数组的对象，若调用 `add()` 方法时传入了非数组和类似数组的对象的参数，就会抛出错误。
+
+- `WeakSet` 成员都是弱引用，可以被垃圾回收机制回收，可以用来保存 DOM 节点，不容易造成内存泄漏。
+- `WeakSet` 只有 `add`，`delete` 和 `has` 三个方法，也没有 `size` 属性。
+- `WeakSet` 不可迭代。
+
+### Map
+
+`Map` 中存储的是 `key-value` 形式的键值对, 其中的 `key` 和 `value` 可以是**任何类型**的。
+
+`Map` 对象的属性和方法：
+
+- `size`: 返回集合所包含元素的数量
+- `set(key, val)`: 向 `Map` 中添加新元素，返回 `Map` 对象本身
+- `get(key)`: 通过键值查找特定的数值并返回
+- `has(key)`: 判断 `Map` 对象中是否有 `Key` 所对应的值，有返回 `true`，否则返回 `false`
+- `delete(key)`: 通过键值从 `Map` 中移除对应的数据
+- `clear()`: 将这个 `Map` 中的所有元素删除
+- `keys()`：返回键名的遍历器
+- `values()`：返回键值的遍历器
+- `entries()`：返回键值对的遍历器
+- `forEach()`：使用回调函数遍历每个成员
+
+```javascript
+const m = new Map().set(123, 12345)
+[...m] // [[123, 12345]]
+```
+
+### WeakMap
+
+`WeakMap` 结构与 `Map` 结构类似，也是用于生成键值对的集合。
+
+- 只接受对象作为键名（`null` 除外），不接受其他类型的值作为键名。
+- 键名是弱引用，键值可以是任意的，键名所指向的对象可以被垃圾回收，此时键名是无效的。
+- 不能遍历，方法有 `get`、`set`、`has`、`delete`。
+
+### 应用
+
+在为 DOM 元素添加事件监听的时候就可以用到 `WeakMap` 和 `WeakSet`。
+
+## ES5/ES6 的继承除了写法之外还有其他区别么？
+
+ES5 的继承是先创建子类的实例对象，再将父类的原型链与子类的相关联。而 ES6 则是利用 `super` 先创建父对象，再调用子类的构造函数修改 `this` 指向。
+
+## DOMContentLoaded 与 onload 的区别
+
+`DOMContentLoaded` 事件是在 HTML 文档完全加载完的时候就触发。
+
+`onload` 事件是在页面上的所有资源(CSS、JavaScript、Image、Iframe 等)完全加载完毕后触发。
