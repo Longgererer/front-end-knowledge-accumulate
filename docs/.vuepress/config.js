@@ -3,11 +3,10 @@ module.exports = {
   description: 'Record the front-end knowledge I learned',
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }], // 增加一个自定义的 favicon(网页标签的图标)
-    ['link', { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css' }],
-    ['link', { rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css" }],
-    ['script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js' }],
-    ['script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.2/jquery.fancybox.min.js' }],
-    ['link', { rel: 'stylesheet', type: 'text/css', href: 'https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.2/jquery.fancybox.min.css' }]
+    ['link', { rel: 'stylesheet', href: 'https://cdn.bootcdn.net/ajax/libs/KaTeX/0.13.13/katex.min.css' }],
+    ['link', { rel: "stylesheet", href: "https://cdn.bootcdn.net/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css" }],
+    ['link', { rel: 'stylesheet', type: 'text/css', defer: true, href: 'https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css' }],
+    ['script', { src: 'https://cdn.bootcdn.net/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js' }],
   ],
   base: '', // 这是部署到github相关的配置 下面会讲
   markdown: {
@@ -182,7 +181,8 @@ module.exports = {
             'AST详解',
             '从输入URL到页面加载完毕',
             '跨域',
-            'NPM包管理'
+            'NPM包管理',
+            'WEB安全及防护原理'
           ]
         }
       ]

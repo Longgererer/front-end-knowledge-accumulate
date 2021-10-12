@@ -79,6 +79,9 @@ DOCTYPE 声明中，没有使用 DTD 声明或者使用 HTML4 以下（不包括
 
 除了这两种常见模式，还有一种 limited quirks mode (几乎标准的模式)，他与 strict mode 的唯一区别是是否对元素给定行高和基线。几乎标准模式中，如果 标签所在行没有其他的行内元素，将不指定基线。
 
+在 HTML4.01 标准中，浏览器解析时到底使用标准模式还是兼容模式，与网页中的 DTD 直接相关，因为 HTML 4.01 基于 SGML，DTD 规定了标记语言的规则，这样浏览器才能正确地呈现。 且有三种
+HTML5 不基于 SGML，因此不需要对 DTD 进行引用。只需要在顶部声明 `<!DOCTYPE html>`
+
 ## 网页的三层结构
 
 构成：结构层、表示层、行为层。
@@ -235,3 +238,121 @@ transform: scale(0.5, 0.5);
 2. 将 `vertical-align` 设置为其他值。
 3. 将 `line-height` 设置为 0。
 4. 将 `font-size` 设置为 0。
+
+## display:none 和 visibility:hidden 的区别？
+
+1. `display：none` 会让元素从渲染树中消失，渲染的时候不占据任何空间；`visibility：hidden` 不会让元素从渲染树中消失，渲染的时候仍然占据空间，只是内容不可见。
+2. `display：none` 是非继承属性，子孙节点消失是由于元素从渲染树中消失造成，通过修改子孙节点的属性无法显示；`visibility：hidden` 是继承属性，子孙节点消失是由于继承了 `hidden`，通过设置 `visibility：visible`，可以让子孙节点显示。
+3. 读屏器不会读取 `display：none` 的元素内容，而会读取 `visibility：hidden` 的元素内容。
+
+## opacity: 0 和 visibility:hidden 的区别？
+
+这两个属性的元素虽然都不可见且占据位置，但是有很大区别。
+
+`visibility:hidden` 元素不可进行鼠标操作，比如 `click`，`hover` 这些都是无效的。但子元素可以通过修改 `visibility` 的值来显示自己。
+
+`opacity: 0` 元素可以进行鼠标操作。但子元素即使修改自己的 `opacity`，也不能显示。
+
+## HTML4 和 XHTML 的区别？
+
+HTML4.01
+
+`<html>` 必须是 root 元素。
+`<head>` 和 `<body>` 是 `<html>` 中一定有且只有的元素。
+`<head>` 必须有 `<title>`， `<meta>` 和 `<style>` 可选, 他们只能在 `<head>` 里。
+`<body>` 里只能有 `block` 元素。
+`block` 元素不能放在 `inline` 元素里。
+`block` 元素不能放在 `<p>` 里。
+`<ul>` 和`<ol>` 中只能有 `<li>` 元素，但 `<li>` 里可以放其他，包括 `block` 元素。
+`<blockquote>` 中只能放 `block` 元素。
+
+XHTML：
+
+- 文档顶部 doctype 声明不同，XHTML 的 doctype 顶部声明中明确规定了 xhtml DTD 的写法
+- 元素必须始终正确嵌套
+- 标签必须始终关闭
+- 标签名必须小写
+- 特殊字符必须转义
+- 文档必须有根元素
+- 属性值必须用双引号 "" 括起来
+- 禁止属性最小化（例如，必须使用 checked="checked" 而不是 checked）
+
+## SGML 是什么？
+
+SGML 是标准通用标记语言，是一种定义电子文档结构和描述其内容的国际标准语言， 是所有电子文档标记语言的起源。
+
+## HTML 空元素是什么？
+
+首先啥是空元素呢？就是字面意思：没有内容的 HTML 元素，比较常见的空元素像`<img>`、`<link>`、`<meta>`、`<br>`、`<hr>`这种，他们往往没有关闭标签。
+
+## HTML5 离线存储原理是什么？
+
+通过创建 `cache manifest` 文件，创建 web 应用的离线版本。
+
+HTML5 引入了应用程序缓存，这意味着 web 应用可进行缓存，并可在没有因特网连接时进行访问。
+
+离线存储基于一个新建的 `.appcache` 文件，通过这个文件上的解析清单离线存储资源，这些资源就会像 `cookie` 一样被存储了下来。之后当网络在处于离线状态下时，浏览器会通过被离线存储的数据进行页面展示。
+
+要想实现离线存储，我们需要在 `html` 标签内定义一个 `manifest` 属性：
+
+```html
+<html lang="en" manifest="offlineCache.appcache"></html>
+```
+
+然后在 `offlineCache.appcache` 中：
+
+```bash
+CACHE MANIFEST #v01 image/01.jpg
+NETWORK: *
+FALLBACK: /
+```
+
+其中 `#v01` 是版本号，
+
+这里需要注意一点，我们虽然只缓存了 `image/01.jpg` 但是**引入 `manifest` 的页面,即使没有被列入缓存清单中，仍然会被用户代理缓存**。
+
+同时：
+
+1. 在 manifest 中使用的相对路径，相对参照物为 manifest 文件。
+2. CACHE MANIFEST 字符串应在第一行，且必不可少。
+3. 引用 manifest 的 html 必须与 manifest 文件同源，在同一个域下。
+
+## iframe 有哪些缺点？
+
+1. `iframe` 会阻塞主页面的 `Onload` 事件。
+2. 搜索引擎的检索程序无法解读这种页面，不利于 SEO。
+3. `iframe` **和主页面共享连接池**，而浏览器对相同域的连接有限制，所以会影响页面的并行加载。
+4. 使用 `iframe` 之前需要考虑这两个缺点。如果需要使用 `iframe`，最好通过 `JavaScript` 动态给 `iframe` 添加 `src` 属性值，这样可以绕开以上两个问题。
+
+## FOUC 是什么？
+
+FOUC(flash of unstyled content)——浏览器样式闪烁。页面加载解析时，页面以样式 A 渲染；当页面加载解析完成后，页面突然以样式 B 渲染，导致出现页面样式闪烁。
+
+浏览器在解析 html 的时候，当解析到 inline stylesheet 或 internal stylesheet 时，马上刷新 CSSOM Tree，CSSOM Tree 或 DOM Tree 发生变化时会引起 Render Tree 变化。在网络不好的时候，会有明显的 FOUC。
+
+因此 FOUC 的产生是由于页面采用临时样式来渲染页面而导致的。
+
+可以先隐藏 `body` 标签，当样式加载完成后再显示 `body`。
+
+## 渐进增强和优雅降级之间有什么不同?
+
+渐进增强（Progressive Enhancement）：一开始就针对低版本浏览器进行构建页面，完成基本的功能，然后再针对高级浏览器进行效果、交互、追加功能达到更好的体验。
+
+优雅降级（Graceful Degradation）：一开始就构建站点的完整功能，然后针对浏览器测试和修复。比如一开始使用 CSS3 的特性构建了一个应用，然后逐步针对各大浏览器进行 hack 使其可以在低版本浏览器上正常浏览。
+
+```css
+.transition {
+  /*渐进增强写法*/
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+.transition {
+  /*优雅降级写法*/
+  transition: all 0.5s;
+  -o-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+}
+```
