@@ -107,13 +107,13 @@ console.log('end')
 
 ```javascript
 console.log('start')
-setTimeout(function () {
+setTimeout(function() {
   console.log('setTimeout')
 }, 0)
-new Promise(function (resolve) {
+new Promise(function(resolve) {
   console.log('newPromise')
   resolve()
-}).then(function () {
+}).then(function() {
   console.log('then')
 })
 console.log('end')
@@ -276,6 +276,33 @@ then1
 以上所有例子的输出结果都是在 node12 的环境下运行，老版本可能输出结果会不一样。
 :::
 
+## node 中的 EventLoop
+
+```javascript
+setTimeout(() => {
+  console.log('timer1')
+  Promise.resolve().then(function() {
+    console.log('promise1')
+  })
+}, 0)
+setTimeout(() => {
+  console.log('timer2')
+  Promise.resolve().then(function() {
+    console.log('promise2')
+  })
+}, 0)
+```
+
+对于 node11 之前的版本，执行过程是这样的：
+
+1. 理想情况下这个就是一开始将两个 `setTimeout` 放进 `timers` 的阶段。
+2. 等到时间到达后运行 `timer1`，把 `promise1` 的 `Promise` 放入 `timers` 的下一阶段微任务队列中，同理继续运行 `timers` 的阶段，执行 `timer2`，把 `promise2` 的 `Promise` 放入 `timers` 的下一阶段微任务队列中。
+3. 直到 `timers` 队列全部执行完，才开始运行微任务队列，也就是 `promise1` 和 `promise2`。
+
+node11 开始 EventLoop 行为与浏览器趋同。
+
+就是 node10 只有全部执行了 `timers` 阶段队列的全部任务才执行微任务队列，而浏览器只要执行了一个宏任务就会执行微任务队列。
+
 ## 扩展
 
 ### requestAnimationFrame
@@ -286,15 +313,86 @@ requestAnimationFrame 简称 RAF，其作用就是让浏览器流畅的执行动
 
 使用 requestAnimationFrame 坐帧动画往往比 setTimeout 更具效率，性能更高。
 
+## chrome73 更新
+
+我们看以下代码：
+
+```javascript
+console.log('script start')
+async function async1() {
+  await async2()
+  console.log('async1 end')
+}
+async function async2() {
+  console.log('async2 end')
+}
+async1()
+setTimeout(function() {
+  console.log('setTimeout')
+}, 0)
+new Promise((resolve) => {
+  console.log('Promise')
+  resolve()
+})
+  .then(function() {
+    console.log('promise1')
+  })
+  .then(function() {
+    console.log('promise2')
+  })
+console.log('script end')
+```
+
+按照现在的思维，你可能会想：`async await` 就是一个语法糖，其实就是 `promise.then`，因此最先将 `await` 回调函数放入 microtask 队列，所以 `async1` 比 `promise1,promise2` 更先输出。
+
+实际上恰好相反，`promise1,promise2` 才是更先输出的。
+
+在 73 以下版本，首先，传递给 `await` 的值被包裹在一个 `Promise` 中。然后，处理程序附加到这个包装的 `Promise`，以便在 `Promise` 变为 `fulfilled` 后恢复该函数，并且暂停执行异步函数，一旦 `promise` 变为 `fulfilled`，恢复异步函数的执行。
+每个 `await` 引擎必须创建两个额外的 `Promise`（即使右侧已经是一个 `Promise`）并且它需要至少三个 microtask 队列 `ticks`（`tick` 为系统的相对时间单位，也被称为系统的时基，来源于定时器的周期性中断（输出脉冲），一次中断表示一个 `tick`，也被称做一个“时钟滴答”、时标。）。
+
+比如下面这个代码：
+
+```javascript
+async function f() {
+  await 123
+  console.log('ok')
+}
+```
+
+会被解析成类似这样：
+
+```javascript
+// 73以下
+function f() {
+  return new Promise((resolve) => {
+    resolve(123)
+  })
+    .then()
+    .then(() => {
+      console.log('ok')
+    })
+}
+// 73以上
+function f() {
+  return Promise.resolve(123).then(() => {
+    console.log('ok')
+  })
+}
+```
+
+- 如果 `RESOLVE(p)` 对于 `p` 为 `promise` 直接返回 `p` 的话，那么 `p` 的 `then` 方法就会被马上调用，其回调就立即进入 `job` 队列。
+- 而如果 `RESOLVE(p)` 严格按照标准，应该是产生一个新的 `promise`，尽管该 `promise` 确定会 `resolve` 为 `p`，但这个过程本身是异步的，也就是现在进入 `job` 队列的是新 `promise` 的 `resolve` 过程，所以该 `promise` 的 `then` 不会被立即调用，而要等到当前 `job` 队列执行到前述 `resolve` 过程才会被调用，然后其回调（也就是继续 `await` 之后的语句）才加入 `job` 队列，所以时序上就晚了。
+
 ## 使用工具
 
 [loupe 查看执行栈和事件队列工具](http://latentflip.com/loupe/)
 
 ## 参考文章
 
-- [Concurrency model and the event loop](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop)  
-- [【译】理解 Javascript 执行上下文和执行栈](https://zhuanlan.zhihu.com/p/48590085)  
-- [详解 JavaScript 中的 Event Loop（事件循环）机制](https://zhuanlan.zhihu.com/p/33058983)  
-- [js 中的宏任务与微任务](https://zhuanlan.zhihu.com/p/78113300)  
-- [The Node.js Event Loop, Timers, and process.nextTick()](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout)  
+- [Concurrency model and the event loop](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop)
+- [【译】理解 Javascript 执行上下文和执行栈](https://zhuanlan.zhihu.com/p/48590085)
+- [详解 JavaScript 中的 Event Loop（事件循环）机制](https://zhuanlan.zhihu.com/p/33058983)
+- [js 中的宏任务与微任务](https://zhuanlan.zhihu.com/p/78113300)
+- [The Node.js Event Loop, Timers, and process.nextTick()](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout)
 - [这一次，彻底弄懂 JavaScript 执行机制](https://juejin.cn/post/6844903512845860872)
+- [一次弄懂 Event Loop（彻底解决此类面试问题）](https://zhuanlan.zhihu.com/p/55511602)
