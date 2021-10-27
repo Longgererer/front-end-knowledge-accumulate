@@ -309,9 +309,53 @@ node11 开始 EventLoop 行为与浏览器趋同。
 
 我们在上面的内容里主要关注的是任务队列中回调的执行顺序，但实际上在 JS 线程执行完之后，浏览器**可能**会进行 GUI 渲染，之所以说可能，是因为**每次执行完宏任务并不一定进行 GUI 渲染**，每次进行 GUI 渲染的间隔为 16ms 左右，因为浏览器刷新频率为 60HZ，1000/60≈16ms。
 
-requestAnimationFrame 简称 RAF，其作用就是让浏览器流畅的执行动画效果，在进行 GUI 渲染的时候，就需要用到 RAF，RAF 执行完后，在进行重绘。
+`requestAnimationFrame` 简称 RAF，其作用就是让浏览器流畅的执行动画效果，在进行 GUI 渲染的时候，就需要用到 RAF，RAF 执行完后，在进行重绘。
 
-使用 requestAnimationFrame 坐帧动画往往比 setTimeout 更具效率，性能更高。
+![](http://picstore.lliiooiill.cn/1635148955%281%29.jpg)
+
+上图为浏览器渲染每一帧时执行的生命周期。可以看到 RAF 回调在回流和重绘前执行。
+
+`requestAnimationFrame` 的回调有两个特征：
+
+1. 在重新渲染前调用。
+2. 很可能在宏任务之后不调用。
+
+使用 `requestAnimationFrame` 做帧动画往往比 `setTimeout` 更具效率，性能更高。并且由于宏任务之间不一定会伴随着浏览器绘制。如果两个宏任务间隔很近，那就很可能不会在它们之间执行渲染造成掉帧。
+
+```javascript
+setTimeout(() => {
+  console.log('sto')
+  requestAnimationFrame(() => console.log('rAF'))
+})
+setTimeout(() => {
+  console.log('sto')
+  requestAnimationFrame(() => console.log('rAF'))
+})
+
+queueMicrotask(() => console.log('mic'))
+queueMicrotask(() => console.log('mic'))
+```
+
+输出：
+
+```bash
+mic
+mic
+sto
+sto
+rAF
+rAF
+```
+
+输出结果可以反映出宏任务和渲染没有绝对的对应关系。并不是每次宏任务之后都跟着一次渲染。
+
+### requestIdleCallback
+
+`requestIdleCallback` 方法插入一个函数，这个函数将在浏览器空闲时期被调用。这使开发者能够在主事件循环上执行后台和低优先级工作，而不会影响延迟关键事件，如动画和输入响应。
+
+如果回调函数指定了执行**超时时间** `timeout`，则有可能为了在超时前执行函数而打乱执行顺序。因为如果指定了 `timeout`，但是浏览器没有在 `timeout` 指定的时间内，执行 `callback`。在下次空闲时间时，`callback` 会强制执行。
+
+`requestIdleCallback` 的执行时间是不确定的，它取决于当前帧渲染完毕后距离渲染下一帧是否还有足够的时间去执行 `requestIdleCallback` 函数因此只有当空闲时间足够时才会执行，否则就会推到下一次空闲时间执行。
 
 ## chrome73 更新
 
@@ -383,6 +427,19 @@ function f() {
 - 如果 `RESOLVE(p)` 对于 `p` 为 `promise` 直接返回 `p` 的话，那么 `p` 的 `then` 方法就会被马上调用，其回调就立即进入 `job` 队列。
 - 而如果 `RESOLVE(p)` 严格按照标准，应该是产生一个新的 `promise`，尽管该 `promise` 确定会 `resolve` 为 `p`，但这个过程本身是异步的，也就是现在进入 `job` 队列的是新 `promise` 的 `resolve` 过程，所以该 `promise` 的 `then` 不会被立即调用，而要等到当前 `job` 队列执行到前述 `resolve` 过程才会被调用，然后其回调（也就是继续 `await` 之后的语句）才加入 `job` 队列，所以时序上就晚了。
 
+## 不止一个任务队列
+
+任务队列并不是我们想象中的那样只有一个，根据规范里的描述，**事件循环中可能会有一个或多个任务队列**，这些队列分别为了处理：
+
+1. 鼠标和键盘事件
+2. 其他任务
+
+浏览器会在保持任务顺序的前提下，可能分配四分之三的优先权给鼠标和键盘事件，保证用户的输入得到最高优先级的响应，而剩下的优先级交给其他任务，并且保证不会“饿死”它们。
+
+## queueMicrotask
+
+当使用 promise 创建微任务时，由回调抛出的异常被报告为 rejected promises 而不是标准异常。同时，创建和销毁 promise 带来了事件和内存方面的额外开销。因此官方推出了 `queueMicrotask` 这个 API 给我们调用微任务。
+
 ## 使用工具
 
 [loupe 查看执行栈和事件队列工具](http://latentflip.com/loupe/)
@@ -396,3 +453,5 @@ function f() {
 - [The Node.js Event Loop, Timers, and process.nextTick()](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout)
 - [这一次，彻底弄懂 JavaScript 执行机制](https://juejin.cn/post/6844903512845860872)
 - [一次弄懂 Event Loop（彻底解决此类面试问题）](https://zhuanlan.zhihu.com/p/55511602)
+- [详解 requestIdleCallback](https://juejin.cn/post/6844904081463443463#heading-0)
+- [深入解析 EventLoop 和浏览器渲染、帧动画、空闲回调的关系](https://zhuanlan.zhihu.com/p/142742003)

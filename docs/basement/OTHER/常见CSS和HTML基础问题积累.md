@@ -316,6 +316,11 @@ FALLBACK: /
 1. 在 manifest 中使用的相对路径，相对参照物为 manifest 文件。
 2. CACHE MANIFEST 字符串应在第一行，且必不可少。
 3. 引用 manifest 的 html 必须与 manifest 文件同源，在同一个域下。
+4. 如果 manifest 文件，或者内部列举的某一个文件不能正常下载，整个更新过程都将 失败，浏览器继续全部使用老的缓存。
+5. FALLBACK 中的资源必须和 manifest 文件同源。
+6. 当一个资源被缓存后，该浏览器直接请求这个绝对路径也会访问缓存中的资源。
+7. 站点中的其他页面即使没有设置 manifest 属性，请求的资源如果在缓存中也从缓存中访问。
+8. 当 manifest 文件发生改变时，资源请求本身也会触发更新。
 
 ## iframe 有哪些缺点？
 
@@ -356,3 +361,221 @@ FOUC(flash of unstyled content)——浏览器样式闪烁。页面加载解析�
   -webkit-transition: all 0.5s;
 }
 ```
+
+## link 和 @import 的区别？
+
+1. `link` 属于 HTML 标签，而 `@import` 是 CSS 提供的。
+2. 页面被加载的时，`link` 会同时被加载，而 `@import` 被引用的 CSS 会等到引用它的 CSS 文件被加载完再加载。
+3. `@import` 只在 IE5 以上才能识别，而 `link` 是 HTML 标签，无兼容问题。
+4. `@import` 一定要写在除 `@charset` 外的其他任何 CSS 规则之前，如果置于其它位置将会被浏览器忽略，而且，在 `@import` 之后如果存在其它样式，则 `@import` 之后的分号是必须书写，不可省略的。
+5. `link` 比 `@import` 优先加载，虽然 `@import` 比 `link` 样式后加载，但在渲染时，浏览器会用加载好的 css 代码替换掉 `@import`，因此仍然会置于样式表的最顶部，因此相同样式会被 `link` 覆盖。
+
+## position:absolute 和 float 属性的异同？
+
+共同点：`float` 和 `absolute` 都可以让元素脱离文档流，对于行内元素还可以设置宽高。
+
+不同点：`float` 仍然会占据位置，`absolute` 则会覆盖其他文档流中的元素。
+
+## 有多少种 Doctype 文档类型？
+
+XHTML 1.0 中有 3 种 DTD（文档类型定义）声明可以选择：过渡的（Transitional）、严格的（Strict）和框架的（Frameset）。
+
+分别介绍如下:
+
+1．过渡的
+
+一种要求不很严格的 DTD，允许在页面中使用 HTML4.01 的标识（符合 xhtml 语法标准）。过渡的 DTD 的写法如下：
+
+`"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"`
+
+2．严格的
+
+一种要求严格的 DTD，不允许使用任何表现层的标识和属性。严格的 DTD 的写法如下：
+
+`"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"`
+
+3.框架的
+
+一种专门针对框架页面所使用的 DTD，当页面中含有框架元素时，就要采用这种 DTD。框架的 DTD 的写法如下：
+
+`"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"`
+
+HTML 4.01 规定了三种文档类型：Strict、Transitional 以及 Frameset。
+
+**Strict** DTD，如果您需要干净的标记，免于表现层的混乱，请使用此类型。请与层叠样式表（CSS）配合使用：
+
+`DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"`
+
+**Transitional** DTD 可包含 W3C 所期望移入样式表的呈现属性和元素。如果您的读者使用了不支持层叠样式表（CSS）的浏览器以至于您不得不使用 HTML 的呈现特性时，请使用此类型：
+
+`DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" " http://www.w3.org/TR/html4/loose.dtd"`
+
+**Frameset** DTD 应当被用于带有框架的文档。除 frameset 元素取代了 body 元素之外，Frameset DTD 等同于 Transitional DTD：
+
+`DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" " http://www.w3.org/TR/html4/frameset.dtd"`
+
+## 什么是 PWA?
+
+[讲讲 PWA](https://segmentfault.com/a/1190000012353473)
+
+## 常见 css 布局?
+
+[CSS 常见布局方式](https://juejin.cn/post/6844903491891118087#heading-22)
+
+## iphone 和 ipad 下输入框默认内阴影？
+
+使用 `-webkit-appearance: none;`。
+
+## Webkit 和 Blink 内核是什么？
+
+**Webkit**：Webkit 是 Safari 采用的内核，它的优点就是网页浏览速度较快，虽然不及 Presto 但是也胜于 Gecko 和 Trident，缺点是对于网页代码的容错性不高，也就是说对网页 代码的兼容性较低，会使一些编写不标准的网页无法正确显示。WebKit 前身是 KDE 小组 的 KHTML 引擎，可以说 WebKit 是 KHTML 的一个开源的分支。
+
+**Blink**：谷歌在 ChromiumBlog 上发表博客，称将与苹果的开源浏览器核心 Webkit 分 道扬镳，在 Chromium 项目中研发 Blink 渲染引擎（即浏览器核心），内置于 Chrome 浏览器之中。其实 Blink 引擎就是 Webkit 的一个分支，就像 webkit 是 KHTML 的分支一样。 Blink 引擎现在是谷歌公司与 OperaSoftware 共同研发，上面提到过的，Opera 弃用了自己 的 Presto 内核，加入 Google 阵营，跟随谷歌一起研发 Blink。
+
+## title 和 alt 有什么区别？
+
+`title` 通常当鼠标滑动到元素上的时候显示 `alt` 是 `<img>` 的特有属性，是图片内容的等价描述，用于图片无法加载时显示、读屏器阅读图片。
+
+## canvas 和 svg 的区别？
+
+Canvas 是一种通过 JavaScript 来绘制 2D 图形的方法。Canvas 是逐像素来进行渲染的， 因此当我们对 Canvas 进行缩放时，会出现锯齿或者失真的情况。 SVG 是一种使用 XML 描述 2D 图形的语言。SVG 基于 XML，这意味着 SVG DOM 中的每个元素都是可用的。我们可以为某个元素附加 JavaScript 事件监听函数。并且 SVG 保存的是图形的绘制方法，因此当 SVG 图形缩放时并不会失真。
+
+## head 标签中必不少的是？
+
+下面这些标签可用在 head 部分： `<base>`,`<link>`,`<meta>`,`<script>`,`<style>`, 以及 `<title>`。 `<title>` 定义文档的标题，它是 `head` 部分中唯一必需的元素。
+
+## disabled 和 readonly 的区别？
+
+`disabled` 指当 `input` 元素加载时禁用此元素。`input` 内容不会随着表单提交。
+
+`readonly` 规定输入字段为只读。`input` 内容会随着表单提交。
+
+无论设置 `readonly` 还是 `disabled`，通过 `js` 脚本都能更改 `input` 的 `value`。
+
+## 关于伪类 LVHA 的解释?
+
+`a` 标签有四种状态：链接访问前、链接访问后、鼠标滑过、激活，分别对应四种伪类`:link`、`:visited`、`:hover`、`:active`；
+当链接未访问过时：
+
+1. 当鼠标滑过 `a` 链接时，满足`:link` 和`:hover` 两种状态，要改变 `a` 标签的颜色，就必须将`:hover` 伪类在`:link` 伪类后面声明；
+
+2. 当鼠标点击激活 `a` 链接时，同时满足`:link`、`:hover`、`:active` 三种状态，要显示 `a` 标签激 活时的样式（`:active`）
+
+必须将`:active` 声明放到`:link` 和`:hover` 之后。因此得出 LVHA 这个顺序。
+
+当链接访问过时，情况基本同上，只不过需要将`:link` 换成`:visited`。
+
+这个顺序能不能变？可以，但也只有`:link` 和`:visited` 可以交换位置，因为一个链接要么访问过要么没访问过，不可能同时满足， 也就不存在覆盖的问题。
+
+## li 与 li 之间有看不见的空白间隔是什么原因引起的？
+
+浏览器会把 `inline` 元素间的空白字符（空格、换行、Tab 等）渲染成一个空格。而为了美观。我们通常是一个 `<li>` 放在一行，这导致 `<li>` 换行后产生换行字符，它变成一个空格，占用了一个字符的宽度。
+
+1. 将所有 `<li>` 写在同一行。不足：代码不美观。
+2. 为 `<li>` 设置 `float:left`。不足：有些容器是不能设置浮动，如左右切换的焦点图等。
+3. 将 `<ul>` 内的字符尺寸直接设为 0 `ul{font-size:0px;}`。不足:Safari 浏览器依然出现间隔空白。
+4. 将间隔消除：`ul{letter-spacing: -5px;}ul li{letter-spacing: normal;}`。
+
+## img 的 srcset 属性？
+
+我们常常需要在不同分辨率的设备下面展示不同大小的图片，这时就可以用到 `srcset`：
+
+```html
+<img
+  srcset="elva-fairy-320w.jpg 320w, elva-fairy-480w.jpg 480w, elva-fairy-800w.jpg 800w"
+  sizes="(max-width: 320px) 280px,(max-width: 480px) 440px,800px"
+  src="elva-fairy-800w.jpg"
+  alt="Elva dressed as a fairy"
+/>
+```
+
+注意到这里使用 w 单位表示的是像素是多少，而不是你预计的 px。这是图像的真实大小。
+
+`sizes` 定义了一组媒体条件（例如屏幕宽度）并且指明当某些媒体条件为真时，什么样的图片尺寸是最佳选择。
+
+**`picture`** 元素也可以实现 `srcset` 的功能：
+
+`<picture>` 元素通过包含零或多个 `<source>` 元素和⼀个 `<img>` 元素来为不同的显示/设备场景提供图像版本。浏览器 会选择最匹配的⼦ `<source>`元素，如果没有匹配的，就选择 `<img>` 元素的 `src` 属性中的 URL。然后，所选图像呈现 在 `<img>` 元素占据的空间中。
+
+## `data-` 属性的作用是什么？
+
+`data-` 属性是 HTML5 中的新属性，用于存储页面或应用程序的私有自定义数据。`data-` 赋予我们在所有 HTML 元素上嵌入自定义 `data` 属性的能力。
+
+`data-*` 属性包括两部分：
+
+1. 属性名不应该包含任何大写字母，并且在前缀 `data-` 之后必须有至少一个字符。
+2. 属性值可以是任意字符串。
+
+`data-` 后面的值有以下限制：
+
+- 该名称不能以 `xml` 开头，无论这些字母是大写还是小写；
+- 该名称不能包含任何分号 (`U+003A`)；
+- 该名称不能包含 `A` 至 `Z` 的大写字母。
+
+假如标签中声明了 `<li data-test-value="1"></li>`
+
+JS 中可以通过 `ele.dataset.testValue` 来访问到，任何破折号都会被下个字母的大写替代(驼峰拼写)。
+
+在不支持 `dataset` 的浏览器下也可以通过 `ele.getAttribute("data-test-value")` 获取。
+
+## src 和 href 的区别？
+
+`src` 是指向外部资源的位置，指向的内容会嵌⼊到⽂档中当前标签所在的位置，在请求 `src` 资源时会将其指向的资源 下载并应⽤到⽂档内，如 `js` 脚本，`img` 图⽚和 `frame` 等元素。当浏览器解析到该元素时，会暂停其他资源的下载和处 理，知道将该资源加载、编译、执⾏完毕，所以⼀般 `js` 脚本会放在底部⽽不是头部。
+
+`href` 是指向⽹络资源所在位置（的超链接），⽤来建⽴和当前元素或⽂档之间的连接，当浏览器识别到它他指向的 ⽂件时，就会并⾏下载资源，不会停⽌对当前⽂档的处理。
+
+## 有哪些⽅式（CSS）可以隐藏页面元素？
+
+- `opacity:0`：本质上是将元素的透明度将为 0，就看起来隐藏了，但是依然占据空间且可以交互。
+- `visibility:hidden` : 与上⼀个⽅法类似的效果，占据空间，但是不可以交互了。
+- `overflow:hidden` : 这个只隐藏元素溢出的部分，但是占据空间且不可交互。
+- `display:none` : 这个是彻底隐藏了元素，元素从⽂档流中消失，既不占据空间也不交互，也不影响布局。
+- `z-index:-9999` : 原理是将层级放到底部，这样就被覆盖了，看起来隐藏了。
+- `transform: scale(0,0)` : 平⾯变换，将元素缩放为 0，但是依然占据空间，但不可交互。
+- 依靠定位将元素移出可见区域外。
+
+## 层叠上下文和层叠顺序？
+
+每个网页都有一个默认的层叠上下文。这个层叠上下文的根源就是 html 元素。html 元素中的一切都被置于这个默认的层叠上下文的一个层叠层上。
+
+普通元素的层叠水平优先由层叠上下文决定，因此，层叠水平的比较只有在当前层叠上下文元素中才有意义。
+
+需要注意的是，诸位千万不要把层叠水平和 CSS 的 z-index 属性混为一谈。没错，某些情况下 z-index 确实可以影响层叠水平，但是，只限于定位元素以及 Flex 盒子的孩子元素；而层叠水平所有的元素都存在。
+
+[参考文章 1](https://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)
+
+[参考文章 2](https://www.zhihu.com/search?type=content&q=%E5%B1%82%E5%8F%A0%E4%B8%8A%E4%B8%8B%E6%96%87)
+
+以下情况会生成新的层叠上下文：
+
+1. `z-index` 值不为 `auto` 的 `flex` 项(父元素 `display:flex`|`inline-flex`)。
+2. 元素的 `opacity` 值不是 `1`。
+3. 元素的 `transform` 值不是 `none`。
+4. 元素 `mix-blend-mode` 值不是 `normal`。
+5. 元素的 `filter` 值不是 `none`。
+6. 元素的 `isolation` 值是 `isolate`。
+7. `will-change` 指定的属性值为上面任意一个。
+8. 元素的 `-webkit-overflow-scrolling` 设为 `touch`。
+
+![](https://pic1.zhimg.com/v2-52469579956b97b6b7ac6894e1ab4e28_b.jpg)
+
+由图可知层叠顺序如下：
+
+1. 层叠上下文`background`/`border`。
+2. 负 `z-index`。
+3. `block` 块状水平盒子。
+4. `float` 浮动盒子。
+5. `inline`/`inline-block` 水平盒子。
+6. `z-index:auto` 或 `z-index:0`。
+7. 正 `z-index`。
+
+- **谁大谁上**：当具有明显的层叠水平标示的时候，如识别的 `z-index` 值，在同一个层叠上下文领域，层叠水平值大的那一个覆盖小的那一个。
+- **后来居上**：当元素的层叠水平一致、层叠顺序相同的时候，在 DOM 流中处于后面的元素会覆盖前面的元素。
+
+因此，如果一个元素已经产生了层叠上下文，他的后代哪怕是 `z-index` 负多少，都不可能比它的层级还低，一定是叠在他的上面。
+
+## 什么情况下，用 translate()而不用绝对定位？什么时候，情况相反？
+
+`translate()` 是 `transform` 的一个值。改变 `transform` 或 `opacity` 不会触发浏览器重新布局（`reflow`）或重绘（`repaint`），只会触发复合（`compositions`）。而改变绝对定位会触发重新布局，进而触发重绘和复合。`transform` 使浏览器为元素创建一个 `GPU` 图层，但改变绝对定位会使用到 `CPU`。 因此 `translate()` 更高效，可以缩短平滑动画的绘制时间。
+
+当使用 `translate()` 时，元素仍然占据其原始空间（有点像 `position：relative`），这与改变绝对定位不同。

@@ -89,7 +89,8 @@ module.exports = {
             'JS/JS垃圾回收机制',
             'JS/模板字符串',
             'JS/Class',
-            'JS/源码映射'
+            'JS/源码映射',
+            'JS/BOM'
           ],
         },
         {
@@ -120,7 +121,8 @@ module.exports = {
             'OTHER/常用正则表达式',
             'OTHER/常见原生JS基础问题积累',
             'OTHER/常见CSS和HTML基础问题积累',
-            'OTHER/常见网络基础问题积累'
+            'OTHER/常见网络基础问题积累',
+            'OTHER/常见webpack问题积累',
           ]
         }
       ],
@@ -152,7 +154,8 @@ module.exports = {
         {
           title: 'Vue',
           children: [
-            'vue/简单梳理vue3新特性'
+            'vue/简单梳理vue3新特性',
+            'vue/Vue常见知识点'
           ],
         },
         {
@@ -162,6 +165,7 @@ module.exports = {
             'react/React生命周期',
             'react/ReactRouter',
             'react/ReactHook',
+            'react/React常见知识点'
           ]
         }
       ],

@@ -782,3 +782,214 @@ JSON 比 XML **数据的体积小，传输速度更快**。
 
 JSON 与 JavaScript 的交互更加方便，**更容易读取解析处理**。但 JSON 对数据的**描述性比 XML 差**。
 
+## reduce 实现 map 方法
+
+```javascript
+Array.prototype._map = function(callback, thisArg) {
+  const target = thisArg || this
+  return target.reduce((list, item, index) => {
+    list.push(callback.call(target, item, index, target))
+    return list
+  }, [])
+}
+```
+
+## 用 js 刷新当前页面？
+
+- `location.reload(bol)`
+- `location.replace()`
+- `history.go(0)`
+- `location.assign(location)`
+- `location=location`
+
+## 什么是 Web worker?
+
+在 HTML 页面中，如果在执行脚本时，页面的状态是不可响应的，直到脚本执行完成后，页面才变成可响应。web worker 是运行在后台的 js，独立于其他脚本，不会影响页面的性能。并且通过 postMessage 将结果回传到主线程。这样在进行复杂操作的时候，就不会阻塞主线程了。
+
+## click 在 ios 上有 300ms 延迟，原因及如何解决？
+
+当用户一次点击屏幕之后，浏览器并不能立刻判断用户是要进行双击缩放，还是想要进行单击操作。因此，iOS Safari 就等待 300 毫秒，以判断用户是否再次点击了屏幕。有几种方法：
+
+1. 禁用缩放
+
+```html
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+```
+
+2. 检测到 `touchend` 事件后，立刻触发模拟 `click` 事件，并且把浏览器 `300` 毫秒之后真正触发的事件给阻断掉。对于移动端点击来说，会先触发 `touchstart` 和 `touchend`，然后才会触发 `click`，所以我们才需要监听 `touchend`。
+
+3. 通过 meta 标签将网页的 `viewport` 设置为 `ideal viewport`
+
+## addEventListener 是什么？
+
+`addEventListener(event, function, useCapture)` 其中，event 指定事件名；function 指定要事件触发时执行的函数；useCapture 指定事件 是否在捕获或冒泡阶段执行。
+
+## DOM 怎么添加移除移动复制创建？
+
+1. 创建新节点：
+
+```javascript
+createDocumentFragment() //创建一个DOM片段
+createElement() //创建一个具体的元素
+createTextNode() //创建一个文本节点
+```
+
+2. 添加、移除、替换、插入
+
+```javascript
+appendChild()
+removeChild()
+replaceChild()
+insertBefore() //并没有insertAfter()
+```
+
+3. 复制
+
+```javascript
+node.cloneNode()
+```
+
+## mouseover,mouseenter,mouseleave,mouseout 的区别？
+
+`mouseover`：当鼠标移入元素或其子元素都会触发事件，所以有一个重复触发，冒泡的过程。对应的移除事件是 `mouseout`。
+`mouseenter`：当鼠标移出元素本身（不包含元素的子元素）会触发事件，也就是不会冒泡，对应的移除事件是 `mouseleave`。
+
+## 实现一个 once 函数，实现只能执行一次的效果？
+
+```javascript
+function func(fn) {
+  let isFirst = true
+  return function() {
+    if (isFirst) {
+      isFirst = false
+      fn()
+    }
+  }
+}
+```
+
+## HTML5 Drag API
+
+`dragstart`：事件主体是被拖放元素，在开始拖放被拖放元素时触发。
+`darg`：事件主体是被拖放元素，在正在拖放被拖放元素时触发。
+`dragenter`：事件主体是目标元素，在被拖放元素进入某元素时触发。
+`dragover`：事件主体是目标元素，在被拖放在某元素内移动时触发。
+`dragleave`：事件主体是目标元素，在被拖放元素移出目标元素是触发。
+`drop`：事件主体是目标元素，在目标元素完全接受被拖放元素时触发。
+`dragend`：事件主体是被拖放元素，在整个拖放操作结束时触发。
+
+## 内部属性 `[[class]]` 是什么？
+
+所有 `typeof` 返回值为 `"object"` 的对象（如数组）都包含一个内部属性 `[[Class]]`（我们可以把它看作一个内部的分类，而非传统的面向对象意义上的类）。这个属性无法直接访问， 一般通过 `Object.prototype.toString(..)` 来查看
+
+## 判断当前脚本是否运行在 node 中？
+
+`this === window ? 'browser' : 'node';`
+
+通过判断 Global 对象是否为 `window`，如果不为 `window`，当前脚本没有运行在浏览器中。
+
+## toPrecision 和 toFixed 和 Math.round 的区别？
+
+`toPrecision` 用于处理精度，精度是从左至右第一个不为 0 的数开始数起。
+
+`toFixed` 是对小数点后指定位数取整，从小数点开始数起。
+
+`Math.round` 是将一个数字四舍五入到一个整数
+
+## 如何比较两个 DOM 树的差异?
+
+两个树的完全 diff 算法的时间复杂度为 O(n^3) ，但是在前端中，我们很少会跨层级的移动 元素，所以我们只需要比较同一层级的元素进行比较，这样就可以将算法的时间复杂度降低为 O(n)。
+
+算法首先会对新旧两棵树进行一个深度优先的遍历，这样每个节点都会有一个序号。在深度遍历 的时候，每遍历到一个节点，我们就将这个节点和新的树中的节点进行比较，如果有差异，则将 这个差异记录到一个对象中。
+
+在对列表元素进行对比的时候，由于 TagName 是重复的，所以我们不能使用这个来对比。我们需要给每一个子节点加上一个 key，列表对比的时候使用 key 来进行比较，这样我们才能够复用老的 DOM 树上的节点。
+
+## innerHTML 与 outerHTML 的区别？
+
+对于这样一个 HTML 元素：`<div>content<br/></div>`
+
+innerHTML：内部 HTML，`content<br/>`
+
+outerHTML：外部 HTML，`<div>content<br/></div>`
+
+innerText：内部文本，`content`
+
+outerText：内部文本，`content`
+
+## JavaScript 类数组对象的定义?
+
+一个拥有 `length` 属性和若干索引属性的对象就可以被称为类数组对象，类数组对象和数组类似，但是不能调用数组的方法。常见的类数组对象有 `arguments` 和 DOM 方法的返回结果，还有一个函数也可以被看作是类数组对象，因为它含有 `length` 属性值，代表可接收的参数个数。
+
+1. 通过 `call` 调用数组的 `slice` 方法来实现转换 : `Array.prototype.slice.call(arrayLike);`。
+
+2. 通过 `call` 调用数组的 `splice` 方法来实现转换 : `Array.prototype.splice.call(arrayLike, 0);`。
+
+3. 通过 `apply` 调用数组的 `concat` 方法来实现转换 : `Array.prototype.concat.apply([], arrayLike);`。
+
+4. 通过 `Array.from` 方法来实现转换 : `Array.from(arrayLike);`。
+
+## 什么是尾调用
+
+尾调用指的是函数的最后一步调用另一个函数。我们代码执行是基于执行栈的，所以当我们在一个函数里调用另一个函数时，我们会保留当前的执行上下文，然后再新建另外一个执行上下文加入栈中。使用尾调用的话，因为已经是函数的最后一步，所以这个时候我们可以不必再保留当前的执行上下文，从而节省了内存，这就是尾调用优化。但是 ES6 的尾调用优化只在严格模式下开启，正常模式是无效的。
+
+## Reflect 对象创建目的？
+
+1. 将 `Object` 对象的一些明显属于语言内部的方法（比如 `Object.defineProperty`，放到 `Reflect` 对象上。
+
+2. 修改某些 `Object` 方法的返回结果，让其变得更合理。
+
+3. 让 `Object` 操作都变成函数行为。
+
+4. `Reflect` 对象的方法与 `Proxy` 对象的方法一一对应，只要是 `Proxy` 对象的方法，就能在 `Reflect` 对象上找到对应的方法。这就让 `Proxy` 对象可以方便地调用对应的 `Reflect` 方法，完成默认行为，作为修改行为的基础。
+
+也就是说，不管 `Proxy` 怎么修改默认行为，你总可以在 `Reflect` 上获取默认行为。
+
+## 什么是 proxy ？
+
+`Proxy` 用于修改某些操作的默认行为，等同于在语言层面做出修改，所以属于一种“元编程”，即对编程语言进行编程。
+
+`Proxy` 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。`Proxy` 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。
+
+## 前端需要注意哪些 SEO？
+
+1. 合理的 title、description、keywords：搜索对着三项的权重逐个减小，title 值强调重 点即可，重要关键词出现不要超过 2 次，而且要靠前，不同页面 title 要有所不同； description 把页面内容高度概括，长度合适，不可过分堆砌关键词，不同页面 description 有所不同； keywords 列举出重要关键词即可。
+2. 语义化的 HTML 代码，符合 W3C 规范：语义化代码让搜索引擎容易理解网页。
+3. 重要内容 HTML 代码放在最前：搜索引擎抓取 HTML 顺序是从上到下，有的搜索引 擎对抓取长度有限制，保证重要内容肯定被抓取。
+4. 重要内容不要用 js 输出：爬虫不会执行 js 获取内容。
+5. 少用 iframe：搜索引擎不会抓取 iframe 中的内容。
+6. 非装饰性图片必须加 alt。
+7. 提高网站速度：网站速度是搜索引擎排序的一个重要指标。
+
+## eslint 和 prettier 之间的冲突怎么解决？
+
+冲突的本质在于 `eslint` 既负责了代码质量检测，又负责了一部分的格式美化工作,格式化部分的部分规则和 `prettier` 不兼容。 能不能让 `eslint` 只负责代码质量检测而让 `prettier` 负责美化呢? 好在社区有了非常好的成熟方案，即 `eslint-config-prettier` + `eslint-plugin-prettier`。
+
+- `eslint-config-prettier` 的作用是关闭 `eslint` 中与 `prettier` 相互冲突的规则。
+- `eslint-plugin-prettier` 的作用是赋予 `eslint` 用 `prettier` 格式化代码的能力。
+
+安装依赖并修改 `.eslintrc` 文件：
+
+```bash
+// 安装依赖
+yarn add eslint-config-prettier eslint-plugin-prettier -D
+
+// .eslintrc
+{
+   // 其余的配置
+ - "extends": ["eslint:recommended", "standard"]
+ + "extends": ["eslint:recommended", "standard",  "plugin:prettier/recommended"]
+  // 其余的配置
+}
+```
+
+## 判断当前节点类型?
+
+1. 元素节点
+2. 属性节点
+3. 文本节点
+4. 注释节点
+5. 文档节点
+
+通过 `nodeObject.nodeType` 判断节点类型：其中，`nodeObject` 为 DOM 节点（节点对象）。该属性返回以数字表示的节点类型，例如，元素节点返回 `1`，属性节点返回 `2` 。
+
+
