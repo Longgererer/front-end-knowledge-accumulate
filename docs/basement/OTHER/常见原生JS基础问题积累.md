@@ -1379,3 +1379,29 @@ function asyncToGenerator(generatorFunc) {
   }
 }
 ```
+
+## 73. 手写 Promise.all
+
+```js
+Promise.myAll = function(promises) {
+  return new Promise((resolve, reject) => {
+    let res = []
+    promises.forEach((promise, index) => {
+      promise
+        .then((data) => {
+          res.push(data)
+          if (index === promises.length - 1) {
+            resolve(res)
+          }
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  })
+}
+
+Promise.myAll([p1, p2]).then((res) => {
+  console.log(res)
+})
+```
