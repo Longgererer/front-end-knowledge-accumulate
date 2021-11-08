@@ -596,6 +596,13 @@ ele {
 
 优先级：`max-width/min-width > flex-basis > width`。
 
+也就是说：
+
+- 当不设置 `width` 和 `flex-basis` 时，宽度默认为内容自身的宽度。
+- 设置 `width`，不设置 `flex-basis`，宽度正常随着 `width` 走，但是当 `width` 小于 `0` 时，则宽度恢复为自身内容宽度。
+- 不设置 `width`，设置 `flex-basis`，当 `flex-basis` 设置值小于自身内容宽度时，`flex-basis` 不生效，不管是正值还是负值。当 `flex-basis` 设置值大于自身内容宽度时，相应宽度也会正常增加。
+- 同时设置 `width`，又设置 `flex-basis`，当 `flex-basis` 大于自身内容宽度时，不管 `width` 是否设置，`flex-basis` 优先级高。当 `flex-basis` 和 `width` 都小于自身内容宽度时，`flex-basis` 和 `width` 哪个值大，宽度就是那个。当 `flex-basis` 设置值小于自身内容宽度，而 `width` 大于自身宽度时，则宽度为自身内容宽度。
+
 ### flex-grow
 
 `flex-grow` 定义子容器的瓜分剩余空间的比例，默认为 `0`，即如果存在剩余空间，也不会去瓜分。通常将 `flex-grow` 设置为 `1` 使元素自动填满剩余空间。
@@ -697,4 +704,3 @@ ele {
 **非置换元素**：
 
 HTML 的大多数元素是不可替换元素，即其内容直接表现给用户端（例如浏览器）。
-

@@ -122,8 +122,7 @@ module.exports = {
             'OTHER/常见原生JS基础问题积累',
             'OTHER/常见CSS和HTML基础问题积累',
             'OTHER/常见网络基础问题积累',
-            'OTHER/常见webpack问题积累',
-            'OTHER/HTTPS原理'
+            'OTHER/常见webpack问题积累'
           ]
         }
       ],
@@ -188,7 +187,9 @@ module.exports = {
             '跨域',
             'NPM包管理',
             'WEB安全及防护原理',
-            '三次握手与四次挥手'
+            '三次握手与四次挥手',
+            'HTTPS原理',
+            '详解TCPIP'
           ]
         }
       ]
