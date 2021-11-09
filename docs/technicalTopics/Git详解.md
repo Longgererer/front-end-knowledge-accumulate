@@ -201,6 +201,83 @@ remote 可以查看已存在的远程分支
 git remote
 ```
 
+## git 高级命令
+
+**跳到之前的分支**：
+
+```bash
+git checkout -
+```
+
+**查看我的分支和 master 的不同**：
+
+```bash
+git diff master..my-branch
+```
+
+### git commit --amend
+
+提交后发现有错误，修正。"amend" 是「修正」的意思。当前 commit 上增加一个 commit，而是会把当前 commit 的内容和暂存区里的内容合并起来，创建一个新的 commit，并用这个新的 commit 替换掉当前 commit。
+
+**编辑上次提交**：
+
+```bash
+git commit --amend -m "更好的提交日志"
+```
+
+**在上次提交中附加一些内容，保持提交日志不变**：
+
+```bash
+git add . && git commit --amend --no-edit
+```
+
+### git reset --hard HEAD^
+
+提交后修正都不想，写的太烂了，直接丢弃。HEAD 就是当前 commit 的引用，HEAD^表示的 HEAD 的父 commit。
+
+**丢弃上一次提交，重置回上次提交前的状态**：
+
+```bash
+git reset --hard HEAD^ # 回退到上一版
+git reset --hard HEAD^^ # 回退到倒数第二版
+git reset --hard 3628164 # 回退到 commit id 为3628164的版本
+```
+
+### git rebase
+
+merge 之后，commit 历史就会出现分叉，这种分叉再汇合的结构会让有些人觉得混乱
+可以用 rebase 来代替 merge，就不会出现分叉。
+
+在 master 分支上合并 branch1：
+
+```bash
+git checkout master
+git merge branch1
+```
+
+如果把 merge 换成 rebase，可以这样操作：
+
+```bash
+git checkout branch1 # 签出分支branch1 HEAD 指向了 branch1
+git rebase master # 站在branch 1上 rebase操作
+```
+
+### git pull --rebase
+
+那就先看看 git pull，我们都知道是同步代码，拉取远程最新的代码 git pull 命令其本质是：把远程仓库使用 git fetch 取下来以后再进行 git merge 操作的。
+
+如果本地什么都没有修改 git pull 其实是和 git fetch 一样的。
+
+如果在本地什么都没有修改的情况下 git pull rebase 和 git pull 和 git fetch 都是一样的。
+
+有修改的情况下 git pull rebase 相比会改变父 commit。--rebase 可以让提交记录看起来很连续和优美，而不是多出很多无用的 merge commit。
+
+### git stash
+
+在代码写了一部分后，而这时想要切换到另一个分支做其他事情，又不想因为过会儿回到这一点而做了一半的工作创建一次提交。这种场景下就可以使用 git stash 命令。
+
+git stash 的意思是暂存，可以把我们工作目录所有的未提交的修改都保存起来。
+
 ## git 协议
 
 git 可以使用四种不同的协议传输资料：**本地协议**，**HTTP 协议**，**SSH 协议**和 **git 协议**。
@@ -252,6 +329,14 @@ git merge 会把分支的差异内容 pull 到本地，然后与本地分支的�
 
 git rebase 会把分支优先合并到主分支，然后把本地分支的 commit 放到主分支后面，合并后的分支就好像从合并后主分支又拉了一个分支一样，本地分支本身不会保留提交历史。
 
+![](http://picstore.lliiooiill.cn/1_pzT4KMiZDOFsMOKH-cJjfQ.png)
+
+从上图就可以看出，rebase 可以提供一套线性的，清晰的代码修改历史。而 merge 则很容易产生网状结构，很难去研究每个历史对应的代码。
+
+但这并不代表 rebase 比 merge 要好，因为 rebase 并不是将分支中的 commit 直接拼在主分支的后面，而是会创建新的 commit，因此会失去分支改动的历史。
+
+在别人合并了你的代码以后，并且增加了提交就不能使用 git rebase 了，这时他已经在你的提交节点上产生了新的提交节点，如果此时你在本地使用 git rebase 你们两者的提交历史将会不一致，再次合并时又会产生一个全新的合并记录，这样 git rebase 就失去了意义。（一般多人开发时基本不用 git rebase 这个命令，因为你大多数情况下是不知道同事是否已经提交过代码的）
+
 ### 如何把本地仓库的内容推向一个空的远程仓库
 
 先连接远程仓库：
@@ -273,3 +358,7 @@ fork 是对存储仓库进行远程的，服务器端的拷贝，从源头上就
 clone 不是复刻，克隆是对某个远程仓库的本地拷贝，拷贝的是整个仓库，包括所有历史记录和分支。
 
 branch 是代码的一个独立版本，**用于处理单一存储仓库中的变更，并最终目的是用于与其他部分代码合并**。
+
+## 常用命令速查表
+
+![](http://picstore.lliiooiill.cn/3248447-92fbd92bdad2a763.jpg)

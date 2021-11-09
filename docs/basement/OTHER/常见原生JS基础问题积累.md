@@ -608,13 +608,17 @@ arr.reduce((prev, cur) => (prev.includes(cur) ? prev : [...prev, cur]), [])
 
 ## 23. cookie，localStorage，sessionStorage 的区别
 
-`cookie` 可设置**失效时间**，没有设置的话，默认是关闭浏览器后失效；数据**大小为 4kb 左右并且有个数限制**；每次请求都会**携带在 HTTP 头中**，如果使用 `cookie` 保存过多数据会带来性能问题。`cookie` **不可跨域**，只有绑定的域名才能访问。
+`cookie` 可设置**失效时间**，没有设置的话，默认是关闭浏览器后失效；数据**大小为 4kb 左右并且有个数限制**；每次请求都会**携带在 HTTP 头中**，如果使用 `cookie` 保存过多数据会带来性能问题。`cookie` **不可跨域**，只有绑定的域名才能访问。非顶级域名，如二级域名或者三级域名，设置的 `cookie` 的 `domain` 只能为顶级域名或者二级域名或者三级域名本身，不能设置其他二级域名。
 
-`localStorage` 除非被手动清除，否则将会永久保存；有专门的监听变化事件：`setItemEvent`，可以用 `addEventListener` 监听。
+修改、删除 `cookie` 时，除 `value`、`maxAge` 之外的所有属性如 `name`、`path`、`domain` 等，都要与原 `cookie` 完全一样，否则，浏览器将视为两个不同的 `cookie`。
 
-`sessionStorage` 仅在当前网页会话下有效，关闭页面或浏览器后就会被清除；
 
-`localStorage` 和 `sessionStorage` 可以保存 5MB 的信息；仅在客户端（即浏览器）中保存，不参与和服务器的通信；会将任何数据转换成字符串存储。因此存储时最好用 JSON 序列化一下。
+
+`localStorage` 除非被手动清除，否则将会永久保存；有专门的监听变化事件：`setItemEvent`，可以用 `addEventListener` 监听。页面必须来自同一个域名（子域名无效）和端口。
+
+`sessionStorage` 仅在当前网页会话下有效，关闭页面或浏览器后就会被清除，不同页面间无法共享 `sessionStorage` 的信息；如果一个页面包含多个 `iframe` 且他们属于同源页面，那么他们之间是可以共享 `sessionStorage` 的。
+
+`localStorage` 和 `sessionStorage` 可以保存 5MB 的信息(注意：这里说的是**每个域名 5M**)；仅在客户端（即浏览器）中保存，不参与和服务器的通信；会将任何数据转换成字符串存储。因此存储时最好用 JSON 序列化一下。
 
 ## 24. 前端如何实现并发请求数量限制？
 
@@ -932,11 +936,8 @@ outerText：内部文本，`content`
 ## 48. Reflect 对象创建目的？
 
 1. 将 `Object` 对象的一些明显属于语言内部的方法（比如 `Object.defineProperty`，放到 `Reflect` 对象上。
-
 2. 修改某些 `Object` 方法的返回结果，让其变得更合理。
-
 3. 让 `Object` 操作都变成函数行为。
-
 4. `Reflect` 对象的方法与 `Proxy` 对象的方法一一对应，只要是 `Proxy` 对象的方法，就能在 `Reflect` 对象上找到对应的方法。这就让 `Proxy` 对象可以方便地调用对应的 `Reflect` 方法，完成默认行为，作为修改行为的基础。
 
 也就是说，不管 `Proxy` 怎么修改默认行为，你总可以在 `Reflect` 上获取默认行为。
@@ -1405,3 +1406,182 @@ Promise.myAll([p1, p2]).then((res) => {
   console.log(res)
 })
 ```
+
+## 74. 对象的深度克隆，包括 function，Date，RegExp 和 symbol 类型？
+
+```js
+function deepClone(origin, target, hash = new WeakMap()) {
+  //origin:要被拷贝的对象
+  // 需要完善，克隆的结果和之前保持相同的所属类
+  var target = target || {}
+
+  // 处理特殊情况
+  if (origin == null) return origin //null 和 undefined 都不用处理
+  if (origin instanceof Date) return new Date(origin)
+  if (origin instanceof RegExp) return new RegExp(origin)
+  if (typeof origin !== 'object') return origin // 普通常量直接返回
+
+  //  防止对象中的循环引用爆栈，把拷贝过的对象直接返还即可
+  if (hash.has(origin)) return hash.get(origin)
+  hash.set(origin, target) // 制作一个映射表
+
+  // 拿出所有属性，包括可枚举的和不可枚举的，但不能拿到symbol类型
+  var props = Object.getOwnPropertyNames(origin)
+  props.forEach((prop, index) => {
+    if (origin.hasOwnProperty(prop)) {
+      if (typeof origin[prop] === 'object') {
+        if (Object.prototype.toString.call(origin[prop]) == '[object Array]') {
+          //数组
+          target[prop] = []
+          deepClone(origin[prop], target[prop], hash)
+        } else if (Object.prototype.toString.call(origin[prop]) == '[object Object]') {
+          //普通对象
+          target[prop] = {}
+
+          deepClone(origin[prop], target[prop], hash)
+        } else if (origin[prop] instanceof Date) {
+          // 处理日期对象
+          target[prop] = new Date(origin[prop])
+        } else if (origin[prop] instanceof RegExp) {
+          // 处理正则对象
+          target[prop] = new RegExp(origin[prop])
+        } else {
+          //null
+          target[prop] = null
+        }
+      } else if (typeof origin[prop] === 'function') {
+        var _copyFn = function(fn) {
+          var result = new Function('return ' + fn)()
+          for (var i in fn) {
+            deepClone[(fn[i], result[i], hash)]
+          }
+          return result
+        }
+        target[prop] = _copyFn(origin[prop])
+      } else {
+        //除了object、function，剩下都是直接赋值的原始值
+        target[prop] = origin[prop]
+      }
+    }
+  })
+
+  // 单独处理symbol
+  var symKeys = Object.getOwnPropertySymbols(origin)
+  if (symKeys.length) {
+    symKeys.forEach((symKey) => {
+      target[symKey] = origin[symKey]
+    })
+  }
+  return target
+}
+```
+
+## 75. 什么是 Intersection Observer？
+
+`IntersectionObserver` 接口提供了一种异步观察目标元素与其祖先元素或顶级文档视窗交叉状态的方法。祖先元素与视窗被称为**根**(root)。
+
+当一个 `IntersectionObserver` 对象被创建时，其被配置为监听根中一段给定比例的可见区域。一旦 `IntersectionObserver` 被创建，则无法更改其配置，所以一个给定的观察者对象只能用来监听可见区域的特定变化值；然而，你可以在同一个观察者对象中配置监听多个目标元素。
+
+网页开发时，常常需要了解某个元素是否进入了"视口"（viewport），即用户能不能看到它。
+
+传统的实现方法是，监听到 `scroll` 事件后，调用目标元素的 `getBoundingClientRect()` 方法，得到它对应于视口左上角的坐标，再判断是否在视口之内。这种方法的缺点是，由于 `scroll` 事件密集发生，计算量很大，容易造成性能问题。
+
+用法：
+
+```js
+var io = new IntersectionObserver(callback, option)
+// 开始观察
+io.observe(document.getElementById('example'))
+// 停止观察
+io.unobserve(element)
+// 关闭观察器
+io.disconnect()
+
+// callback 会在元素刚开始进入视线和完全离开视线触发
+var io = new IntersectionObserver((entries) => {
+  console.log(entries)
+})
+```
+
+我们希望某些静态资源（比如图片），只有用户向下滚动，它们进入视口时才加载，这样可以节省带宽，提高网页性能。这就叫做"惰性加载"。有了 IntersectionObserver API，实现起来就很容易了。
+
+IntersectionObserver API 是异步的，不随着目标元素的滚动同步触发。规格写明，`IntersectionObserver` 的实现，应该采用 `requestIdleCallback()`，即只有线程空闲下来，才会执行观察器。这意味着，这个观察器的优先级非常低，只在其他任务执行完，浏览器有了空闲才会执行。
+
+实现图片懒加载：
+
+```html
+<!-- 图片元素设置 lazyload 属性 -->
+<img src="图片链接" alt="图片说明" lazyload="true" />
+<script>
+  /**
+   * @method lazyLoad
+   * @param {NodeList} $imgList      图片元素集合
+   * @param {number}   preloadHeight 预加载高度
+   */
+  function lazyLoad($imgList, preloadHeight = 1000) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // 目标元素出现在 root 可视区，返回 true
+            const $target = entry.target
+            const src = $target.getAttribute('lazyload')
+
+            if (src) {
+              $target.setAttribute('src', src) // 真正加载图片
+            }
+            observer.unobserve($target) // 解除观察
+          }
+        })
+      },
+      {
+        rootMargin: `0px 0px ${preloadHeight}px 0px`,
+      }
+    )
+
+    Array.prototype.forEach.call($imgList, ($item) => {
+      if ($item.getAttribute('src')) return // 过滤已经加载过的图片
+      observer.observe($item) // 开始观察
+    })
+  }
+  // 观察图片元素
+  lazyLoad(document.querySelectorAll('[lazyload]'))
+</script>
+```
+
+如果浏览器不支持，可以使用 [polyfill](https://github.com/w3c/IntersectionObserver/tree/main/polyfill)
+
+## 76. localStorage 可以设置过期时间吗？怎么去实现呢？
+
+存储的值加一个时间戳，下次取值时验证时间戳。
+
+```js
+Storage.prototype.setExpire = (key, value, expire) => {
+  let obj = {
+    data: value,
+    time: Date.now(),
+    expire: expire,
+  }
+  localStorage.setItem(key, JSON.stringify(obj))
+}
+Storage.prototype.getExpire = (key) => {
+  let val = localStorage.getItem(key)
+  if (!val) {
+    return val
+  }
+  val = JSON.parse(val)
+  if (Date.now() - val.time > val.expire) {
+    localStorage.removeItem(key)
+    return null
+  }
+  return val.data
+}
+
+// 使用
+localStorage.setExpire('userId', 'zhangsan', 5000)
+window.setInterval(() => {
+  console.log(localStorage.getExpire('userId'))
+}, 1000)
+```
+
+##

@@ -1511,3 +1511,110 @@ const store = new Vuex.Store({
 })
 ```
 
+## 69. Vue 依赖收集(Watcher、Dep)原理？
+
+```js
+new Vue({
+  template: `<div>
+            <span>text1:</span> {{text1}}
+        <div>`,
+  data: {
+    text1: 'text1',
+    text2: 'text2',
+  },
+})
+```
+
+可以从以上代码看出，`data` 中 `text2` 并没有被模板实际用到，为了提高代码执行效率，我们没有必要对其进行响应式处理，因此，依赖收集简单理解就是收集只在实际页面中用到的 `data` 数据。
+
+Vue 内部使用 `Watcher` 和 `Dep` 来实现依赖收集。
+
+被 `Observer` 的 `data` 在触发 `getter` 时，`Dep` 就会收集依赖，然后打上标记，这里就是标记为 `Dep.target`。
+
+`Watcher` 是一个观察者对象。依赖收集以后的 `watcher` 对象被保存在 `Dep` 的 `subs` 中，数据变动的时候 `Dep` 会通知 `watcher` 实例，然后由 `watcher` 实例回调 `cb` 进行视图更新。
+
+`Watcher` 可以接受多个订阅者的订阅，当有 `data` 变动时，就会通过 `Dep` 给 `Watcher` 发通知进行更新。
+
+```js
+class Observer {
+  constructor(value) {
+    this.value = value
+    if (!value || typeof value !== 'object') {
+      return
+    } else {
+      this.walk(value)
+    }
+  }
+  walk(obj) {
+    Object.keys(obj).forEach((key) => {
+      defineReactive(obj, key, obj[key])
+    })
+  }
+}
+// 订阅者Dep，存放观察者对象
+class Dep {
+  constructor() {
+    this.subs = []
+  }
+  /*添加一个观察者对象*/
+  addSub(sub) {
+    this.subs.push(sub)
+  }
+  /*依赖收集，当存在Dep.target的时候添加观察者对象*/
+  depend() {
+    if (Dep.target) {
+      Dep.target.addDep(this)
+    }
+  }
+  // 通知所有watcher对象更新视图
+  notify() {
+    this.subs.forEach((sub) => {
+      sub.update()
+    })
+  }
+}
+class Watcher {
+  constructor() {
+    /* 在new一个Watcher对象时将该对象赋值给Dep.target，在get中会用到 */
+    Dep.target = this
+  }
+  update() {
+    console.log('视图更新啦')
+  }
+  /*添加一个依赖关系到Deps集合中*/
+  addDep(dep) {
+    dep.addSub(this)
+  }
+}
+function defineReactive(obj, key, val) {
+  const dep = new Dep()
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter() {
+      dep.depend() /*进行依赖收集*/
+      return val
+    },
+    set: function reactiveSetter(newVal) {
+      if (newVal === val) return
+      dep.notify()
+    },
+  })
+}
+class Vue {
+  constructor(options) {
+    this._data = options.data
+    new Observer(this._data) // 所有data变成可观察的
+    new Watcher() // 创建一个观察者实例
+    console.log('render~', this._data.test)
+  }
+}
+let o = new Vue({
+  data: {
+    test: 'hello vue.',
+  },
+})
+o._data.test = 'hello mvvm!'
+
+Dep.target = null
+```
