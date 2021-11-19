@@ -88,6 +88,7 @@ module.exports = {
             'JS/WebSocket',
             'JS/JS垃圾回收机制',
             'JS/模板字符串',
+            'JS/变量存储',
             'JS/Class',
             'JS/源码映射',
             'JS/BOM'

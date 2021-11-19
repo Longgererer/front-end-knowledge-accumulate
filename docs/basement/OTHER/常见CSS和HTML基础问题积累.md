@@ -168,6 +168,12 @@ IFC 的行框由其包含行内元素中最高的实际高度来计算，不受�
 transform: scale(0.5, 0.5);
 ```
 
+或者使用：
+
+```css
+box-shadow: 0 0.5px 0 #000;
+```
+
 ## zoom 和 transform:scale() 的区别？
 
 `transform` 的值是基于坐标系统的，`transform` 的变换过程实际上是矩阵变换的过程，被 `transform` 的元素要经过一系列的矩阵运算最终确定其坐标。
@@ -704,3 +710,205 @@ ele {
 **非置换元素**：
 
 HTML 的大多数元素是不可替换元素，即其内容直接表现给用户端（例如浏览器）。
+
+## 如何使用 css 实现轮播？
+
+:::: tabs
+::: tab HTML
+
+```html
+<section class="slider-container">
+  <!-- 轮播器 -->
+  <ul class="slider">
+    <li class="slider-item slider-item1"></li>
+    <li class="slider-item slider-item2"></li>
+    <li class="slider-item slider-item3"></li>
+    <li class="slider-item slider-item4"></li>
+    <li class="slider-item slider-item5"></li>
+  </ul>
+  <!-- 轮播焦点 -->
+  <div class="focus-container">
+    <ul class="floatfix">
+      <li>
+        <div class="focus-item focus-item1"></div>
+      </li>
+      <li>
+        <div class="focus-item focus-item2"></div>
+      </li>
+      <li>
+        <div class="focus-item focus-item3"></div>
+      </li>
+      <li>
+        <div class="focus-item focus-item4"></div>
+      </li>
+      <li>
+        <div class="focus-item focus-item5"></div>
+      </li>
+    </ul>
+  </div>
+</section>
+```
+
+:::
+::: tab CSS
+
+```css
+* {
+  margin: 0;
+  padding: 0;
+}
+ul,
+li {
+  list-style: none;
+}
+.slider-container {
+  width: 50%;
+  position: relative;
+  margin: 0 auto;
+}
+.slider,
+.slider-item {
+  padding-bottom: 40%;
+}
+.slider-item {
+  position: absolute;
+  width: 100%;
+  background-size: 100%;
+}
+.slider-item1 {
+  background-image: url(imgs/1.jpg);
+}
+.slider-item2 {
+  background-image: url(imgs/2.jpg);
+}
+.slider-item3 {
+  background-image: url(imgs/3.jpg);
+}
+.slider-item4 {
+  background-image: url(imgs/4.jpg);
+}
+.slider-item5 {
+  background-image: url(imgs/5.jpg);
+}
+.focus-container {
+  position: absolute;
+  bottom: 2%;
+  z-index: 7;
+  left: 50%;
+  margin-left: -45px;
+}
+.focus-container li {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  float: left;
+  margin-right: 10px;
+  background: #fff;
+}
+.focus-item {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background: #51b1d9;
+  border-radius: inherit;
+  animation-duration: 20s;
+  animation-timing-function: linear;
+  animation-name: fade;
+  animation-iteration-count: infinite;
+}
+.focus-item1 {
+  animation-delay: -1s;
+}
+.focus-item2 {
+  animation-delay: 3s;
+}
+.focus-item3 {
+  animation-delay: 7s;
+}
+.focus-item4 {
+  animation-delay: 11s;
+}
+.focus-item5 {
+  animation-delay: 15s;
+}
+```
+
+:::
+::::
+
+## 哪些样式可以继承?
+
+有继承性的属性：
+
+1. 字体系列属性：`font`、`font-family`、`font-weight`、`font-size`、`font-style`、`font-variant`、`font-stretch`、`font-size-adjust`。
+2. 文本系列属性：`text-indent`、`text-align`、`text-shadow`、`line-height`、`word-spacing`、`letter-spacing`、`text-transform`、`direction`、`color`。
+3. 元素可见性：`visibility`。
+4. 表格布局属性：`caption-side`、`border-collapse`、`empty-cells`。
+5. 列表属性：`list-style-type`、`list-style-image`、`list-style-position`、`list-style`。
+6. 设置嵌套引用的引号类型：`quotes`。
+7. 光标属性：`cursor`。
+
+## 1px 怎么跨设备兼容？
+
+`1px` 边框在一些移动设备上变粗问题：
+
+其实这个原因很简单，因为 css 中的 `1px` 并不等于移动设备的 `1px`，这些由于不同的手机有不同的像素密度。在 `window` 对象中有一个 `devicePixelRatio` 属性，他可以反应 `css` 中的像素与设备的像素比。
+
+可以设置 0.5px 的边框：
+
+```js
+if (window.devicePixelRatio && devicePixelRatio >= 2) {
+  var testElem = document.createElement('div')
+  testElem.style.border = '.5px solid transparent'
+  document.body.appendChild(testElem)
+  if (testElem.offsetHeight == 1) {
+    document.querySelector('html').classList.add('hairlines')
+  }
+  document.body.removeChild(testElem)
+}
+```
+
+然后：
+
+```css
+div {
+  border: 1px solid #bbb;
+}
+.hairlines div {
+  border-width: 0.5px;
+}
+```
+
+## transform:scale 可以是负数吗，什么效果？
+
+可以是负数，使用后会发生翻转：
+
+1. `scaleX(-1)` 水平方向上的翻转。
+2. `scaleY(-1)` 纵轴方向上的翻转。
+
+## 行内样式 width: 300px !important，怎么修改宽度为 100 呢？
+
+1. `transform scale`。
+2. `max-width`。
+3. `display` + `padding`
+
+:::: tabs
+::: tab HTML
+
+```html
+<div style="width:300px !important"></div>
+```
+
+:::
+::: tab CSS
+
+```css
+div {
+  display: inline;
+  padding: 0 50px;
+  background: red;
+}
+```
+
+:::
+::::

@@ -330,7 +330,7 @@ function set(target: Array<any> | Object, key: any, val: any): any {
 
 `Proxy` 的优势如下:
 
-- 可以直接监听对象而非属性，任何属性包括嵌套属性发生彼岸花都可以监听到；
+- 可以直接监听对象而非属性，任何属性发生变化都可以监听到，只是嵌套属性还是要用递归遍历；
 - 可以直接监听数组的变化；
 - 有多达 13 种拦截方法,不限于 `apply`、`ownKeys`、`deleteProperty`、`has` 等等是 `Object.defineProperty` 不具备的；
 - 返回的是一个新对象,我们可以只操作新的对象达到目的,而 `Object.defineProperty` 只能遍历对象属性直接修改；
@@ -1618,3 +1618,45 @@ o._data.test = 'hello mvvm!'
 
 Dep.target = null
 ```
+
+## 70. vue 中怎么定义全局函数？
+
+1. `Vue.prototype`。
+
+2. 写一个模块文件，挂载到 `main.js` 上面：`exports.install`+`Vue.prototype`
+
+```js
+export default {
+  install(Vue)  {
+    Vue.prototype.getToken = {
+      ...
+    }
+  }
+}
+```
+
+`main.js` 引入并使用：
+
+```js
+import fun from './fun' // 路径示公共JS位置决定
+Vue.use(fun)
+```
+
+3. 使用 `Vue.mixin` 全局混入来注册全局方法：
+
+```js
+Vue.mixin({
+  methods: {
+    loadPage(routerName, param) {
+      if (param) {
+        this.$router.push({ name: routerName, query: param })
+      } else {
+        this.$router.push({ name: routerName })
+      }
+    },
+  },
+})
+```
+
+在 `main.js` 中注册全局方法，所有组件都可以调用该方法了，不过要注意的是，如果组件有与之同名的 `loadPage` 方法，则会覆盖 `mixin` 中的方法。
+

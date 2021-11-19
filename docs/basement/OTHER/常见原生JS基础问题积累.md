@@ -612,8 +612,6 @@ arr.reduce((prev, cur) => (prev.includes(cur) ? prev : [...prev, cur]), [])
 
 修改、删除 `cookie` 时，除 `value`、`maxAge` 之外的所有属性如 `name`、`path`、`domain` 等，都要与原 `cookie` 完全一样，否则，浏览器将视为两个不同的 `cookie`。
 
-
-
 `localStorage` 除非被手动清除，否则将会永久保存；有专门的监听变化事件：`setItemEvent`，可以用 `addEventListener` 监听。页面必须来自同一个域名（子域名无效）和端口。
 
 `sessionStorage` 仅在当前网页会话下有效，关闭页面或浏览器后就会被清除，不同页面间无法共享 `sessionStorage` 的信息；如果一个页面包含多个 `iframe` 且他们属于同源页面，那么他们之间是可以共享 `sessionStorage` 的。
@@ -1584,4 +1582,81 @@ window.setInterval(() => {
 }, 1000)
 ```
 
-##
+## 77. 哪些方法可以将字符串转换为 JavaScript 代码执行？
+
+如下：
+
+```js
+eval('console.log(123)') // 123
+new Function('console.log(123)')() // 123
+setInterval('console.log(123)', 0)
+setTimeout('console.log(123)', 0)
+```
+
+## 79. 代码块和表达式的区别？
+
+JavaScript 规定，如果行首是大括号，一律解释为语句（即代码块）。如果要解释为表达式（即对象），必须在大括号前加上圆括号。
+
+## 80. 编译原理中词法分析、语法分析、语义分析的区别？
+
+**词法分析**阶段是编译过程的第一个阶段。这个阶段的任务是从左到右一个字符一个字符地读入源程序，即对构成源程序的字符流进行扫描然后根据构词规则识别单词(也称单词符号或符号)。词法分析程序实现这个任务。
+
+**语法分析**是编译过程的一个逻辑阶段。语法分析的任务是在词法分析的基础上将单词序列组合成各类语法短语，如“程序”，“语句”，“表达式”等等，语法分析程序判断源程序在结构上是否正确，源程序的结构由上下文无关文法描述。
+
+**语义分析**是编译过程的一个逻辑阶段. 语义分析的任务是对结构上正确的源程序进行上下文有关性质的审查, 进行类型审查。
+
+## 81. 怎么处理数万条数据的虚拟列表？
+
+使用 webWorker 接收后台传过来的海量数据，使用 indexedDB 而不是内存来存储列表数据。
+
+## 82. 判断一个对象是否为空对象？
+
+1. 将 JSON 对象转化为 JSON 字符串，再判断该字符串是否为 `{}`
+
+```js
+var data = {}
+console.log(JSON.stringify(data) === '{}')
+```
+
+2. `for...in`
+
+```js
+var obj = {}
+var b = function() {
+  for (var key in obj) {
+    return false
+  }
+  return true
+}
+alert(b()) //true
+```
+
+3. `Object.getOwnPropertyNames()`
+
+```js
+var data = {}
+var arr = Object.getOwnPropertyNames(data)
+alert(arr.length == 0) //true
+```
+
+4. `Object.keys()`
+
+```js
+var data = {}
+var arr = Object.keys(data)
+alert(arr.length == 0) //true
+```
+
+## 83. 闭包中的变量存在哪里？
+
+```js
+function count() {
+  let num = -1
+  return function() {
+    num++
+    return num
+  }
+}
+```
+
+按照常理来说栈中数据在函数执行结束后就会被销毁，但是闭包不一样，由于内部函数引用了外部函数中的变量，因此被引用的变量会储存在**堆内存**中，并使用一个特殊的对象： `[[Scopes]]` 存储这些变量，这些变量属于**被捕获对象**。

@@ -87,15 +87,98 @@ Webpack 开启监听模式，有两种方式：
 
 ## 如何提高 webpack 构建速度？
 
-- 通过 externals 配置来提取常用库
-- 利用 DllPlugin 和 DllReferencePlugin 预编译资源模块 通过 DllPlugin 来对那些我们引用但是绝对不会修改的 npm 包来进行预编译，再通过 DllReferencePlugin 将预编译的模块加载进来。
-- 使用 Happypack 实现多线程加速编译
-- 使用 webpack-uglify-parallel 来提升 uglifyPlugin 的压缩速度。原理上 webpack-uglify-parallel 采用了多核并行压缩来提升压缩速度
-- 使用 Tree-shaking 和 Scope Hoisting 来剔除多余代码
+- 通过 `externals` 配置来提取常用库
+- 利用 `DllPlugin` 和 `DllReferencePlugin` 预编译资源模块 通过 `DllPlugin` 来对那些我们引用但是绝对不会修改的 npm 包来进行预编译，再通过 `DllReferencePlugin` 将预编译的模块加载进来。
+- 使用 `Happypack` 实现多线程加速编译
+- 使用 `webpack-uglify-parallel` 来提升 `uglifyPlugin` 的压缩速度。原理上 `webpack-uglify-parallel` 采用了多核并行压缩来提升压缩速度
+- 使用 `Tree-shaking` 和 `Scope Hoisting` 来剔除多余代码
 
 ## 什么是 bundle,chunk,module？
 
 - `bundle` 是 `webpack` 打包出来的文件。
 - `chunk` 是 `webpack` 在进行模块的依赖分析的时候，代码分割出来的代码块。
 - `module` 是开发中的单个模块。
+
+## common chunk 是什么？
+
+common chunk 通过 `CommonsChunkPlugin` 插件实现。
+
+`CommonsChunkPlugin` 主要是用来提取第三方库和公共模块，通过将公共模块拆出来，最终合成的文件能够在最开始的时候加载一次，便存到缓存中供后续使用，避免首屏加载的 bundle 文件或者按需加载的 bundle 文件体积过大，从而导致加载时间过长。
+
+## tree shaking 是什么？
+
+用于移除 JavaScript 上下文中的未引用代码，它依赖于 ES2015 模块系统中的静态结构特性，例如 `import` 和 `export`。如果一个 js 文件中导出了方法，变量，却没有在其它任何一个地方导入，那么 tree shaking 会将这些代码剔除。
+
+可以在 `sideEffects` 中
+
+如果想要在 webpack 中使用 tree shaking，必须：
+
+1. 使用 ES2015 模块语法。
+2. 在项目 `package.json` 文件中，添加一个 `"sideEffects"` 入口。
+3. 引入一个能够删除未引用代码(dead code)的压缩工具(minifier)（例如 UglifyJSPlugin）。
+
+对于第一点，这是因为 `export` 和 `import` 都是在预编译的时候进行解析的，因此可以得知哪些模块导入了，哪些导出了，但 CommonJS 模块规范如 `require()`，这些模块是动态加载的，因此哪些模块导入导出完全是不确定的，因此无法使用 tree shaking。
+
+如果所有代码都不包含副作用，我们就可以简单地将该属性标记为 `false`，来告知 webpack，它可以安全地删除未用到的 `export` 导出。
+
+> 「副作用」的定义是，在导入时会执行特殊行为的代码，而不是仅仅暴露一个 `export` 或多个 `export`。举例说明，例如 polyfill，它影响全局作用域，并且通常不提供 `export`。
+
+对于这些副作用，既然不受导入导出的影响，便可能会被 tree shaking 剔除，因此需要进行配置(数组方式支持相关文件的相对路径、绝对路径和 glob 模式。)：
+
+```json
+{
+  "sideEffects": ["./src/some-side-effectful-file.js"]
+}
+```
+
+## Webpack5 模块联邦是什么？
+
+Webpack5 模块联邦让 Webpack 达到了线上 Runtime 的效果，让代码直接在项目间利用 CDN 直接共享，不再需要本地安装 Npm 包、构建再发布了！
+
+NPM 是现在比较常用的模块共享方案，只要把本地模块上传到 NPM，其他项目下载下来即可使用。
+
+模块联邦是 Webpack5 新内置的一个重要功能，可以让跨应用间真正做到模块共享。
+
+这个方案是直接将一个应用的包应用于另一个应用，同时具备整体应用一起打包的公共依赖抽取能力。
+
+模块联邦的使用方式如下：
+
+```js
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin')
+
+module.exports = {
+  // other webpack configs...
+  plugins: [
+    new ModuleFederationPlugin({
+      name: 'app_one_remote',
+      remotes: {
+        app_two: 'app_two_remote',
+        app_three: 'app_three_remote',
+      },
+      exposes: {
+        AppContainer: './src/App',
+      },
+      shared: ['react', 'react-dom', 'react-router-dom'],
+    }),
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      chunks: ['main'],
+    }),
+  ],
+}
+```
+
+模块联邦本身是一个普通的 Webpack 插件 `ModuleFederationPlugin`，插件有几个重要参数：
+
+1. `name` 当前应用名称，需要全局唯一。
+2. `remotes` 可以将其他项目的 `name` 映射到当前项目中。
+3. `exposes` 表示导出的模块，只有在此申明的模块才可以作为远程依赖被使用。
+4. `shared` 是非常重要的参数，制定了这个参数，可以让远程加载的模块对应依赖改为使用本地项目的 React 或 ReactDOM。
+
+比如设置了 `remotes: { app_tw0: "app_two_remote" }`，在代码中就可以直接利用以下方式直接从对方应用调用模块：
+
+```js
+import { Search } from 'app_two/Search'
+```
 
