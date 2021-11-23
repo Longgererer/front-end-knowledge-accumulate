@@ -1647,16 +1647,40 @@ var arr = Object.keys(data)
 alert(arr.length == 0) //true
 ```
 
-## 83. 闭包中的变量存在哪里？
+## 83. undefined 和 null 的区别？
+
+JavaScript 的最初版本是这样区分的：`null` 是一个表示"无"的对象，转为数值时为 `0`；`undefined` 是一个表示"无"的原始值，转为数值时为 `NaN`。
 
 ```js
-function count() {
-  let num = -1
-  return function() {
-    num++
-    return num
-  }
-}
+Number(undefined) // NaN
+Number(null) // 0
 ```
 
-按照常理来说栈中数据在函数执行结束后就会被销毁，但是闭包不一样，由于内部函数引用了外部函数中的变量，因此被引用的变量会储存在**堆内存**中，并使用一个特殊的对象： `[[Scopes]]` 存储这些变量，这些变量属于**被捕获对象**。
+但除了这些，它们两个还有很多区别：
+
+1. `null` 表示"没有对象"，即该处不应该有值，比如原型链的终点为 `null`，同时，除非定义为 `null`，否则不会出现 `null`。`undefined` 表示"缺少值"，就是此处应该有一个值，但是还没有定义。
+2. `undefined` 是 `window` 对象中的一个只读属性，不能在全局更改或重新声明 `undefined`，但在函数中可以。
+
+```js
+undefined = 123
+console.log(undefined) // undefined
+
+let undefined = 123 // Uncaught SyntaxError: Identifier 'undefined' has already been declared
+
+;(function() {
+  let undefined = 123
+  console.log(undefined) // 123
+})()
+```
+
+由于 `undefined` 在函数中可以被改写，因此通常使用 `void 0` 代替 `undefined` 做返回值。
+
+实际上，ECMAScript 明确规定 `void` 操作符 对任何表达式求值都返回 `undefined` ，这和函数执行操作后没有返回值的作用是一样的，JavaScript 中的函数都有返回值，当没有 `return` 操作时，就默认返回一个原始的状态值，这个值就是 `undefined`，表明函数的返回值未被定义。
+
+```js
+void 0 // undefined
+void false // undefined
+void [] // undefined
+void null // undefined
+void function fn() {} // undefined
+```

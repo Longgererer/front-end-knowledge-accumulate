@@ -57,6 +57,8 @@ Vue.set(vm.items, indexOfItem, newValue)
 vm.$set(vm.items, indexOfItem, newValue)
 // Array.prototype.splice
 vm.items.splice(indexOfItem, 1, newValue)
+// 强制更新视图
+vm.$forceUpdated()
 ```
 
 可以使用如下方式解决第二个问题：
@@ -757,7 +759,12 @@ Vue 的数据是响应式的，但其实模板中并不是所有的数据都是�
 
 ### Vue2.x
 
-简单来说，diff 算法有以下过程
+Vue 采取的策略为：**深度优先，同层比较**，也就是：
+
+1. 比较只会在同层级进行, 不会跨层级比较
+2. 比较的过程中，循环从两边向中间收拢
+
+简单来说，diff 算法有以下过程：
 
 - 同级比较，再比较子节点
 - 先判断一方有子节点一方没有子节点的情况(如果新的 `children` 没有子节点，将旧的子节点移除)
@@ -1660,3 +1667,246 @@ Vue.mixin({
 
 在 `main.js` 中注册全局方法，所有组件都可以调用该方法了，不过要注意的是，如果组件有与之同名的 `loadPage` 方法，则会覆盖 `mixin` 中的方法。
 
+## 71. Vue.\$forceUpdated 是什么？
+
+`$forceUpdate` 方法用来强制更新视图，但 Vue 不推荐我们这样去做，如果你调用了这个函数，十有八九是写的代码有问题。
+
+`$forceUpdate` 方法仅仅**影响实例本身和插入插槽内容的子组件**，而不是所有子组件。
+
+## 72. 如何强制刷新组件？
+
+1. 刷新整个页面（最 low 的，可以借助 route 机制，不推荐）
+
+2. 使用 `v-if` 标记（比较 low 的，有时候不生效，不推荐）
+
+使用 `v-if` 重新加载组件的时候需要配合 `$nextTick`：
+
+```js
+this.display = false
+this.$nextTick(() => {
+  this.display = true
+})
+```
+
+同时 `v-if` 重新创建组件还会触发一连串的生命周期，子元素也一同被影响，这或许不是我们所期望的。
+
+3. 使用内置的 `$forceUpdate` 方法（较好的）
+
+`$forceUpdate` 并不会重载组件，而是重新执行内部的 `render` 函数生成新的虚拟 DOM 并渲染到页面上。因此只会触发 `beforeUpdate` 和 `updated` 这两个钩子函数。
+
+注意：`$forceUpdate` 不会更新现有的计算属性。仅仅强制重新渲染视图。
+
+4. 使用 key-changing 优化组件（最好的）
+
+Vue 提供一个 `key` 属性，以便 Vue 知道特定的组件与特定的数据片段相关联。如果 `key` 保持不变，则不会更改组件，但是如果 `key` 发生更改，Vue 就会知道应该删除旧组件并创建新组件。
+
+我们可以采用这种将 `key` 分配给子组件的策略，但是每次想重新渲染组件时，只需更新该 `key` 即可。
+
+:::: tabs
+::: tab HTML
+
+```HTML
+<template>
+<component-to-re-render :key="componentKey" />
+</template>
+```
+
+:::
+::: tab JavaScript
+
+```js
+export default {
+  data() {
+    return {
+      componentKey: 0,
+    }
+  },
+  methods: {
+    forceRerender() {
+      this.componentKey += 1
+    },
+  },
+}
+```
+
+:::
+::::
+
+## 72. Vue 中组件和插件有什么区别？
+
+组件就是把图形、非图形的各种逻辑均抽象为一个统一的概念（组件）来实现开发的模式，在 Vue 中每一个 `.vue` 文件都可以视为一个组件。
+
+插件通常用来为 Vue 添加全局功能。插件的功能范围没有严格的限制——一般有下面几种：
+
+- 添加全局方法或者属性。如: `vue-custom-element`。
+- 添加全局资源：指令/过滤器/过渡等。如 `vue-touch`。
+- 通过全局混入来添加一些组件选项。如 `vue-router`。
+- 添加 Vue 实例方法，通过把它们添加到 `Vue.prototype` 上实现。
+- 一个库，提供自己的 API，同时提供上面提到的一个或多个功能。如 `vue-router`。
+
+Vue 插件的实现应该暴露一个 `install` 方法。这个方法的第一个参数是 Vue 构造器，第二个参数是一个可选的选项对象。
+
+```js
+MyPlugin.install = function (Vue, options) {
+  // 1. 添加全局方法或 property
+  Vue.myGlobalMethod = function () {
+    // 逻辑...
+  }
+
+  // 2. 添加全局资源
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 3. 注入组件选项
+  Vue.mixin({
+    created: function () {
+      // 逻辑...
+    }
+    ...
+  })
+
+  // 4. 添加实例方法
+  Vue.prototype.$myMethod = function (methodOptions) {
+    // 逻辑...
+  }
+}
+```
+
+插件的注册通过 `Vue.use()` 的方式进行注册（安装），第一个参数为插件的名字，第二个参数是可选择的配置项。
+
+```js
+Vue.use(插件名字, {
+  /* ... */
+})
+```
+
+## 73. Vue.observable 你有了解过吗？
+
+`Vue.observable`，让一个对象变成响应式数据。Vue 内部会用它来处理 `data` 函数返回的对象。
+
+返回的对象可以直接用于渲染函数和计算属性内，并且会在发生变更时触发相应的更新。也可以作为最小化的跨组件状态存储器。
+
+```js
+Vue.observable({ count: 1 })
+```
+
+等同于：
+
+```js
+new vue({ count: 1 })
+```
+
+在 Vue 2.x 中，被传入的对象会直接被 `Vue.observable` 变更，它和被返回的对象是同一个对象。
+
+在 Vue 3.x 中，则会返回一个可响应的代理，而对源对象直接进行变更仍然是不可响应的。
+
+因此，为了向前兼容，官方推荐始终操作使用 `Vue.observable` 返回的对象，而不是传入源对象。
+
+### 使用 Vue.observable() 进行状态管理
+
+Vuex 当然可以解决这类问题，不过就像 Vuex 官方文档所说的，如果应用不够大，为避免代码繁琐冗余，最好不要使用它，所以我们可以使用 vue.js 2.6 新增加的 Observable API。
+
+首先创建一个 `store.js`，包含一个 `store` 和一个 `mutations`，分别用来指向数据和处理方法。
+
+```js
+//store.js
+import Vue from 'vue'
+
+export let store = Vue.observable({ count: 0, name: '李四' })
+export let mutations = {
+  setCount(count) {
+    store.count = count
+  },
+  changeName(name) {
+    store.name = name
+  },
+}
+```
+
+然后在组件 `Home.vue` 中引用，在组件里使用数据和方法：
+
+:::: tabs
+::: tab HTML
+
+```html
+<template>
+  <div class="container">
+    <button @click="setCount(count+1)">+1</button>
+    <button @click="setCount(count-1)">-1</button>
+    <div>store中count：{{count}}</div>
+    <button @click="changeName(name1)">父页面修改name</button>
+    <div>store中name：{{name}}</div>
+    <router-link to="/detail"><h5>跳转到详情页</h5> </router-link>
+  </div>
+</template>
+```
+
+:::
+::: tab JavaScript
+
+```js
+import { store, mutations } from '@/store'
+export default {
+  data() {
+    return {
+      name1: '主页的name',
+    }
+  },
+  computed: {
+    count() {
+      return store.count
+    },
+    name() {
+      return store.name
+    },
+  },
+  methods: {
+    setCount: mutations.setCount,
+    changeName: mutations.changeName,
+  },
+}
+```
+
+:::
+::::
+
+## 74. vue 项目本地开发完成后部署到服务器后报 404 是什么原因呢？
+
+Vue 项目在本地时运行正常，但部署到服务器中，刷新页面，出现了 404 错误，而 HTTP 404 错误意味着链接指向的资源不存在。为什么只有 history 模式下会出现这个问题？
+
+Vue 是属于单页应用，这意味着不管我们应用有多少页面，构建物都只会产出一个 `index.html`。
+
+默认 Nginx 配置是这样的：
+
+```nginx
+server {
+  listen  80;
+  server_name  www.xxx.com;
+
+  location / {
+    index  /data/dist/index.html;
+  }
+}
+```
+
+这样的配置意味着：只有我们在访问 `www.xxx.com` 的时候，Nginx 才会返回 `index.html`，假如我们访问 `www.xxx.com/login` 这个时候匹配不上路径，自然就 404 了。
+
+产生问题的本质是因为我们的路由是通过 JS 来执行视图切换的，而使用 history 模式的时候每一次切换页面都要像后台发送请求，只需要配置将任意页面都重定向到 `index.html`，把路由交由前端处理就好了。
+
+```nginx
+server {
+  listen  80;
+  server_name  www.xxx.com;
+
+  location / {
+    index  /data/dist/index.html;
+    try_files $uri $uri/ /index.html;
+  }
+}
+```
+
+这么做以后，你的服务器就不再返回 404 错误页面，因为对于所有路径都会返回 `index.html` 文件。
