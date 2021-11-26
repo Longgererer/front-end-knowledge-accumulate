@@ -1910,3 +1910,661 @@ server {
 ```
 
 这么做以后，你的服务器就不再返回 404 错误页面，因为对于所有路径都会返回 `index.html` 文件。
+
+## 75. vue 中 watch 和 created 哪个先执行？为什么？
+
+在生命周期中，初始化响应式数据(init reactivity)是晚于 `beforeCreate` 早于 `created` 的。
+
+`watch` 如果增加了 `immediate: true` 的时候，就会在初始化响应式数据的时候就执行回调，否则在 `created` 之后执行。
+
+## 76. vue 中 mixins 和 extends 有什么区别？
+
+`mixins` 是对 `vue.options` 合并并且覆盖（因此慎用），`mixins` 可以混入多个 `mixin`；`extend` 用于创建 Vue 实例，`extends` 只能继承一个，`mixins` 类似于面向切面的编程（AOP），`extends` 类似于面向对象的编程。优先级 `Vue.extend` > `extends` > `mixins`。
+
+## 77. 什么是深度作用选择器？
+
+如果你希望 `scoped` 样式中的一个选择器能够作用得“更深”，例如影响子组件，你可以使用 `>>>` 操作符：
+
+有些像 Sass 之类的预处理器无法正确解析 `>>>`。这种情况下你可以使用 `/deep/` 或 `::v-deep` 操作符取而代之——两者都是 `>>>` 的别名，同样可以正常工作。
+
+## 78. vue-loader 在 webpack 编译流程中的哪个阶段？
+
+**编译模板阶段**：从入口文件出发，调用所有配置的 `Loader` 对模块进行翻译，再找出该模块依赖的模块，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理。
+
+## 79. Vue 的.sync 修饰符可以用表达式吗？为什么？
+
+带有 `.sync` 修饰符的 `v-bind` 不能和表达式一起使用 (例如 `v-bind:title.sync="doc.title + '!'"` 是无效的)。取而代之的是，你只能提供你想要绑定的 `property` 名，类似 `v-model`。
+
+先看看 Vue 最终生成的 `render` 函数：
+
+```html
+<div>
+  <input v-bind:name.sync="name + 1" />
+</div>
+```
+
+Vue 会把上面的模板生成为：
+
+```js
+function render() {
+  with (this) {
+    return _c('div', [
+      _c('input', {
+        attrs: {
+          name: name + 1,
+        },
+        on: {
+          'update:name': function($event) {
+            name + 1 = $event
+          },
+        },
+      }),
+    ])
+  }
+}
+```
+
+看到这里就明白了，使用表达式会产生一条错误的语句：
+
+```js
+name + 1 = $event
+// Uncaught SyntaxError: Invalid left-hand side in assignment
+```
+
+## 80. Vue 如何批量引入组件？
+
+全局和局部引入批量组件方法
+
+一、全局批量引入
+
+创建一个 `.js` 文件，并在 `main.js` 中引入即可。
+
+```js
+import Vue from 'vue'
+import upperFirst from 'lodash/upperFirst'
+import camelCase from 'lodash/camelCase'
+const requireComponent = require.context(
+  './', //组件所在目录的相对路径
+  false, //是否查询其子目录
+  /Base[A-Z]\w+\.(vue|js)$/ //匹配基础组件文件名的正则表达式
+)
+requireComponent.keys().forEach((fileName) => {
+  // 获取文件名
+  var names = fileName
+    .split('/')
+    .pop()
+    .replace(/\.\w+$/, '') //BaseBtn
+  // 获取组件配置
+  const componentConfig = requireComponent(fileName)
+  // 若该组件是通过"export default"导出的，优先使用".default"，
+  // 否则退回到使用模块的根
+  Vue.component(names, componentConfig.default || componentConfig)
+})
+```
+
+局部批量引入：
+
+:::: tabs
+::: tab HTML
+
+```html
+<template>
+  <div>
+    <component v-bind:is="isWhich"></component>
+  </div>
+</template>
+```
+
+:::
+::: tab JavaScript
+
+```js
+// 引入所有需要的动态组件
+const requireComponent = require.context(
+  './', //组件所在目录的相对路径
+  true, //是否查询其子目录
+  /\w+\.vue$/ //匹配基础组件文件名的正则表达式
+)
+var comObj = {}
+requireComponent.keys().forEach((fileName) => {
+  // 获取文件名
+  var names = fileName
+    .split('/')
+    .pop()
+    .replace(/\.\w+$/, '')
+  // 获取组件配置
+  const componentConfig = requireComponent(fileName)
+  // 若该组件是通过"export default"导出的，优先使用".default"，否则退回到使用模块的根
+  comObj[names] = componentConfig.default || componentConfig
+})
+export default {
+  data() {
+    return {
+      isWhich: '',
+    }
+  },
+  mounted() {},
+  components: comObj,
+}
+```
+
+:::
+::::
+
+## 81. axios 同时请求多个接口，如何取消请求？
+
+```js
+// using the CancelToken.source factory
+const CancelToken = axios.CancelToken
+const source = CancelToken.source()
+
+// get
+axios
+  .get('/user/1', {
+    cancelToken: source.token,
+  })
+  .catch(function(thrown) {
+    if (axios.isCancel(thrown)) {
+      console.log('Request canceled', thrown.message)
+    } else {
+      // handle error
+    }
+  })
+
+// post
+axios.post(
+  '/user/1',
+  {
+    name: '',
+  },
+  {
+    cancelToken: source.token,
+  }
+)
+
+// cancel request 参数可选
+source.cancel('取消上次请求')
+```
+
+也可以：
+
+```js
+// use executor function
+const CancelToken = axios.CancelToken
+let cancel
+
+// get
+axios.get('/user/1', {
+  cancelToken: new CancelToken(function executor(c) {
+    // executor 函数接收一个 cancel 函数作为参数
+    cancel = c
+  }),
+})
+
+// post
+axios.post(
+  '/user/1',
+  {
+    name: '',
+  },
+  {
+    cancelToken: new CancelToken(function executor(c) {
+      cancel = c
+    }),
+  }
+)
+
+// cancel request
+cancel()
+```
+
+原生 XHR 使用 `about()` 函数：
+
+```js
+let xhr
+if (window.XMLHttpRequest) {
+  xhr = new XMLHttpRequest()
+} else {
+  xhr = new ActiveXObject('Microsoft.XMLHTTP')
+}
+xhr = new XMLHttpRequest()
+xhr.open('GET', 'https://api')
+xhr.send()
+xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+    // success
+  } else {
+    // error
+  }
+}
+// 取消ajax请求 readyState = 0
+xhr.abort()
+```
+
+axios `cancelToken` 源码：
+
+```js
+var Cancel = require('./Cancel')
+
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.')
+  }
+  /**
+   * 定义 resolvePromise
+   * 新建promise实例
+   * 将 promise的resolve方法赋值给 resolvePromise 目的是为了在promise对象外使用resolvePromise方法来改变对象状态
+   */
+  var resolvePromise
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve
+  })
+  /**
+   * 将CancelToken实例赋值给token
+   * 给executor传入cancel方法，cancel可调用resolvePromise方法
+   */
+  var token = this
+  executor(function cancel(message) {
+    if (token.reason) {
+      // 取消已响应 返回
+      return
+    }
+    token.reason = new Cancel(message)
+    // 这里执行的就是promise的resolve方法，改变状态
+    resolvePromise(token.reason)
+  })
+}
+
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason
+  }
+}
+
+CancelToken.source = function source() {
+  var cancel
+  var token = new CancelToken(function executor(c) {
+    // c 就是CancelToken中给executor传入的cancel方法
+    cancel = c
+  })
+  return {
+    token: token,
+    cancel: cancel,
+  }
+}
+
+module.exports = CancelToken
+```
+
+## 82. data 的属性可以和 methods 中的方法同名吗？为什么？
+
+不行，`data` 中的属性和 `methods` 方法重名会优先执行 `data` 中的属性并且弹出警告：
+
+```bash
+[Vue warn]: Method "myname" has already been defined as a data property.
+```
+
+我们看一下 Vue 源码：
+
+```js {22}
+function initData(vm: Component) {
+  let data = vm.$options.data
+  data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {}
+  if (!isPlainObject(data)) {
+    data = {}
+    process.env.NODE_ENV !== 'production' &&
+      warn(
+        'data functions should return an object:\n' +
+          'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function',
+        vm
+      )
+  }
+  // proxy data on instance
+  const keys = Object.keys(data)
+  const props = vm.$options.props
+  const methods = vm.$options.methods
+  let i = keys.length
+  while (i--) {
+    const key = keys[i]
+    if (process.env.NODE_ENV !== 'production') {
+      if (methods && hasOwn(methods, key)) {
+        warn(`Method "${key}" has already been defined as a data property.`, vm)
+      }
+    }
+    if (props && hasOwn(props, key)) {
+      process.env.NODE_ENV !== 'production' &&
+        warn(`The data property "${key}" is already declared as a prop. ` + `Use prop default value instead.`, vm)
+    } else if (!isReserved(key)) {
+      proxy(vm, `_data`, key)
+    }
+  }
+  // observe data
+  observe(data, true /* asRootData */)
+}
+```
+
+在 `initData` 方法中，Vue 获取 `data` 中的键名并判断 `props` 和 `methods` 中是否有同名属性，如果冲突就弹出警告。
+
+至于为什么 `data` 同名属性会覆盖 `methods` 和 `props`，请看源码：
+
+```js
+export function initState(vm: Component) {
+  vm._watchers = []
+  const opts = vm.$options
+  if (opts.props) initProps(vm, opts.props)
+  if (opts.methods) initMethods(vm, opts.methods)
+  if (opts.data) {
+    initData(vm)
+  } else {
+    observe((vm._data = {}), true /* asRootData */)
+  }
+  if (opts.computed) initComputed(vm, opts.computed)
+  if (opts.watch && opts.watch !== nativeWatch) {
+    initWatch(vm, opts.watch)
+  }
+}
+```
+
+我们看到 `initData` 是发生在 `initProps` 和 `initMethods` 之后的，因此会覆盖。
+
+## 83. 怎么解决 vue 动态设置 img 的 src 不生效的问题？
+
+因为动态添加 `src` 被当做静态资源处理了，没有进行编译，所以要加上 `require`：
+
+```html
+<img :src="require('@/assets/images/xxx.png')" />
+```
+
+如果项目通过 `vue-cli` 生成或者配置了 `file-loader` 就直接：
+
+```html
+<img :src="@/assets/images/xxx.png" />
+```
+
+## 84. 怎么重置当前组件的 data？
+
+`vm.$data` 可以获取当前状态下的 `data`，`vm.$options.data()` 可以获取到组件初始化状态下的 `data`。
+
+```js
+Object.assign(this.$data, this.$options.data())
+```
+
+## 85. vue 渲染模板时怎么保留模板中的 HTML 注释呢？
+
+```html
+<template comments>
+  ...
+</template>
+```
+
+## 86. 你知道 style 加 scoped 属性的用途和原理吗？
+
+`scoped` 会在元素上添加唯一的属性（`data-v-hash值` 形式），`css` 编译后也会加上属性选择器，从而达到限制作用域的目的。
+
+缺点：
+
+1. 由于只是通过属性限制，类还是原来的类，所以在其他地方对类设置样式还是可以造成污染。
+2. 添加了属性选择器，对于 CSS 选择器的权重加重了。
+3. 外层组件包裹子组件，会给子组件的根节点添加 `data` 属性。在外层组件中无法修改子组件中除了根节点以外的节点的样式。比如子组件中有 `box` 类，在父节点中设置样式，会被编译为 `.box[data-v-hash值]` 的形式，但是 `box` 类所在的节点上没有添加 `data` 属性，因此无法修改样式。可以使用 `/deep/` 或者 `>>>` 穿透 CSS，这样外层组件设置的 `box` 类编译后的就为 `[data-v-hash值] .box` 了，就可以进行修改。
+
+可以使用 CSS Module，CSS Module 没有添加唯一属性，而是通过修改类名限制作用域。这样类发生了变化，在其他地方设置样式无法造成污染，也没有使 CSS 选择器的权重增加。
+
+## 87. Vue 有哪些边界情况？
+
+[边界情况](https://cn.vuejs.org/v2/guide/components-edge-cases.html)
+
+## 88. 你有使用过 babel-polyfill 模块吗？主要是用来做什么的？
+
+Babel 默认只转换新的 JavaScript 句法（syntax），而不转换新的 API，比如 `Iterator、Generator、Set、Maps、Proxy、Reflect、Symbol、Promise` 等全局对象，以及一些定义在全局对象上的方法（比如 Object.assign）都不会转码。
+
+举例来说，ES6 在 `Array` 对象上新增了 `Array.from` 方法。Babel 就不会转码这个方法。如果想让这个方法运行，必须使用 babel-polyfill，为当前环境提供一个垫片。
+
+Babel 默认不转码的 API 非常多，详细清单可以查看 babel-plugin-transform-runtime 模块的 `definitions.js` 文件。
+
+## 89. 说说你对 vue 的错误处理的了解？
+
+分为 `errorCaptured` 与 `errorHandler`。
+
+`errorCaptured` 是组件内部钩子，可捕捉本组件与子孙组件抛出的错误，接收 `error`、`vm`、`info` 三个参数，`return false` 后可以阻止错误继续向上抛出。
+
+`errorHandler` 为全局钩子，使用 `Vue.config.errorHandler` 配置，接收参数与 `errorCaptured` 一致，2.6 后可捕捉 `v-on` 与 `promise` 链的错误，可用于统一错误处理与错误兜底。
+
+## 90. 在 vue 事件中传入 \$event，使用 e.target 和 e.currentTarget 有什么区别？
+
+`currentTarget` 事件绑定的元素，而 `target` 是鼠标触发的元素。
+
+## 91. 一个 .vue 文件中哪些是必须的？
+
+`template` 是必须的，而 `script` 与 `style` 都不是必须的。
+
+## 92. vue 变量名如果以\_、\$开头的属性会发生什么问题？怎么访问到它们的值？
+
+实例创建之后，可以通过 `vm.$data` 访问原始数据对象。Vue 实例也代理了 `data` 对象上所有的属性，因此访问 `vm.a` 等价于访问 `vm.$data.a`。
+
+以 \_ 或 \$ 开头的属性 不会 被 Vue 实例代理，因为它们可能和 Vue 内置的属性、API 方法冲突。你可以使用例如 `vm.$data._property` 的方式访问这些属性。
+
+## 93. vue 使用 v-for 遍历对象时，是按什么顺序遍历的？
+
+1. 会先判断是否有 `iterator` 接口，如果有循环执行 `next()` 方法
+2. 没有 `iterator` 的情况下，会调用 `Object.keys()` 方法，在不同浏览器中，JS 引擎不能保证输出顺序一致
+3. 保证对象的输出顺序可以把对象放在数组中，作为数组的元素
+
+## 94. 说下$attrs和$listeners 的使用场景？
+
+一般我对一些 UI 库进行二次封装用，比如 element-ui，里面的组件不能满足自己的使用场景的时候，会二次封装，但是又想保留他自己的属性和方法，那么这个时候时候 `$attrs` 和 `$listeners` 是个完美的解决方案。
+
+简单的例子，对 `el-button` 二次封装：
+
+:::: tabs
+::: tab HTML
+
+```html
+<template>
+  <el-button v-on="$listeners" v-bind="$attrs" :loading="loading" @click="myClick">
+    <slot></slot>
+  </el-button>
+</template>
+```
+
+:::
+::: tab JavaScript
+
+```js
+export default {
+  name: 'mButton',
+  inheritAttrs: false,
+  props: {
+    debounce: {
+      type: [Boolean, Number],
+    },
+  },
+  data() {
+    return {
+      timer: 0,
+      loading: false,
+    }
+  },
+  methods: {
+    myClick() {
+      if (!this.debounce) return
+      this.loading = true
+      clearTimeout(this.timer)
+      this.timer = setTimeout(
+        () => {
+          this.loading = false
+        },
+        typeof this.debounce === 'boolean' ? 500 : this.debounce
+      )
+    },
+  },
+}
+```
+
+:::
+::::
+
+## 95. 说说你对 vue 的表单修饰符.lazy 的理解？
+
+`input` 标签 `v-model` 用 `lazy` 修饰之后，vue 并不会立即监听 input Value 的改变，会在 `input` 失去焦点之后，才会触发 input Value 的改变。
+
+## 96. vue 中什么是递归组件？举个例子说明下？
+
+组件自己调用自己，用过组件的 name 属性，调用自身。例如生成树型菜单。
+
+## 97. vue 的 is 这个特性你有用过吗？主要用在哪些方面？
+
+vue 中 `is` 的属性引入是为了解决 dom 结构中对放入 html 的元素有限制的问题，
+
+```js
+<ul>
+  <li is="my-component"></li>
+</ul>
+```
+
+下面是一个 tab 切换的例子：
+
+:::: tabs
+::: tab HTML
+
+```html
+<script src="https://unpkg.com/vue"></script>
+
+<div id="dynamic-component-demo" class="demo">
+  <button
+    v-for="tab in tabs"
+    v-bind:key="tab"
+    v-bind:class="['tab-button', { active: currentTab === tab }]"
+    v-on:click="currentTab = tab"
+  >
+    {{ tab }}
+  </button>
+
+  <component v-bind:is="currentTabComponent" class="tab"> </component>
+</div>
+```
+
+:::
+::: tab JavaScript
+
+```js
+Vue.component('tab-home', {
+  template: '<div>Home component</div>',
+})
+Vue.component('tab-posts', {
+  template: '<div>Posts component</div>',
+})
+Vue.component('tab-archive', {
+  template: '<div>Archive component</div>',
+})
+
+new Vue({
+  el: '#dynamic-component-demo',
+  data: {
+    currentTab: 'Home',
+    tabs: ['Home', 'Posts', 'Archive'],
+  },
+  computed: {
+    currentTabComponent: function() {
+      return 'tab-' + this.currentTab.toLowerCase()
+    },
+  },
+})
+```
+
+:::
+::: tab CSS
+
+```css
+.tab-button {
+  padding: 6px 10px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background: #f0f0f0;
+  margin-bottom: -1px;
+  margin-right: -1px;
+}
+.tab-button:hover {
+  background: #e0e0e0;
+}
+.tab-button.active {
+  background: #e0e0e0;
+}
+.tab {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+```
+
+:::
+::::
+
+## 98. vue 的:class 和:style 有几种表示方式？
+
+`:class` 绑定变量 绑定对象 绑定一个数组 绑定三元表达式。
+
+`:style` 绑定变量 绑定对象 绑定函数返回值 绑定三元表达式。
+
+## 99. Vue 函数式组件是什么？
+
+需要提供一个 `render` 方法， 接受一个参数（`createElement` 函数）， 方法内根据业务逻辑，通过 `createElement` 创建 `vnodes`，最后 `return vnodes`。
+
+```js
+// Vue 2 函数式组件示例
+export default {
+  functional: true,
+  props: ['level'],
+  render(h, { props, data, children }) {
+    return h(`h${props.level}`, data, children)
+  },
+}
+```
+
+或者：
+
+```html
+<!-- Vue 2 结合 <template> 的函数式组件示例 -->
+<template functional>
+  <component :is="`h${props.level}`" v-bind="attrs" v-on="listeners" />
+</template>
+
+<script>
+  export default {
+    props: ['level'],
+  }
+</script>
+```
+
+## 100. vue 怎么改变插入模板的分隔符？
+
+可以在 `new Vue` 传入配置对象中设置 `delimiters`，也可以 `Vue.config.delimiters = ['${', '}']`
+
+这么一改，所有用到 `{{ }}` 插值表达式的地方都要換成 `${ }`。
+
+## 101. 组件中写 name 选项有什么作用？
+
+1. 项目使用 `keep-alive` 时，可搭配组件 `name` 进行缓存过滤
+2. DOM 做递归组件时需要调用自身 `name`
+3. `vue-devtools` 调试工具里显示的组见名称是由 vue 中组件 `name` 决定的
+
+## 102. prop 验证的 type 类型有哪几种？
+
+```js
+export default {
+  props: {
+    title: String,
+    likes: Number,
+    isPublished: Boolean,
+    commentIds: Array,
+    author: Object,
+    callback: Function,
+    symbol: Symbol,
+    time: Date,
+  },
+}
+```
+
+## 103. v-on 可以绑定多个方法吗？
+
+可以：`<input v-model="msg" type="text" v-on="{ input:a, focus:b }"/>`
