@@ -143,7 +143,7 @@ console.log(process.env.npm_package_config_port) // 8080
 
 比如项目本身依赖于 1.0 版本的 B，现在要安装一个依赖 A，而 依赖 A 又依赖于 2.0 版本的 B，假设 B2.0 不兼容 B1.0 版本，那么最后 `node_modules` 的结构会是这样：
 
-```dash
+```bash
 node_modules
   ├─B@1.0
   └─A@1.0
@@ -157,7 +157,7 @@ node_modules
 
 `node_modules` 的结构会是这样：
 
-```dash
+```bash
 node_modules
   ├─B@1.0
   ├─A@1.0
@@ -181,7 +181,7 @@ node_modules
 
 对应结构：
 
-```dash
+```bash
 node_modules
   ├─B@1.0
   ├─A@1.0
@@ -199,7 +199,7 @@ node_modules
 
 对应结构：
 
-```dash
+```bash
 node_modules
   ├─B@2.0
   ├─C@1.0

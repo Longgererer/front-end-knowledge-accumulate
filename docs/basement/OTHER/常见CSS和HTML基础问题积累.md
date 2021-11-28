@@ -1,6 +1,6 @@
 # 常见 CSS&HTML 基础问题积累
 
-## CSS 盒模型
+## 1. CSS 盒模型
 
 CSS 盒模型包含 4 个部分：外边距、边框、内边距和内容。
 
@@ -8,7 +8,7 @@ CSS 盒模型包含 4 个部分：外边距、边框、内边距和内容。
 
 可以使用 `box-sizing: border-box` 兼容两种情况。
 
-## video/audio 标签的使用
+## 2. video/audio 标签的使用
 
 ```html
 <video src=""></video>
@@ -28,7 +28,7 @@ CSS 盒模型包含 4 个部分：外边距、边框、内边距和内容。
 
 除此之外，`video` 还有 `width/height` 属性和 `poster`(封面)属性。
 
-## CSS 高度塌陷
+## 3. CSS 高度塌陷
 
 当所有子元素设置浮动，且父元素没有设置高度，这个时候父元素就会产生高度塌陷。
 
@@ -41,11 +41,11 @@ CSS 盒模型包含 4 个部分：外边距、边框、内边距和内容。
 3. 在浮动元素后面加一个空的块级标签如 `div`，并设置 `clear: both`。
 4. 给父元素添加伪元素并设置 `content: "";display: block;clear: both`。
 
-## 如何使 chrome 浏览器显示小于 12px 的文字？
+## 4. 如何使 chrome 浏览器显示小于 12px 的文字？
 
 设置 `-webkit-transform: scale()`。
 
-## 网页中有大量图片加载很慢，如何优化？
+## 5. 网页中有大量图片加载很慢，如何优化？
 
 1. 骨架屏+图片懒加载。通过滚动条事件判断图片与可视区域的距离来加载。
 2. 小图标可以使用 csssprite 或 svgsprite。
@@ -55,7 +55,7 @@ CSS 盒模型包含 4 个部分：外边距、边框、内边距和内容。
 
 预加载和懒加载的区别是：懒加载是按需加载，可以减少不必要的请求，但预加载是一开始就加载好了。
 
-## 浏览器的 quirks 模式和 strict 模式的区别
+## 6. 浏览器的 quirks 模式和 strict 模式的区别
 
 quirks 模式又叫做怪异模式，这个模式并不遵守 W3C 的标准。但是为了能让以前的网页能够正确显示，许多浏览器并未放弃支持怪异模式。
 
@@ -82,7 +82,7 @@ DOCTYPE 声明中，没有使用 DTD 声明或者使用 HTML4 以下（不包括
 在 HTML4.01 标准中，浏览器解析时到底使用标准模式还是兼容模式，与网页中的 DTD 直接相关，因为 HTML 4.01 基于 SGML，DTD 规定了标记语言的规则，这样浏览器才能正确地呈现。 且有三种
 HTML5 不基于 SGML，因此不需要对 DTD 进行引用。只需要在顶部声明 `<!DOCTYPE html>`
 
-## 网页的三层结构
+## 7. 网页的三层结构
 
 构成：结构层、表示层、行为层。
 
@@ -90,7 +90,7 @@ HTML5 不基于 SGML，因此不需要对 DTD 进行引用。只需要在顶部�
 
 HTML 实现页面结构、CSS 完成页面的表现与风格、JavaScript 实现客户端的一些功能和业务。
 
-## DOCTYPE 的作用
+## 8. DOCTYPE 的作用
 
 DOCTYPE 标签的目的是要告诉浏览器应该使用什么样的文档类型定义（DTD）来解析文档。
 
@@ -98,7 +98,7 @@ DOCTYPE 标签的目的是要告诉浏览器应该使用什么样的文档类型
 
 如果不声明 DOCTYPE 或者声明错误的 DOCTYPE，浏览器会使用怪异模式解析 CSS。
 
-## 什么是 BFC
+## 9. 什么是 BFC
 
 BFC(block formatting context)就是块级格式化上下文，它虽然属于文档流的一部分，但它将内部的内容与外部上下文隔开。这种隔离为创建 BFC 的元素做了三件事情：
 
@@ -113,7 +113,7 @@ BFC(block formatting context)就是块级格式化上下文，它虽然属于文
 3. `display` 为非 `block` 的块级容器，包含：`inline-block`、`table-cell`、`table-caption`、`flex`、`inline-flex`、`grid` 和 `inline-grid`。
 4. `position` 为 `absolute` 或 `fixed`。
 
-## 外边距重叠是什么？如何避免外边距重叠？
+## 10. 外边距重叠是什么？如何避免外边距重叠？
 
 [CSS2.1 标准](http://www.ayqy.net/doc/css2-1/box.html#collapsing-margins)
 
@@ -142,7 +142,7 @@ BFC(block formatting context)就是块级格式化上下文，它虽然属于文
 1. 父元素设置上下边框。
 2. 为父元素添加 `padding`，至少添加 `padding-top`。
 
-## 什么是 IFC？
+## 11. 什么是 IFC？
 
 IFC 是行内格式化上下文。
 
@@ -154,7 +154,7 @@ IFC 的行框由其包含行内元素中最高的实际高度来计算，不受�
 
 计算行框中每个行内级盒的高度时，对于替换元素，`inline-block` 元素和 `inline-table` 元素，这个值就是其外边距框的高度；对于行内元素，这个值是其 `line-height` 决定的。当元素 B 的高度小于它所在的行框的高度时，行框中 B 的垂直对齐方式由 `vertical-align` 属性决定。当一行的行内元素的总宽度小于它们所在的行框的宽度时，它们在行框里的水平分布由 `text-align` 属性决定。行框高度是最高的盒的顶端与最低的盒的底端之间的距离。
 
-## 如何画一条 0.5px 的线
+## 12. 如何画一条 0.5px 的线
 
 使用 meta viewport 缩放 0.5 倍。**viewport 只针对于移动端，只在移动端上才能看到效果**。
 
@@ -174,7 +174,7 @@ transform: scale(0.5, 0.5);
 box-shadow: 0 0.5px 0 #000;
 ```
 
-## zoom 和 transform:scale() 的区别？
+## 13. zoom 和 transform:scale() 的区别？
 
 `transform` 的值是基于坐标系统的，`transform` 的变换过程实际上是矩阵变换的过程，被 `transform` 的元素要经过一系列的矩阵运算最终确定其坐标。
 
@@ -190,13 +190,13 @@ box-shadow: 0 0.5px 0 #000;
 
 `zoom` **受浏览器最小字号限制**，文字只能缩小到最小字号；而 `scale` 是纯粹地进行文字缩小。
 
-## CSS 定位
+## 14. CSS 定位
 
 - `fixed`：元素的位置相对于浏览器窗口是固定位置，即使窗口是滚动的它也不会移动。`fixed` 定位会使得元素脱离当前文档流，因此不占据空间。
 - `absolute`：绝对定位的元素的位置相对于最近的已定位父元素，`absolute` 定位会使得元素脱离当前文档流，因此不占据空间。
 - `sticky`：元素先按照普通文档流定位，然后相对于该元素在流中的 flow root(BFC) 和最近的块级元素祖先定位。而后定位表现为在跨越特定阈值之前为相对定位，之后就变为固定定位。
 
-## relative 相对于谁进行定位?
+## 15. relative 相对于谁进行定位?
 
 定位为 `relative` 的元素脱离正常的文档流，但其在文档流中的位置依然存在，只是视觉上相对原来的位置有移动。
 
@@ -204,7 +204,7 @@ box-shadow: 0 0.5px 0 #000;
 
 无父级则以文本流的顺序在上一个元素的底部为原始点。
 
-## 布局和包含块
+## 16. 布局和包含块
 
 一个元素的尺寸和位置经常受其**包含块**的影响。包含块就是这个元素**最近的祖先块元素的内容区**，但也不是总是这样。
 
@@ -228,7 +228,7 @@ box-shadow: 0 0.5px 0 #000;
    - `filter` 的值不是 `none` 或 `will-change` 的值是 `filter`(只在 Firefox 下生效)。
    - `contain` 的值是 `paint` (例如: `contain: paint;`)。
 
-## 幽灵空白节点怎么产生的，如何解决？
+## 17. 幽灵空白节点怎么产生的，如何解决？
 
 幽灵空白节点和行内元素有关。
 
@@ -245,13 +245,13 @@ box-shadow: 0 0.5px 0 #000;
 3. 将 `line-height` 设置为 0。
 4. 将 `font-size` 设置为 0。
 
-## display:none 和 visibility:hidden 的区别？
+## 18. display:none 和 visibility:hidden 的区别？
 
 1. `display：none` 会让元素从渲染树中消失，渲染的时候不占据任何空间；`visibility：hidden` 不会让元素从渲染树中消失，渲染的时候仍然占据空间，只是内容不可见。
 2. `display：none` 是非继承属性，子孙节点消失是由于元素从渲染树中消失造成，通过修改子孙节点的属性无法显示；`visibility：hidden` 是继承属性，子孙节点消失是由于继承了 `hidden`，通过设置 `visibility：visible`，可以让子孙节点显示。
 3. 读屏器不会读取 `display：none` 的元素内容，而会读取 `visibility：hidden` 的元素内容。
 
-## opacity: 0 和 visibility:hidden 的区别？
+## 19. opacity: 0 和 visibility:hidden 的区别？
 
 这两个属性的元素虽然都不可见且占据位置，但是有很大区别。
 
@@ -259,7 +259,7 @@ box-shadow: 0 0.5px 0 #000;
 
 `opacity: 0` 元素可以进行鼠标操作。但子元素即使修改自己的 `opacity`，也不能显示。
 
-## HTML4 和 XHTML 的区别？
+## 20. HTML4 和 XHTML 的区别？
 
 HTML4.01
 
@@ -283,15 +283,15 @@ XHTML：
 - 属性值必须用双引号 "" 括起来
 - 禁止属性最小化（例如，必须使用 checked="checked" 而不是 checked）
 
-## SGML 是什么？
+## 21. SGML 是什么？
 
 SGML 是标准通用标记语言，是一种定义电子文档结构和描述其内容的国际标准语言， 是所有电子文档标记语言的起源。
 
-## HTML 空元素是什么？
+## 22. HTML 空元素是什么？
 
 首先啥是空元素呢？就是字面意思：没有内容的 HTML 元素，比较常见的空元素像`<img>`、`<link>`、`<meta>`、`<br>`、`<hr>`这种，他们往往没有关闭标签。
 
-## HTML5 离线存储原理是什么？
+## 23. HTML5 离线存储原理是什么？
 
 通过创建 `cache manifest` 文件，创建 web 应用的离线版本。
 
@@ -328,14 +328,14 @@ FALLBACK: /
 7. 站点中的其他页面即使没有设置 manifest 属性，请求的资源如果在缓存中也从缓存中访问。
 8. 当 manifest 文件发生改变时，资源请求本身也会触发更新。
 
-## iframe 有哪些缺点？
+## 24. iframe 有哪些缺点？
 
 1. `iframe` 会阻塞主页面的 `Onload` 事件。
 2. 搜索引擎的检索程序无法解读这种页面，不利于 SEO。
 3. `iframe` **和主页面共享连接池**，而浏览器对相同域的连接有限制，所以会影响页面的并行加载。
 4. 使用 `iframe` 之前需要考虑这两个缺点。如果需要使用 `iframe`，最好通过 `JavaScript` 动态给 `iframe` 添加 `src` 属性值，这样可以绕开以上两个问题。
 
-## FOUC 是什么？
+## 25. FOUC 是什么？
 
 FOUC(flash of unstyled content)——浏览器样式闪烁。页面加载解析时，页面以样式 A 渲染；当页面加载解析完成后，页面突然以样式 B 渲染，导致出现页面样式闪烁。
 
@@ -345,7 +345,7 @@ FOUC(flash of unstyled content)——浏览器样式闪烁。页面加载解析�
 
 可以先隐藏 `body` 标签，当样式加载完成后再显示 `body`。
 
-## 渐进增强和优雅降级之间有什么不同?
+## 26. 渐进增强和优雅降级之间有什么不同?
 
 渐进增强（Progressive Enhancement）：一开始就针对低版本浏览器进行构建页面，完成基本的功能，然后再针对高级浏览器进行效果、交互、追加功能达到更好的体验。
 
@@ -368,7 +368,7 @@ FOUC(flash of unstyled content)——浏览器样式闪烁。页面加载解析�
 }
 ```
 
-## link 和 @import 的区别？
+## 27. link 和 @import 的区别？
 
 1. `link` 属于 HTML 标签，而 `@import` 是 CSS 提供的。
 2. 页面被加载的时，`link` 会同时被加载，而 `@import` 被引用的 CSS 会等到引用它的 CSS 文件被加载完再加载。
@@ -376,13 +376,13 @@ FOUC(flash of unstyled content)——浏览器样式闪烁。页面加载解析�
 4. `@import` 一定要写在除 `@charset` 外的其他任何 CSS 规则之前，如果置于其它位置将会被浏览器忽略，而且，在 `@import` 之后如果存在其它样式，则 `@import` 之后的分号是必须书写，不可省略的。
 5. `link` 比 `@import` 优先加载，虽然 `@import` 比 `link` 样式后加载，但在渲染时，浏览器会用加载好的 css 代码替换掉 `@import`，因此仍然会置于样式表的最顶部，因此相同样式会被 `link` 覆盖。
 
-## position:absolute 和 float 属性的异同？
+## 28. position:absolute 和 float 属性的异同？
 
 共同点：`float` 和 `absolute` 都可以让元素脱离文档流，对于行内元素还可以设置宽高。
 
 不同点：`float` 仍然会占据位置，`absolute` 则会覆盖其他文档流中的元素。
 
-## 有多少种 Doctype 文档类型？
+## 29. 有多少种 Doctype 文档类型？
 
 XHTML 1.0 中有 3 种 DTD（文档类型定义）声明可以选择：过渡的（Transitional）、严格的（Strict）和框架的（Frameset）。
 
@@ -420,37 +420,37 @@ HTML 4.01 规定了三种文档类型：Strict、Transitional 以及 Frameset。
 
 `DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" " http://www.w3.org/TR/html4/frameset.dtd"`
 
-## 什么是 PWA?
+## 30. 什么是 PWA?
 
 [讲讲 PWA](https://segmentfault.com/a/1190000012353473)
 
-## 常见 css 布局?
+## 31. 常见 css 布局?
 
 [CSS 常见布局方式](https://juejin.cn/post/6844903491891118087#heading-22)
 
-## iphone 和 ipad 下输入框默认内阴影？
+## 32. iphone 和 ipad 下输入框默认内阴影？
 
 使用 `-webkit-appearance: none;`。
 
-## Webkit 和 Blink 内核是什么？
+## 33. Webkit 和 Blink 内核是什么？
 
 **Webkit**：Webkit 是 Safari 采用的内核，它的优点就是网页浏览速度较快，虽然不及 Presto 但是也胜于 Gecko 和 Trident，缺点是对于网页代码的容错性不高，也就是说对网页 代码的兼容性较低，会使一些编写不标准的网页无法正确显示。WebKit 前身是 KDE 小组 的 KHTML 引擎，可以说 WebKit 是 KHTML 的一个开源的分支。
 
 **Blink**：谷歌在 ChromiumBlog 上发表博客，称将与苹果的开源浏览器核心 Webkit 分 道扬镳，在 Chromium 项目中研发 Blink 渲染引擎（即浏览器核心），内置于 Chrome 浏览器之中。其实 Blink 引擎就是 Webkit 的一个分支，就像 webkit 是 KHTML 的分支一样。 Blink 引擎现在是谷歌公司与 OperaSoftware 共同研发，上面提到过的，Opera 弃用了自己 的 Presto 内核，加入 Google 阵营，跟随谷歌一起研发 Blink。
 
-## title 和 alt 有什么区别？
+## 34. title 和 alt 有什么区别？
 
 `title` 通常当鼠标滑动到元素上的时候显示 `alt` 是 `<img>` 的特有属性，是图片内容的等价描述，用于图片无法加载时显示、读屏器阅读图片。
 
-## canvas 和 svg 的区别？
+## 35. canvas 和 svg 的区别？
 
 Canvas 是一种通过 JavaScript 来绘制 2D 图形的方法。Canvas 是逐像素来进行渲染的， 因此当我们对 Canvas 进行缩放时，会出现锯齿或者失真的情况。 SVG 是一种使用 XML 描述 2D 图形的语言。SVG 基于 XML，这意味着 SVG DOM 中的每个元素都是可用的。我们可以为某个元素附加 JavaScript 事件监听函数。并且 SVG 保存的是图形的绘制方法，因此当 SVG 图形缩放时并不会失真。
 
-## head 标签中必不少的是？
+## 36. head 标签中必不少的是？
 
 下面这些标签可用在 head 部分： `<base>`,`<link>`,`<meta>`,`<script>`,`<style>`, 以及 `<title>`。 `<title>` 定义文档的标题，它是 `head` 部分中唯一必需的元素。
 
-## disabled 和 readonly 的区别？
+## 37. disabled 和 readonly 的区别？
 
 `disabled` 指当 `input` 元素加载时禁用此元素。`input` 内容不会随着表单提交。
 
@@ -458,7 +458,7 @@ Canvas 是一种通过 JavaScript 来绘制 2D 图形的方法。Canvas 是逐�
 
 无论设置 `readonly` 还是 `disabled`，通过 `js` 脚本都能更改 `input` 的 `value`。
 
-## 关于伪类 LVHA 的解释?
+## 38. 关于伪类 LVHA 的解释?
 
 `a` 标签有四种状态：链接访问前、链接访问后、鼠标滑过、激活，分别对应四种伪类`:link`、`:visited`、`:hover`、`:active`；
 当链接未访问过时：
@@ -473,7 +473,7 @@ Canvas 是一种通过 JavaScript 来绘制 2D 图形的方法。Canvas 是逐�
 
 这个顺序能不能变？可以，但也只有`:link` 和`:visited` 可以交换位置，因为一个链接要么访问过要么没访问过，不可能同时满足， 也就不存在覆盖的问题。
 
-## li 与 li 之间有看不见的空白间隔是什么原因引起的？
+## 39. li 与 li 之间有看不见的空白间隔是什么原因引起的？
 
 浏览器会把 `inline` 元素间的空白字符（空格、换行、Tab 等）渲染成一个空格。而为了美观。我们通常是一个 `<li>` 放在一行，这导致 `<li>` 换行后产生换行字符，它变成一个空格，占用了一个字符的宽度。
 
@@ -482,7 +482,7 @@ Canvas 是一种通过 JavaScript 来绘制 2D 图形的方法。Canvas 是逐�
 3. 将 `<ul>` 内的字符尺寸直接设为 0 `ul{font-size:0px;}`。不足:Safari 浏览器依然出现间隔空白。
 4. 将间隔消除：`ul{letter-spacing: -5px;}ul li{letter-spacing: normal;}`。
 
-## img 的 srcset 属性？
+## 40. img 的 srcset 属性？
 
 我们常常需要在不同分辨率的设备下面展示不同大小的图片，这时就可以用到 `srcset`：
 
@@ -503,7 +503,7 @@ Canvas 是一种通过 JavaScript 来绘制 2D 图形的方法。Canvas 是逐�
 
 `<picture>` 元素通过包含零或多个 `<source>` 元素和⼀个 `<img>` 元素来为不同的显示/设备场景提供图像版本。浏览器 会选择最匹配的⼦ `<source>`元素，如果没有匹配的，就选择 `<img>` 元素的 `src` 属性中的 URL。然后，所选图像呈现 在 `<img>` 元素占据的空间中。
 
-## `data-` 属性的作用是什么？
+## 41. `data-` 属性的作用是什么？
 
 `data-` 属性是 HTML5 中的新属性，用于存储页面或应用程序的私有自定义数据。`data-` 赋予我们在所有 HTML 元素上嵌入自定义 `data` 属性的能力。
 
@@ -524,13 +524,13 @@ JS 中可以通过 `ele.dataset.testValue` 来访问到，任何破折号都会�
 
 在不支持 `dataset` 的浏览器下也可以通过 `ele.getAttribute("data-test-value")` 获取。
 
-## src 和 href 的区别？
+## 42. src 和 href 的区别？
 
 `src` 是指向外部资源的位置，指向的内容会嵌⼊到⽂档中当前标签所在的位置，在请求 `src` 资源时会将其指向的资源 下载并应⽤到⽂档内，如 `js` 脚本，`img` 图⽚和 `frame` 等元素。当浏览器解析到该元素时，会暂停其他资源的下载和处 理，知道将该资源加载、编译、执⾏完毕，所以⼀般 `js` 脚本会放在底部⽽不是头部。
 
 `href` 是指向⽹络资源所在位置（的超链接），⽤来建⽴和当前元素或⽂档之间的连接，当浏览器识别到它他指向的 ⽂件时，就会并⾏下载资源，不会停⽌对当前⽂档的处理。
 
-## 有哪些⽅式（CSS）可以隐藏页面元素？
+## 43. 有哪些⽅式（CSS）可以隐藏页面元素？
 
 - `opacity:0`：本质上是将元素的透明度将为 0，就看起来隐藏了，但是依然占据空间且可以交互。
 - `visibility:hidden` : 与上⼀个⽅法类似的效果，占据空间，但是不可以交互了。
@@ -540,7 +540,7 @@ JS 中可以通过 `ele.dataset.testValue` 来访问到，任何破折号都会�
 - `transform: scale(0,0)` : 平⾯变换，将元素缩放为 0，但是依然占据空间，但不可交互。
 - 依靠定位将元素移出可见区域外。
 
-## 层叠上下文和层叠顺序？
+## 44. 层叠上下文和层叠顺序？
 
 每个网页都有一个默认的层叠上下文。这个层叠上下文的根源就是 html 元素。html 元素中的一切都被置于这个默认的层叠上下文的一个层叠层上。
 
@@ -580,13 +580,13 @@ JS 中可以通过 `ele.dataset.testValue` 来访问到，任何破折号都会�
 
 因此，如果一个元素已经产生了层叠上下文，他的后代哪怕是 `z-index` 负多少，都不可能比它的层级还低，一定是叠在他的上面。
 
-## 什么情况下，用 translate()而不用绝对定位？什么时候，情况相反？
+## 45. 什么情况下，用 translate()而不用绝对定位？什么时候，情况相反？
 
 `translate()` 是 `transform` 的一个值。改变 `transform` 或 `opacity` 不会触发浏览器重新布局（`reflow`）或重绘（`repaint`），只会触发复合（`compositions`）。而改变绝对定位会触发重新布局，进而触发重绘和复合。`transform` 使浏览器为元素创建一个 `GPU` 图层，但改变绝对定位会使用到 `CPU`。 因此 `translate()` 更高效，可以缩短平滑动画的绘制时间。
 
 当使用 `translate()` 时，元素仍然占据其原始空间（有点像 `position：relative`），这与改变绝对定位不同。
 
-## 复合属性：flex ？
+## 46. 复合属性：flex ？
 
 在 CSS3 中，我们可以使用 `flex` 属性来同时设置 `flex-grow`、`flex-shrink`、`flex-basis` 这 3 个属性。说白了，`flex` 属性就是一个简写形式，就是一个“语法糖”。
 
@@ -621,7 +621,7 @@ ele {
 
 如果子容器没有超出父容器，设置 `flex-shrink` 无效。
 
-## Base64 在 html 中的优缺点？
+## 47. Base64 在 html 中的优缺点？
 
 优点：
 
@@ -632,7 +632,7 @@ ele {
 
 1. 对于大图片，base64 编码会太长，导致代码可读性降低。
 
-## input 有哪些属性？
+## 48. input 有哪些属性？
 
 - `type`：`button`，`checkbox`，`file`，`hidden`，`image`，`password`，`radio`，`reset`，`submit`，`text`。
 - `autocomplete`：规定是否使用输入字段的自动完成功能。
@@ -643,7 +643,7 @@ ele {
 - `size`：定义输入字段的宽度。
 - `value`：规定 `input` 元素的值。
 
-## CSS 中有哪些长度单位？
+## 49. CSS 中有哪些长度单位？
 
 绝对长度单位：
 
@@ -668,13 +668,13 @@ ele {
 - `vmax` 当前 `vw` 和 `vh` 中较大的值的 `1%`
 - `%` 相对于父元素
 
-## 设备像素和 css 像素有什么不同？
+## 50. 设备像素和 css 像素有什么不同？
 
 **设备像素**（device pixels）：是指与硬件设备直接相关的像素，是真实的屏幕设备中的像素点。比如说，一个电脑显示器的参数中，最佳分辨率是 1920x1080，那么指的就是这个显示器在屏幕上用于显示的实际像素点，也就是设备像素。
 
 **css 像素**（css pixels）：css 像素是指网页布局和样式定义所使用的像素，也就是说，css 代码中的 px，对应的就是 css 像素。
 
-## 什么是 dpr ？
+## 51. 什么是 dpr ？
 
 为什么移动端设计稿通常是 `750px` ?
 
@@ -684,18 +684,18 @@ ele {
 
 **dpr=物理像素/逻辑像素**，iphone6 的 dpr 为 `2`。
 
-## 打开谷歌会有四个进程，为什么？
+## 52. 打开谷歌会有四个进程，为什么？
 
 因为打开 1 个页面至少需要 1 个网络进程、1 个浏览器进程、1 个 GPU 进程以及 1 个渲染进程，共 4 个；如果打开的页面有运行插件的话，还需要再加上 1 个插件进程。
 
-## 如何去除浮动？
+## 53. 如何去除浮动？
 
 1. 为 `float` 元素后的兄弟元素添加 `clear` 属性。
 2. 利用伪元素元素添加 `clear` 属性。
 3. 将父元素的 `overflow` 属性修改为 `overflow:auto|hidden`。
 4. 除了以上方案外，还有一些其他的方案，比如将父元素的 `display` 样式属性改为 `display:table` 或者 `position:fixed`，但是这些方案容易带来更大的副作用，得不偿失，所以实践中一般都会使用以上三种方案。
 
-## 置换元素与非置换元素？
+## 54. 置换元素与非置换元素？
 
 **置换元素**：
 
@@ -711,7 +711,7 @@ ele {
 
 HTML 的大多数元素是不可替换元素，即其内容直接表现给用户端（例如浏览器）。
 
-## 如何使用 css 实现轮播？
+## 55. 如何使用 css 实现轮播？
 
 :::: tabs
 ::: tab HTML
@@ -836,7 +836,7 @@ li {
 :::
 ::::
 
-## 哪些样式可以继承?
+## 56. 哪些样式可以继承?
 
 有继承性的属性：
 
@@ -848,7 +848,7 @@ li {
 6. 设置嵌套引用的引号类型：`quotes`。
 7. 光标属性：`cursor`。
 
-## 1px 怎么跨设备兼容？
+## 57. 1px 怎么跨设备兼容？
 
 `1px` 边框在一些移动设备上变粗问题：
 
@@ -879,14 +879,14 @@ div {
 }
 ```
 
-## transform:scale 可以是负数吗，什么效果？
+## 58. transform:scale 可以是负数吗，什么效果？
 
 可以是负数，使用后会发生翻转：
 
 1. `scaleX(-1)` 水平方向上的翻转。
 2. `scaleY(-1)` 纵轴方向上的翻转。
 
-## 行内样式 width: 300px !important，怎么修改宽度为 100 呢？
+## 59. 行内样式 width: 300px !important，怎么修改宽度为 100 呢？
 
 1. `transform scale`。
 2. `max-width`。

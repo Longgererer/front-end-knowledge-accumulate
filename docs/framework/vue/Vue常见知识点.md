@@ -1102,7 +1102,7 @@ var a = new Vue({
 
 这样权重大的，访问快些，因为作用域链短了：
 
-```dash
+```bash
 A.__proto__ = B
 B.__proto__ = C
 C.__proto__ = D

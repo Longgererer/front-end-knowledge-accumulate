@@ -1,12 +1,12 @@
 # 常见 webpack 问题积累
 
-## webpack loader 和 plugins 的区别？
+## 1. webpack loader 和 plugins 的区别？
 
 loader 一般是将某个语法统一处理为统一的语法。比如将 `less` 转换为 `css`。
 
 plugin 一般是在打包前或打包后对结果进行再次操作。是一个扩展器，它丰富了 webpack 本身，针对是 loader 结束后，webpack 打包的整个过程，它并不直接操作文件，而是基于事件机制工作，会监听 webpack 打包过程中的某些节点，执行广泛的任务。
 
-## 常用的 webpack loader？
+## 2. 常用的 webpack loader？
 
 - `raw-loader`：加载文件原始内容（utf-8）。
 - `file-loader`：把文件输出到一个文件夹中，在代码中通过相对 URL 去引用输出的文件 (处理图片和字体)。
@@ -25,14 +25,14 @@ plugin 一般是在打包前或打包后对结果进行再次操作。是一个�
 - `vue-loader`：加载 Vue.js 单文件组件。
 - `i18n-loader`: 国际化。
 
-## 常用的 webpack plugins？
+## 3. 常用的 webpack plugins？
 
 - `webpack-bundle-analyzer`：可视化 Webpack 输出文件的体积 (业务组件、依赖第三方模块)。
 - `define-plugin`：定义环境变量 (Webpack4 之后指定 mode 会自动配置)。
 - `ignore-plugin`：忽略部分文件。
 - `mini-css-extract-plugin`：分离样式文件，CSS 提取为独立文件，支持按需加载 (替代 extract-text-webpack-plugin)。
 
-## Webpack 构建流程简单说一下？
+## 4. Webpack 构建流程简单说一下？
 
 Webpack 的运行流程是一个串行的过程，从启动到结束会依次执行以下流程：
 
@@ -52,12 +52,12 @@ Webpack 的运行流程是一个串行的过程，从启动到结束会依次执
 
 在以上过程中，Webpack 会在特定的时间点广播出特定的事件，插件在监听到感兴趣的事件后会执行特定的逻辑，并且插件可以调用 Webpack 提供的 API 改变 Webpack 的运行结果。
 
-## 使用 webpack 开发时，你用过哪些可以提高效率的插件？
+## 5. 使用 webpack 开发时，你用过哪些可以提高效率的插件？
 
 - `webpack-dashboard`：可以更友好的展示相关打包信息。
 - `HotModuleReplacementPlugin`：模块热替换。
 
-## 文件监听原理？
+## 6. 文件监听原理？
 
 在发现源码发生变化时，自动重新构建出新的输出文件。
 
@@ -69,7 +69,7 @@ Webpack 开启监听模式，有两种方式：
 
 原理：轮询判断文件的最后编辑时间是否变化，如果某个文件发生了变化，并不会立刻告诉监听者，而是先缓存起来，等 `aggregateTimeout` 后再执行。
 
-## 说一下 Webpack 的热更新原理吧？
+## 7. 说一下 Webpack 的热更新原理吧？
 
 热更新(`HMR`)可以做到不用刷新浏览器而将新变更的模块替换掉旧的模块。
 
@@ -79,13 +79,13 @@ Webpack 开启监听模式，有两种方式：
 
 后续的部分(拿到增量更新之后如何处理？哪些状态该保留？哪些又需要更新？)由 `HotModulePlugin` 来完成，提供了相关 API 以供开发者针对自身场景进行处理，像 `react-hot-loader` 和 `vue-loader` 都是借助这些 API 实现 `HMR`。
 
-## 文件指纹是什么？怎么用？
+## 8. 文件指纹是什么？怎么用？
 
 - `Hash`：和整个项目的构建相关，只要项目文件有修改，整个项目构建的 `hash` 值就会更改。
 - `Chunkhash`：和 `Webpack` 打包的 `chunk` 有关，不同的 `entry` 会生出不同的 `chunkhash`。
 - `Contenthash`：根据文件内容来定义 `hash`，文件内容不变，则 `contenthash` 不变。
 
-## 如何提高 webpack 构建速度？
+## 9. 如何提高 webpack 构建速度？
 
 - 通过 `externals` 配置来提取常用库
 - 利用 `DllPlugin` 和 `DllReferencePlugin` 预编译资源模块 通过 `DllPlugin` 来对那些我们引用但是绝对不会修改的 npm 包来进行预编译，再通过 `DllReferencePlugin` 将预编译的模块加载进来。
@@ -93,19 +93,19 @@ Webpack 开启监听模式，有两种方式：
 - 使用 `webpack-uglify-parallel` 来提升 `uglifyPlugin` 的压缩速度。原理上 `webpack-uglify-parallel` 采用了多核并行压缩来提升压缩速度
 - 使用 `Tree-shaking` 和 `Scope Hoisting` 来剔除多余代码
 
-## 什么是 bundle,chunk,module？
+## 10. 什么是 bundle,chunk,module？
 
 - `bundle` 是 `webpack` 打包出来的文件。
 - `chunk` 是 `webpack` 在进行模块的依赖分析的时候，代码分割出来的代码块。
 - `module` 是开发中的单个模块。
 
-## common chunk 是什么？
+## 11. common chunk 是什么？
 
 common chunk 通过 `CommonsChunkPlugin` 插件实现。
 
 `CommonsChunkPlugin` 主要是用来提取第三方库和公共模块，通过将公共模块拆出来，最终合成的文件能够在最开始的时候加载一次，便存到缓存中供后续使用，避免首屏加载的 bundle 文件或者按需加载的 bundle 文件体积过大，从而导致加载时间过长。
 
-## tree shaking 是什么？
+## 12. tree shaking 是什么？
 
 用于移除 JavaScript 上下文中的未引用代码，它依赖于 ES2015 模块系统中的静态结构特性，例如 `import` 和 `export`。如果一个 js 文件中导出了方法，变量，却没有在其它任何一个地方导入，那么 tree shaking 会将这些代码剔除。
 
@@ -131,7 +131,7 @@ common chunk 通过 `CommonsChunkPlugin` 插件实现。
 }
 ```
 
-## Webpack5 模块联邦是什么？
+## 13. Webpack5 模块联邦是什么？
 
 Webpack5 模块联邦让 Webpack 达到了线上 Runtime 的效果，让代码直接在项目间利用 CDN 直接共享，不再需要本地安装 Npm 包、构建再发布了！
 

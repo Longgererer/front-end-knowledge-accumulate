@@ -241,7 +241,7 @@ HSTS（HTTP Strict Transport Security）HTTP 严格传输安全技术可以强�
 
 这时服务器发回来的响应头是这样的：
 
-```dash
+```bash
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 ```
 

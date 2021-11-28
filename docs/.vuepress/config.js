@@ -123,7 +123,8 @@ module.exports = {
             'OTHER/常见原生JS基础问题积累',
             'OTHER/常见CSS和HTML基础问题积累',
             'OTHER/常见网络基础问题积累',
-            'OTHER/常见webpack问题积累'
+            'OTHER/常见webpack问题积累',
+            'OTHER/常见TypeScript问题积累',
           ]
         }
       ],
