@@ -144,14 +144,6 @@ module.exports = {
             '常见算法/缓存淘汰策略',
           ]
         },
-        {
-          title: 'LeetCode算法题',
-          children: [
-            'LeetCode算法题/简单难度',
-            'LeetCode算法题/中等难度',
-            'LeetCode算法题/困难难度'
-          ]
-        }
       ],
       '/framework/': [
         '/framework/',
