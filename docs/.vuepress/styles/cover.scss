@@ -94,26 +94,37 @@
 a.sidebar-item.active {
   background-color: var(--c-sidebar-item-bg) !important;
   border-radius: 0 0.5rem 0.5rem 0 !important;
+  box-shadow: var(--c-offset-shadow, 0 0 #0000), var(--c-offset-shadow, 0 0 #0000), var(--c-inner-shadow);
 }
 .sidebar-sub-items a.sidebar-item.active {
   border-radius: 0.5rem !important;
   font-weight: 600;
+  box-shadow: var(--c-offset-shadow, 0 0 #0000), var(--c-offset-shadow, 0 0 #0000), var(--c-inner-shadow);
 }
 
 // code tab
 .el-tabs--border-card {
   border-radius: 0.5rem;
   border: none;
+  overflow: hidden;
+  background-color: var(--c-sidebar-item-bg);
   & > .el-tabs__content {
     padding: 0 0.85rem;
   }
   & > .el-tabs__header {
     border-bottom: none;
+    background-color: transparent;
+    .el-tabs__nav{
+      margin-left: 1rem;
+    }
     .el-tabs__item {
       border: none;
     }
     .el-tabs__item.is-active {
       color: var(--c-brand);
+      background-color: transparent;
+      border-bottom: 2px solid var(--c-brand);
+      transition: none;
     }
     .el-tabs__item:not(.is-disabled):hover {
       color: var(--c-brand);
@@ -180,10 +191,10 @@ main img {
 // footer
 .page-nav {
   .inner {
-    display: flex;
+    display: grid;
     border-top: none;
     overflow: hidden;
-    justify-content: space-between;
+    grid-template-columns: repeat(2, 1fr);
     .prev,
     .next {
       color: transparent;
@@ -194,8 +205,6 @@ main img {
       display: inline-block;
       padding: 3rem 1rem 1rem 1rem;
       position: relative;
-      overflow: hidden;
-
       &:hover {
         background-color: var(--c-sidebar-item-hover-bg);
       }
@@ -210,6 +219,7 @@ main img {
       }
     }
     .prev {
+      justify-self: start;
       .nav-link {
         margin-left: -1.2rem;
       }
@@ -220,6 +230,7 @@ main img {
     }
     .next {
       text-align: right;
+      justify-self: end;
       .nav-link {
         margin-right: -1.2rem;
       }
