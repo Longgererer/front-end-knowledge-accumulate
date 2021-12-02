@@ -34,7 +34,7 @@
 }
 
 .tip::before {
-  content: '¡';
+  content: '!';
   background-color: var(--c-tip);
 }
 
@@ -44,7 +44,7 @@
 }
 
 .danger::before {
-  content: '✗';
+  content: '!';
   background-color: var(--c-danger);
 }
 
