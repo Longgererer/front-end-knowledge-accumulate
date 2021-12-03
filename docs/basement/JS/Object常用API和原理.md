@@ -153,7 +153,7 @@ new Map(Object.entries(obj)) // Map {a:1,b:2}
 
 需要**注意**的地方:
 
-在 `writable` 为 `true` 时，仍然可以通过 `defineProperty` 重新配置属性：
+在 `writable` 为 `true` 时，仍然可以通过 `defineProperty` 重新配置属性的其他属性，但不能修改 `configurable`：
 
 ```javascript
 const obj = {}
@@ -162,7 +162,14 @@ Object.defineProperty(obj, 'a', {
   configurable: false,
   writable: true,
 })
-Object.defineProperty(obj, 'a', { value: 2 }) // success
+Object.defineProperty(obj, 'a', {
+  value: 2,
+  enumerable: false,
+}) // success
+Object.defineProperty(obj, 'a', {
+  value: 2,
+  configurable: true,
+}) // Uncaught TypeError: Cannot redefine property: a
 ```
 
 反之，`writable` 为 `false` 时，如果 `configurable` 为 `true`，那么仍然可以通过 `defineProperty` 修改属性的值。
@@ -190,7 +197,7 @@ Object.prototype.hasOwnProperty('toString') // true
 function Animal(name) {
   this.name = name
 }
-Animal.prototype.bark = function() {
+Animal.prototype.bark = function () {
   console.log('汪汪汪')
 }
 const dog = new Animal('dog')
@@ -248,6 +255,6 @@ for (var prop in obj) {
 
 ## 参考资料
 
-- [Object.assign vs Object Spread in Node.js](https://thecodebarbarian.com/object-assign-vs-object-spread.html)  
-- [Object.create in JavaScript](https://medium.com/@happymishra66/object-create-in-javascript-fa8674df6ed2)  
+- [Object.assign vs Object Spread in Node.js](https://thecodebarbarian.com/object-assign-vs-object-spread.html)
+- [Object.create in JavaScript](https://medium.com/@happymishra66/object-create-in-javascript-fa8674df6ed2)
 - [Understanding the difference between Object.create() and new SomeFunction()](https://stackoverflow.com/questions/4166616/understanding-the-difference-between-object-create-and-new-somefunction)
