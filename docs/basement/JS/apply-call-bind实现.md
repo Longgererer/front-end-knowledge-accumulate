@@ -18,8 +18,8 @@ const obj = {
   result: 0,
 }
 add.apply(obj, obj.arr)
-function add(...args) {
-  for (let i of args) {
+function add(...argsArray) {
+  for (let i of argsArray) {
     this.result += i
   }
 }
@@ -31,20 +31,19 @@ console.log(obj.result) // 21
 首先我们要在 `Function.prototype` 上创建一个 `customApply` 属性，接受上下文 `thisArg` 和参数列表 `argsArray`：
 
 ```javascript
-// thisArg 默认指向 window，argsArray 为空数组
-Function.prototype.customApply = function(thisArg = window, argsArray = []) {}
+// thisArg 默认指向 window，args 为空数组
+Function.prototype.customApply = function (thisArg = window, argsArray = []) {}
 ```
 
 对于 `customApply`，我们需要做的事情就是，将被执行函数 `fn` 的 `this` 指向目标 `thisArg`，也就是说要以 `thisArg.fn(...argsArray)` 的形式调用目标函数，然后再将函数执行所得结果返回。
 
 ```javascript
-Function.prototype.customApply = function(thisArg = window, argsArray = []) {
-  thisArg = thisArg || window
+Function.prototype.customApply = function (thisArg = window, argsArray = []) {
   // this 指向的是调用 customApply 的函数
   thisArg.fn = this
   const result = thisArg.fn(...argsArray)
   // 记得删除临时属性 fn
-  delete thisArg.fn
+  delete thisArg[fn]
   return result
 }
 ```
@@ -59,8 +58,7 @@ thisArg[fn] = this
 这样我们就可以避免因为属性覆盖的问题了：
 
 ```javascript
-Function.prototype.customApply = function(thisArg, argsArray = []) {
-  thisArg = thisArg || window
+Function.prototype.customApply = function (thisArg = window, argsArray = []) {
   // this 指向的是调用 customApply 的函数
   const fn = Symbol('fn')
   thisArg[fn] = this
@@ -71,7 +69,7 @@ Function.prototype.customApply = function(thisArg, argsArray = []) {
 }
 
 // test1，我们为数组的原型链上加上一个方法max计算数组最大元素
-Array.prototype.max = function() {
+Array.prototype.max = function () {
   return Math.max.customApply(null, this)
 }
 console.log([2, 3, 6, 3, 1, 5, 8, 1].max()) // 8
@@ -115,7 +113,7 @@ console.log(new Dog('哈巴狗', '汪汪汪', '吃骨头'))
 `call` 与 `apply` 除了参数形式之外没有其他区别，因此实现方法是类似的：
 
 ```javascript
-Function.prototype.customCall = function(thisArg, ...argsArray) {
+Function.prototype.customCall = function (thisArg, ...argsArray) {
   thisArg = thisArg || window
   const fn = Symbol('fn')
   thisArg[fn] = this
@@ -165,48 +163,62 @@ get2PowerFunc.bind(obj)(10) // 1024
 首先我们的 `customBind` 函数接收一个 `thisArg` 作为 `this` 指向的目标，同时返回一个接受若干参数的函数。
 
 ```javascript
-Function.prototype.customBind = function(thisArg) {
-  return (...args) => {
+Function.prototype.customBind = function (thisArg) {
+  return (...argsArray) => {
     // 这里的 this 指向的就是调用 customBind 的函数
-    return this.apply(thisArg, args)
+    return this.apply(thisArg, argsArray)
   }
 }
 ```
 
-这还不够，后续的参数列表 `args` 可以分开传，比如调用 `bind` 的时候传几个参数，执行绑定后函数的时候再传几个参数：
+这还不够，后续的参数列表 `argsArray` 可以分开传，比如调用 `bind` 的时候传几个参数，执行绑定后函数的时候再传几个参数：
 
 `func.bind(this, arg1)(arg2, arg3)`
 
 其实也很简单，只要把两次传的参数一起传给 `apply` 就好了：
 
 ```javascript
-Function.prototype.customBind = function(thisArg, ...bindArgs) {
-  return (...args) => {
-    return this.apply(thisArg, [...bindArgs, ...args])
+Function.prototype.customBind = function (thisArg, ...bindArgs) {
+  return (...argsArray) => {
+    return this.apply(thisArg, [...bindArgs, ...argsArray])
   }
 }
 ```
 
 我们初步完成了 `customBind` 的功能，但我们前面说过：**如果使用 `new` 运算符构造绑定函数，则忽略该参数**。
 
+比如说：
+
+```js
+const obj = {
+  a: 2,
+  get2Power(power) {
+    return this.a ** power
+  },
+}
+const get2PowerFunc = obj.get2Power
+// 使用 new 调用了 bind 返回的函数
+new get2PowerFunc.bind(obj)
+```
+
 因此，我们要判断被绑定的函数是否是被 `new` 调用的：
 
 ```javascript
-Function.prototype.customBind = function(thisArg, ...bindArgs) {
+Function.prototype.customBind = function (thisArg, ...bindArgs) {
   const self = this
   /**
    * 因为下面我们需要将this.prototype绑定到bindFunc.prototype上
    * 但如果之后修改了bindFunc.prototype的话也会造成绑定函数的prototype的改变
    * 因此需要一个临时函数tempFunc进行中转，代替bindFunc.prototype
    */
-  const tempFunc = function() {}
-  // 由于需要支持new操作符，因此返回的函数bindFunc就不能是箭头函数了
-  const bindFunc = function(...args) {
-    // 如果this指向的是tempFunc，说明使用了new进行实例化，忽略thisArg
-    return self.apply(this instanceof tempFunc ? this : thisArg, [...bindArgs, ...args])
-  }
+  const tempFunc = function () {}
   tempFunc.prototype = self.prototype
   bindFunc.prototype = new tempFunc()
+  // 由于需要支持new操作符，因此返回的函数bindFunc就不能是箭头函数了
+  function bindFunc(...argsArray) {
+    // 如果this指向的是tempFunc，说明使用了new进行实例化，忽略thisArg
+    return self.apply(this instanceof bindFunc ? this : thisArg, [...bindArgs, ...argsArray])
+  }
   return bindFunc
 }
 ```
