@@ -275,7 +275,7 @@ console.log(`${obj3}`) // TypeError
 ```javascript
 function a() {
   let b = 1
-  return function() {
+  return function () {
     return ++b
   }
 }
@@ -341,7 +341,7 @@ console.log('__proto__' in Object) // true
 function Parent() {
   this.name = 'parent'
 }
-Parent.prototype.printName = function() {
+Parent.prototype.printName = function () {
   console.log(this.name)
 }
 function Child() {
@@ -362,7 +362,7 @@ function Parent() {
   this.name = 'parent'
   this.list = [1, 2, 3]
 }
-Parent.prototype.printName = function() {
+Parent.prototype.printName = function () {
   console.log(this.name)
 }
 function Child() {
@@ -389,7 +389,7 @@ function Parent() {
   this.name = 'parent'
   this.list = [1, 2, 3]
 }
-Parent.prototype.printName = function() {
+Parent.prototype.printName = function () {
   console.log(this.name)
 }
 function Child() {
@@ -431,7 +431,7 @@ ES6 中可以使用 `Proxy` 实现：
 const obj = new Proxy(
   {},
   {
-    set: function() {
+    set: function () {
       //...
     },
   }
@@ -656,7 +656,7 @@ function handleFetchQueue(urls = [], max = 1, callback = () => {}) {
   }
   handleReq(urls[i])
 }
-const fetch = function(idx) {
+const fetch = function (idx) {
   return new Promise((resolve) => {
     console.log(`start request ${idx}`)
     const timeout = parseInt(Math.random() * 1e4)
@@ -787,7 +787,7 @@ JSON 与 JavaScript 的交互更加方便，**更容易读取解析处理**。�
 ## 32. reduce 实现 map 方法
 
 ```javascript
-Array.prototype._map = function(callback, thisArg) {
+Array.prototype._map = function (callback, thisArg) {
   const target = thisArg || this
   return target.reduce((list, item, index) => {
     list.push(callback.call(target, item, index, target))
@@ -861,7 +861,7 @@ node.cloneNode()
 ```javascript
 function func(fn) {
   let isFirst = true
-  return function() {
+  return function () {
     if (isFirst) {
       isFirst = false
       fn()
@@ -1115,7 +1115,7 @@ foo(2) // => 3
 假如我们需要计算阶乘，使用递归的方法如下：
 
 ```js
-const factorial = function(n) {
+const factorial = function (n) {
   if (n <= 1) return 1
   return factorial(n - 1) * n
 }
@@ -1353,7 +1353,7 @@ a.next(13) // {value: 42, done: true}
 
 ```js
 function asyncToGenerator(generatorFunc) {
-  return function() {
+  return function () {
     const gen = generatorFunc.apply(this, arguments)
     return new Promise((resolve, reject) => {
       function step(key, arg) {
@@ -1382,7 +1382,7 @@ function asyncToGenerator(generatorFunc) {
 ## 73. 手写 Promise.all
 
 ```js
-Promise.myAll = function(promises) {
+Promise.myAll = function (promises) {
   return new Promise((resolve, reject) => {
     let res = []
     promises.forEach((promise, index) => {
@@ -1411,7 +1411,7 @@ Promise.myAll([p1, p2]).then((res) => {
 function deepClone(origin, target, hash = new WeakMap()) {
   //origin:要被拷贝的对象
   // 需要完善，克隆的结果和之前保持相同的所属类
-  var target = target || {}
+  const target = target || {}
 
   // 处理特殊情况
   if (origin == null) return origin //null 和 undefined 都不用处理
@@ -1424,7 +1424,7 @@ function deepClone(origin, target, hash = new WeakMap()) {
   hash.set(origin, target) // 制作一个映射表
 
   // 拿出所有属性，包括可枚举的和不可枚举的，但不能拿到symbol类型
-  var props = Object.getOwnPropertyNames(origin)
+  const props = Object.getOwnPropertyNames(origin)
   props.forEach((prop, index) => {
     if (origin.hasOwnProperty(prop)) {
       if (typeof origin[prop] === 'object') {
@@ -1448,9 +1448,9 @@ function deepClone(origin, target, hash = new WeakMap()) {
           target[prop] = null
         }
       } else if (typeof origin[prop] === 'function') {
-        var _copyFn = function(fn) {
-          var result = new Function('return ' + fn)()
-          for (var i in fn) {
+        const _copyFn = function (fn) {
+          const result = new Function('return ' + fn)()
+          for (let i in fn) {
             deepClone[(fn[i], result[i], hash)]
           }
           return result
@@ -1464,7 +1464,7 @@ function deepClone(origin, target, hash = new WeakMap()) {
   })
 
   // 单独处理symbol
-  var symKeys = Object.getOwnPropertySymbols(origin)
+  const symKeys = Object.getOwnPropertySymbols(origin)
   if (symKeys.length) {
     symKeys.forEach((symKey) => {
       target[symKey] = origin[symKey]
@@ -1622,7 +1622,7 @@ console.log(JSON.stringify(data) === '{}')
 
 ```js
 var obj = {}
-var b = function() {
+var b = function () {
   for (var key in obj) {
     return false
   }
@@ -1667,7 +1667,7 @@ console.log(undefined) // undefined
 
 let undefined = 123 // Uncaught SyntaxError: Identifier 'undefined' has already been declared
 
-;(function() {
+;(function () {
   let undefined = 123
   console.log(undefined) // 123
 })()
@@ -1684,3 +1684,23 @@ void [] // undefined
 void null // undefined
 void function fn() {} // undefined
 ```
+
+## 84. 普通函数和箭头函数的区别？
+
+1. 用了箭头函数，`this` 就不是指向 `window`，而是父级上下文（指向是不可变的）。
+2. 不能够使用 `arguments` 对象。
+3. 不能用作构造函数，这就是说不能够使用 `new` 命令，否则会抛出一个错误。
+4. 不可以使用 `yield` 命令，因此箭头函数不能用作 `Generator` 函数。
+
+## 85. 如何实现 ES6 的模板字符串？
+
+```js
+let name = 'web'
+let age = 10
+let str = '你好，${name} 已经 ${age}岁了'
+str = str.replace(/\$\{([^}]*)\}/g, function () {
+  return eval(arguments[1])
+})
+console.log(str) //你好，web 已经 10岁了
+```
+

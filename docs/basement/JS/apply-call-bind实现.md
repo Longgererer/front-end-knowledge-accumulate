@@ -216,8 +216,9 @@ Function.prototype.customBind = function (thisArg, ...bindArgs) {
   bindFunc.prototype = new tempFunc()
   // 由于需要支持new操作符，因此返回的函数bindFunc就不能是箭头函数了
   function bindFunc(...argsArray) {
-    // 如果this指向的是tempFunc，说明使用了new进行实例化，忽略thisArg
-    return self.apply(this instanceof bindFunc ? this : thisArg, [...bindArgs, ...argsArray])
+    // 如果this指向的是bindFunc，说明使用了new进行实例化，忽略thisArg
+    // new.target代替this instanceof bindFunc判断函数是否被new调用
+    return self.apply(new.target ? this : thisArg, [...bindArgs, ...argsArray])
   }
   return bindFunc
 }

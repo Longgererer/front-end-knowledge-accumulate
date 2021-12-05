@@ -33,7 +33,7 @@ a()
 ```javascript
 function getMime() {
   console.log(1)
-  let a = fs.readFile('input.txt', function(data) {
+  let a = fs.readFile('input.txt', function (data) {
     console.log(2)
     return data.toString()
   })
@@ -68,13 +68,13 @@ undefined
 ```javascript
 function getMime(callback) {
   console.log(1)
-  fs.readFile('input.txt', function(data) {
+  fs.readFile('input.txt', function (data) {
     console.log(2)
     callback(data.toString())
   })
   console.log(3)
 }
-getMime(function(data) {
+getMime(function (data) {
   console.log(data)
 })
 ```
@@ -94,7 +94,7 @@ data.toString()
 ```javascript
 function ajax() {
   var request = new XMLHttpRequest()
-  request.onreadystatechange = function() {
+  request.onreadystatechange = function () {
     if (request.readyState === 4) {
       if (request.status === 200) {
         return success(request.responseText)
@@ -111,8 +111,8 @@ function ajax() {
 ```javascript
 function ajax(method, url, data) {
   let request = new XMLHttpRequest()
-  return new Promise(function(resolve, reject) {
-    request.onreadystatechange = function() {
+  return new Promise(function (resolve, reject) {
+    request.onreadystatechange = function () {
       if (request.readyState === 4) {
         if (request.status === 200) {
           resolve(request.responseText)
@@ -126,9 +126,9 @@ function ajax(method, url, data) {
   })
 }
 let p = ajax('GET', '/url')
-p.then(function(text) {
+p.then(function (text) {
   console.log(text)
-}).catch(function(status) {
+}).catch(function (status) {
   console.log('ERROR: ' + status)
 })
 ```
@@ -143,8 +143,8 @@ p.then(function(text) {
 
 ```javascript
 function timer() {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
       if (false) {
         resolve('hello world')
       } else {
@@ -154,10 +154,10 @@ function timer() {
   })
 }
 timer()
-  .then(function(data) {
+  .then(function (data) {
     console.log(data)
   })
-  .catch(function(err) {
+  .catch(function (err) {
     console.log(err)
   })
 ```
@@ -241,6 +241,53 @@ Promise.resolve(a).then((res) => {
 ```
 
 在上面的代码中，在执行 `Promise.resolve(a)` 时会执行 `a` 对象中的 `then` 方法输出 `'hello'`，然后执行自己的 `then` 方法输出 `123`。
+
+我们可以简单地将其等同于下面的代码：
+
+```js
+Promise.resolve()
+  .then(() => {
+    console.log('hello')
+    return 123
+  })
+  .then((res) => {
+    console.log(res)
+  })
+```
+
+再来一个复杂的：
+
+```js
+new Promise((resolve) => {
+  resolve(1)
+  Promise.resolve({
+    then: function (resolve, reject) {
+      console.log(2)
+      resolve(3)
+    },
+  }).then((t) => console.log(t))
+  console.log(4)
+}).then((t) => console.log(t))
+console.log(5)
+```
+
+输出顺序是：`4、5、2、1、3`。
+
+如果不明白，我们可以一步一步地分析：
+
+1. `new Promise([executor])` 首先执行，进入 `executor` 函数。
+2. 第一行就已经 `resolve(1)`，这个 Promise 马上由 `pending` 状态过渡到 `fulfilled` 状态。这个时候由于还有代码未执行，并不会把输出 `1` 的 `then` 回调加入到微任务队列中。
+3. 继续执行 `executor` 剩下的代码。`Promise.resolve([object])`，这个带 `[object]` 的任务被压到栈中。
+4. 遇到第一个 `console.log(4)`。
+5. 第二个 `console.log(5)`。
+6. 本轮的代码运行完毕，开始清栈。
+7. 处理带 `[object]` 的任务，因为这个 `object` 中有 `then` 方法，直接当新的 `executor` 调用。
+8. 注意 `executor` 是同步的，这里马上遇到 `console.log(2)`。
+9. 接着 `resolve(3)`，因为本轮的栈还没处理完，这个带 `3` 的任务被压到下一轮的栈中。
+10. 处理带 `1` 的任务，`.then(t => console.log(t))` 打印 `1`。
+11. 栈空，马上清理下一轮的栈。
+12. 打印 `3`。
+13. 处理完毕。
 
 :::tip Notice
 所有 Promise 都是实现了 `then` 也就是 thenable 的对象，但并非所有 thenable 对象都是 Promise。
@@ -348,7 +395,7 @@ Promise.resolve()
 
 这个时候 `catch` 捕获到了上面 `then` 方法接受的回调函数抛出的错误。
 
-但 `catch` 只能捕获到在它前面的那些 Promise 抛出的错误，而不能捕获到后面的：
+但 `catch` **只能捕获到在它前面的那些 Promise 抛出的错误，而不能捕获到后面的**：
 
 ```js
 Promise.resolve()
@@ -653,7 +700,7 @@ function Promise1(fn) {
       callback.reject(error)
     }
   }
-  this.then = function(onFulfilled, onRejected) {
+  this.then = function (onFulfilled, onRejected) {
     return new Promise1((resolve, reject) => {
       handle({
         onFulfilled,
@@ -663,13 +710,13 @@ function Promise1(fn) {
       })
     })
   }
-  this.catch = function(onError) {
+  this.catch = function (onError) {
     this.then(null, onError)
   }
-  this.finally = function(onDone) {
+  this.finally = function (onDone) {
     this.then(onDone, onDone)
   }
-  this.resolve = function(value) {
+  this.resolve = function (value) {
     if (value && value instanceof Promise1) {
       return value
     } else if (value && typeof value === 'object' && typeof value.then === 'function') {
@@ -683,12 +730,12 @@ function Promise1(fn) {
       return new Promise1((resolve) => resolve())
     }
   }
-  this.reject = function(value) {
+  this.reject = function (value) {
     return new Promise1((resolve, reject) => {
       reject(value)
     })
   }
-  this.all = function(arr) {
+  this.all = function (arr) {
     let args = Array.prototype.slice.call(arr)
     return new Promise1((resolve, reject) => {
       if (args.length === 0) return resolve([])
@@ -700,7 +747,7 @@ function Promise1(fn) {
             if (typeof then === 'function') {
               then.call(
                 value,
-                function(val) {
+                function (val) {
                   res(i, val)
                 },
                 reject
@@ -722,7 +769,7 @@ function Promise1(fn) {
       }
     })
   }
-  this.race = function(values) {
+  this.race = function (values) {
     return new Promise1((resolve, reject) => {
       for (let i = 0, len = values.length; i < len; i++) {
         values[i].then(resolve, reject)

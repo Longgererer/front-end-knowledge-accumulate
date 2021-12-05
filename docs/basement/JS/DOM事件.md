@@ -10,7 +10,7 @@ DOM 一共分为四个级别：DOM0 级，DOM1 级，DOM2 级和 DOM3 级
 DOM 事件有三种：DOM0 级事件处理，DOM2 级事件处理和 DOM3 级事件处理  
 如下图：
 
-<a data-fancybox title="1.jpg" href="https://images2015.cnblogs.com/blog/775838/201610/775838-20161006202354035-607305606.png">![1.jpg](https://images2015.cnblogs.com/blog/775838/201610/775838-20161006202354035-607305606.png)</a>
+![1.jpg](http://picstore.lliiooiill.cn/2020031315023375.png)
 
 ## DOM0 级事件
 
@@ -18,20 +18,20 @@ DOM 事件有三种：DOM0 级事件处理，DOM2 级事件处理和 DOM3 级事
 <button onclick="func">点我</button>
 <script>
   function func() {
-    console.log(1);
+    console.log(1)
   }
 </script>
 ```
 
-这是 HTML 的事件处理，是最早的一种事件处理方式，也是最不推荐的一种。因为标签内事件所触发的函数名称和 JS 中的函数有强烈的耦合性，一旦函数名称修改，也必须修改 html 所触发的事件名，非常麻烦，但这种方法可以不需要操作 DOM 就完成事件的绑定。
+这是 DOM0 之前 HTML 的事件处理，是最早的一种事件处理方式，也是最不推荐的一种。因为标签内事件所触发的函数名称和 JS 中的函数有强烈的耦合性，一旦函数名称修改，也必须修改 html 所触发的事件名，非常麻烦，但这种方法可以不需要操作 DOM 就完成事件的绑定。
 
-DOM0 级事件处理就是将函数赋给事件处理属性：
+DOM0 级事件处理就是**将函数赋给事件处理属性**：
 
 ```javascript
-const btn = document.getElementById("btn");
-btn.onclick = function() {
-  console.log(1);
-};
+const btn = document.getElementById('btn')
+btn.onclick = function () {
+  console.log(1)
+}
 ```
 
 这种处理方式的优点是简单，具有跨浏览器的优势，所有浏览器都支持这种写法。如果想解绑事件可以使用`btn.onclick = null`来解绑事件。DOM0 事件处理的缺点也很明显，就是无法绑定多个处理函数，于是有了 DOM2 级事件处理。
@@ -41,15 +41,23 @@ btn.onclick = function() {
 DOM2 级事件弥补了 DOM0 级事件无法绑定多个处理函数的缺点：
 
 ```javascript
-const btn = document.getElementById("btn");
+const btn = document.getElementById('btn')
 function func() {
-  console.log(1);
+  console.log(1)
 }
-btn.addEventListener("click", func, false);
-btn.addEventListener("mouseenter", func, false);
+btn.addEventListener('click', func, false)
+btn.addEventListener('mouseenter', func, true)
+
+// 解绑事件
+btn.removeEventListener('click', func, false)
+btn.removeEventListener('mouseenter', func, true)
 ```
 
-DOM2 级事件通过`addEventListener`方法监听事件的触发，想要解绑事件可以通过`btn.removeEventListener('click', func, false);`来解绑事件。
+DOM2 级事件通过`addEventListener`方法监听事件的触发，想要解绑事件可以通过`removeEventListener`来解绑事件。
+
+:::tip Notice
+如果同一个监听事件分别为“事件捕获”和“事件冒泡”注册了一次，这两次事件需要分别移除。两者不会互相干扰。移除捕获监听器不会影响非捕获版本的相同监听器，反之亦然。
+:::
 
 ## DOM3 级事件
 
@@ -70,7 +78,7 @@ DOM3 级事件并没有新增绑定事件的方法，而是添加了许多事件
 `true`代表事件在捕获阶段执行，`false`代表事件在冒泡阶段执行。
 
 事件捕获和事件冒泡如下图所示：
-<a data-fancybox title="1.jpg" href="https://upload-images.jianshu.io/upload_images/2133637-649b6d42c4df498b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">![1.jpg](https://upload-images.jianshu.io/upload_images/2133637-649b6d42c4df498b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</a>
+![1.jpg](http://picstore.lliiooiill.cn/img_recreate02-1-1.jpg)
 
 ### 事件捕获
 
@@ -90,22 +98,22 @@ DOM3 级事件并没有新增绑定事件的方法，而是添加了许多事件
       <div id="div2">div2</div>
     </div>
     <script>
-      const oDiv1 = document.getElementById("div1");
-      const oDiv2 = document.getElementById("div2");
+      const oDiv1 = document.getElementById('div1')
+      const oDiv2 = document.getElementById('div2')
       oDiv1.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(2);
+          console.info(2)
         },
         true
-      );
+      )
       oDiv2.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(1);
+          console.info(1)
         },
         true
-      );
+      )
     </script>
   </body>
 </html>
@@ -129,22 +137,22 @@ DOM3 级事件并没有新增绑定事件的方法，而是添加了许多事件
       <div id="div2">div2</div>
     </div>
     <script>
-      const oDiv1 = document.getElementById("div1");
-      const oDiv2 = document.getElementById("div2");
+      const oDiv1 = document.getElementById('div1')
+      const oDiv2 = document.getElementById('div2')
       oDiv1.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(2);
+          console.info(2)
         },
         false
-      );
+      )
       oDiv2.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(1);
+          console.info(1)
         },
         false
-      );
+      )
     </script>
   </body>
 </html>
@@ -168,51 +176,51 @@ DOM3 级事件并没有新增绑定事件的方法，而是添加了许多事件
       </div>
     </div>
     <script>
-      const oDiv1 = document.getElementById("div1");
-      const oDiv2 = document.getElementById("div2");
-      const oDiv3 = document.getElementById("div3");
+      const oDiv1 = document.getElementById('div1')
+      const oDiv2 = document.getElementById('div2')
+      const oDiv3 = document.getElementById('div3')
       oDiv1.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(1);
+          console.info(1)
         },
         false
-      );
+      )
       oDiv1.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(2);
+          console.info(2)
         },
         true
-      );
+      )
       oDiv2.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(3);
+          console.info(3)
         },
         false
-      );
+      )
       oDiv2.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(4);
+          console.info(4)
         },
         true
-      );
+      )
       oDiv3.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(5);
+          console.info(5)
         },
         false
-      );
+      )
       oDiv3.addEventListener(
-        "click",
+        'click',
         () => {
-          console.info(6);
+          console.info(6)
         },
         true
-      );
+      )
     </script>
   </body>
 </html>
@@ -252,16 +260,16 @@ DOM3 级事件并没有新增绑定事件的方法，而是添加了许多事件
   <!--...-->
 </ul>
 <script>
-  (function() {
-    const list = document.getElementById("list");
-    list.addEventListener("click", showText, false);
+  ;(function () {
+    const list = document.getElementById('list')
+    list.addEventListener('click', showText, false)
     function showText(e) {
-      const x = e.target;
-      if (x.nodeName.toLowerCase() === "li") {
-        alert("The color is " + x.innerText);
+      const x = e.target
+      if (x.nodeName.toLowerCase() === 'li') {
+        alert('The color is ' + x.innerText)
       }
     }
-  })();
+  })()
 </script>
 ```
 

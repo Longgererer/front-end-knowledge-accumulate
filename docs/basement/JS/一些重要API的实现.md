@@ -13,9 +13,11 @@
 function customNew(constructor, ...args) {
   if (typeof constructor !== 'function') throw 'constructor is not a function'
   const obj = Object.create(constructor.prototype)
+  // 等于
+  // const obj = {}
+  // obj.__proto__ = constructor.prototype
   const res = constructor.apply(obj, args)
-  const resT = Object.prototype.toString.call(res).slice(1, 7)
-  return typeof res === 'object' ? res : obj
+  return res instanceof Object ? res : obj
 }
 ```
 
@@ -26,31 +28,17 @@ function customNew(constructor, ...args) {
 1. `proto` 是需要继承的原型对象。
 2. `propertiesObject` 是需要添加到原型对象中的属性集合。该属性遵从 `defineProperties` 第二个参数的格式。
 
-在第一个参数为 `null` 的时候，`Object.create` 会返回一个没有 `__proto__` 属性的空对象。
+在第一个参数为 `null` 的时候，`Object.create` 会返回一个没有 `__proto__` 属性(为 `null`)的对象。
 
-在第一个参数不为 `null` 时，`Object.create` 行为如下：
-
-1. 定义一个全新的构造函数。
-2. 将构造函数的 `prototype` 指向传入的原型对象 `proto`。
-3. 将构造函数的 `constructor` 指向自身。
-4. 返回构造函数的实例化对象。
+在第一个参数不为 `null` 时，生成对象的 `__proto__` 就会指向传入的 `proto`。
 
 ```javascript
 function customCreate(proto, propertiesObject = {}) {
-  const T = Object.prototype.toString.call(proto).slice(1, 7)
-  if (T !== 'object') throw 'proto is not a raw object or null'
-  if (proto !== null) {
-    function F() {}
-    F.prototype = proto
-    F.prototype.constructor = F
-    Object.defineProperties(proto, propertiesObject)
-    return new F()
-  } else {
-    const obj = {}
-    obj.__proto__ = null
-    Object.defineProperties(obj, propertiesObject)
-    return obj
-  }
+  if (typeof proto !== 'object') throw 'Object prototype may only be an Object or null'
+  const obj = {}
+  obj.__proto__ = proto
+  Object.defineProperties(obj, propertiesObject)
+  return obj
 }
 ```
 
