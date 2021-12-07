@@ -103,7 +103,6 @@ module.exports = {
             '/basement/CSS/Sass.md',
             '/basement/CSS/Grid.md',
             '/basement/CSS/CSS常用样式.md',
-            '/basement/CSS/水平垂直居中.md',
             '/basement/CSS/瀑布流布局.md',
             '/basement/CSS/近年来CSS新特性.md'
           ],

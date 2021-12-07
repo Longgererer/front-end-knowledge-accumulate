@@ -604,6 +604,10 @@ Promise.allSettled([timer(100), timer(200), timer(300)]).then((res) => {
 300 rejected
 ```
 
+当有多个彼此不依赖的异步任务成功完成时，或者你总是想知道每个 Promise 的结果时，通常使用它。
+
+相比之下，`Promise.all()` 更适合彼此相互依赖或者在其中任何一个 `reject` 时立即结束。
+
 ## Promise.any()
 
 该方法接收一组 Promise 实例作为参数，包装成一个新的 Promise 实例。只要参数实例有一个变成 `fulfilled` 状态，结果就变为 `fulfilled`。如果所有实例都变成 `rejected`，结果就为 `rejected`。

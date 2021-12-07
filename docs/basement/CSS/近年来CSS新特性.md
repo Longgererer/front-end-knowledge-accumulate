@@ -454,7 +454,7 @@ li::after {
 
 :::
 ::: tab 效果
-<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626088888%281%29.jpg">![](http://picstore.lliiooiill.cn/1626088888%281%29.jpg)</a>
+![](http://picstore.lliiooiill.cn/1626088888%281%29.jpg)
 :::
 ::::
 
@@ -679,7 +679,7 @@ h2 {
 
 :::
 ::: tab 效果
-<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626141702%281%29.jpg">![](http://picstore.lliiooiill.cn/1626141702%281%29.jpg)</a>
+![](http://picstore.lliiooiill.cn/1626141702%281%29.jpg)
 :::
 ::::
 
@@ -715,7 +715,7 @@ h2 {
 
 :::
 ::: tab 效果
-<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626144055%281%29.jpg">![](http://picstore.lliiooiill.cn/1626144055%281%29.jpg)</a>
+![](http://picstore.lliiooiill.cn/1626144055%281%29.jpg)
 :::
 ::::
 
@@ -761,7 +761,7 @@ h2 {
 
 :::
 ::: tab 效果
-<a data-fancybox title="" href="http://picstore.lliiooiill.cn/1626145915%281%29.jpg">![](http://picstore.lliiooiill.cn/1626145915%281%29.jpg)</a>
+![](http://picstore.lliiooiill.cn/1626145915%281%29.jpg)
 :::
 ::::
 

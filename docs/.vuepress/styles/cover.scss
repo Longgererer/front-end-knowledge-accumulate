@@ -115,7 +115,7 @@ a.sidebar-item.active {
   & > .el-tabs__header {
     border-bottom: none;
     background-color: transparent;
-    .el-tabs__nav{
+    .el-tabs__nav {
       margin-left: 1rem;
     }
     .el-tabs__item {
@@ -202,7 +202,7 @@ main img {
       border-radius: 0.5rem;
       font-size: 17px;
       cursor: pointer;
-      width: 200px;
+      max-width: 200px;
       display: inline-block;
       padding: 3rem 1rem 1rem 1rem;
       position: relative;
@@ -220,7 +220,6 @@ main img {
       }
     }
     .prev {
-      justify-self: start;
       .nav-link {
         margin-left: -1.2rem;
       }
@@ -231,7 +230,11 @@ main img {
     }
     .next {
       text-align: right;
+      grid-column-start: 2;
+      grid-column-end: 3;
       justify-self: end;
+      min-width: 100px;
+      word-wrap: break-word;
       .nav-link {
         margin-right: -1.2rem;
       }
@@ -341,6 +344,20 @@ main img {
 
 @media (max-width: 719px) {
   .home-page-class {
+    .home .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      #main-title {
+        padding-left: 0;
+        display: block;
+        text-align: center;
+      }
+      .description {
+        padding-left: 0;
+        text-align: center;
+      }
+    }
     .features {
       grid-template-columns: repeat(1, 1fr) !important;
     }

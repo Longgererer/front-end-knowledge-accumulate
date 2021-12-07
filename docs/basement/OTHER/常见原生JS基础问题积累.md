@@ -71,42 +71,9 @@ compareTwo(0.1 + 0.2, 0.3)
 
 目前，使用 `Number.EPSILON` 作为误差判断能够解决这个问题。
 
-### substr, substring 和 slice 的区别在哪？
-
-`slice` 接收的是起始位置和结束位置(不包括结束位置)，并且支持负数，当接收的参数是负数时，`slice` 会将它**字符串的长度与对应的负数相加**，结果作为参数。
-
-```javascript
-const test = 'hello world'
-console.log(test.slice(7, 4)) // ''
-console.log(test.slice(4, 7)) // 'o w'
-console.log(test.slice(4, -1)) // 'o worl'
-console.log(test.slice(4, 10)) // 'o worl'
-console.log(test.slice(4, 4)) // ''
-```
-
-`substring` 接收的是起始位置和结束位置(不包括结束位置)。传递负数会被当作 0 处理。但起始位置和结束位置是**通过大小判断而不是传递顺序判断**。
-
-```javascript
-const test = 'hello world'
-console.log(test.substring(7, 4)) // 'o w'
-console.log(test.substring(4, 7)) // 'o w'
-console.log(test.substring(4, -1)) // 'hell'
-console.log(test.substring(4, 4)) // ''
-```
-
-`substr` 接收起始位置和要返回的字符串长度。长度不支持负数，会替换成 0。起始位置为负数，则会将会将它**字符串的长度与对应的负数相加**，结果作为参数。
-
-```javascript
-const test = 'hello world'
-console.log(test.substr(7, 4)) // 'orld'
-console.log(test.substr(-2, 2)) // 'ld'
-console.log(test.substr(4, -1)) // ''
-console.log(test.substr(4)) // 'o world'
-```
-
 ## 5. 什么是 BigInt？
 
-JavaScript 只能表示 -(2^53)~2^53 之间的数，超出此范围的数会失去精度。
+JavaScript 只能表示 $-(2^{53})$ 到 $2^{53}$ 之间的数，超出此范围的数会失去精度。
 
 使用 `BigInt` 可以让我们安全的计算大整数。在数字后面加上 `n` 即可。
 
@@ -153,7 +120,7 @@ console.log([] instanceof MyArray) // true
 
 在 `==` 中，左右两边都需要转换为**数字**然后进行比较。
 
-`[]` 转换为数字为 `0`，`![]` 首先是转换为布尔值，由于 `[]` 作为一个引用类型转换为布尔值为 `true`。
+`[]` 用 `valueOf` 转换为数字为 `0`，`![]` 首先是转换为布尔值，由于 `[]` 作为一个引用类型转换为布尔值为 `true`。
 
 因此 `![]` 为 `false`，进而在转换成数字，变为 `0`。
 
@@ -166,6 +133,28 @@ console.log([] instanceof MyArray) // true
 - 判断的类型是否是 `String` 和 `Number`，是的话，把 `String` 类型转换成 `Number`，再进行比较。
 - 判断其中一方是否是 `Boolean`，是的话就把 `Boolean` 转换成 `Number`，再进行比较。
 - 如果其中一方为 `Object`，且另一方为 `String`、`Number` 或者 `Symbol`，会将 `Object` 转换成字符串，再进行比较。
+
+除此之外：
+
+1. `NaN` 和其他任何类型比较永远返回 `false`（包括和他自己）。
+2. `Boolean` 和其他任何类型比较，`Boolean` 首先被转换为 `Number` 类型。
+
+```js
+true == 1 // true
+true == '2' // false, 先把 true 变成 1，而不是把 '2' 变成 true
+true == ['1'] // true, 先把 true 变成 1， ['1']拆箱成 '1', 再参考规则3
+true == ['2'] // false, 同上
+undefined == false // false ，首先 false 变成 0，然后参考规则4
+null == false // false，同上
+```
+
+3. `String` 和 `Number` 比较，先将 `String` 转换为 `Number` 类型。
+4. `null == undefined` 比较结果是 `true`，除此之外，`null`、`undefined` 和其他任何结果的比较值都为 `false`。
+5. 原始类型和引用类型做比较时，引用类型会依照 `ToPrimitive` 规则转换为原始类型。
+
+:::tip Notice
+`ToPrimitive` 规则，是引用类型向原始类型转变的规则，它遵循先 `valueOf` 后 `toString` 的模式期望得到一个原始类型。如果还是没法得到一个原始类型，就会抛出 `TypeError`。
+:::
 
 ## 9. Object.is 是什么？
 
@@ -333,87 +322,26 @@ console.log('__proto__' in Object) // true
 
 `for...in` 只会遍历对象本身可枚举的属性而不检查原型链。
 
-## JS 如何实现继承？
-
-`call`/`apply`/`bind` 继承：
-
-```javascript
-function Parent() {
-  this.name = 'parent'
-}
-Parent.prototype.printName = function () {
-  console.log(this.name)
-}
-function Child() {
-  Parent.call(this) // Parent.apply(this) | Parent.bind(this)()
-  this.type = 'child'
-}
-const boy = new Child()
-console.log(boy) // {name: 'parent', type: 'child'}
-boy.printName() // boy.printName is not a function
-```
-
-我们可以看出这种继承方式无法继承父构造函数原型中定义的属性，因为我们并没有把 `Child` 的原型对象指向 `Parent`。
-
-因此我们需要手动进行指向：
-
-```javascript
-function Parent() {
-  this.name = 'parent'
-  this.list = [1, 2, 3]
-}
-Parent.prototype.printName = function () {
-  console.log(this.name)
-}
-function Child() {
-  Parent.call(this)
-  this.__proto__ = Parent.prototype
-  this.type = 'child'
-}
-const boy = new Child()
-boy.printName() // 'parent'
-```
-
-但是这样有个问题：
-
-```javascript
-console.log(boy instanceof Child) // false
-```
-
-我们发现 `boy` 并不是 `Child` 的实例，因为我们没有把 `boy` 的原型对象指向 `Child` 而是指向了 `Parent`。
-
-即使 `new` 操作符会自动帮我们指向 `Child`，但被我们覆盖掉了。因此，我们需要将 `Child` 原型对象指向 `Parent`。
-
-```javascript
-function Parent() {
-  this.name = 'parent'
-  this.list = [1, 2, 3]
-}
-Parent.prototype.printName = function () {
-  console.log(this.name)
-}
-function Child() {
-  Parent.call(this)
-  this.type = 'child'
-}
-Child.prototype.constructor = Child
-Child.prototype.__proto__ = Parent.prototype
-const boy1 = new Child()
-```
-
 ## 14. client，scroll 和 offset 的区别
 
-![](https://upload-images.jianshu.io/upload_images/2511429-16b18d86d7ea0e23.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
+![](http://picstore.lliiooiill.cn/2511429-16b18d86d7ea0e23.webp)
 
-![](https://upload-images.jianshu.io/upload_images/2511429-4d42f61ffa6c8cd7.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
-
-![](https://upload-images.jianshu.io/upload_images/2511429-2e3165599cdea492.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
-
-![](https://upload-images.jianshu.io/upload_images/2511429-384eec8d8d3cc4f2.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
-
-![](https://upload-images.jianshu.io/upload_images/2511429-c46ac0a02c0a6108.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
-
-![](https://upload-images.jianshu.io/upload_images/2511429-1781b8614212a647.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
+- `offsetTop` 表示元素距离上方或上层控件的距离。
+- `offsetLeft` 表示元素距离左方或上层控件的距离。
+- `offsetWidth` 表示元素自身的宽度。
+- `offsetHeight` 表示元素自身的高度。
+- `clientWidth` 表示元素中可视的宽度(不含 `border`)。
+- `clientHeight` 表示元素中可视的高度(不含 `border`)。
+- `scrollWidth` 表示元素实际内容的宽度(左 `padding` 与右 `padding` 之间的距离)。
+- `scrollHeight` 表示元素的滚动高度。
+- `scrollLeft` 表示位于元素左边界和窗口中目前可见内容和的最左端之间的距离。
+- `scrollTop` 表示位于元素最顶端和窗口中可见内容的最顶端之间的距离。
+- `clientX` 表示鼠标指针位置相对于当前窗口的横坐标，不包括浏览器自身控件和滚动条。
+- `clientY` 表示鼠标指针位置相对于当前窗口的纵坐标，不包括浏览器自身控件和滚动条。
+- `offsetX` 表示鼠标指针位置相对于触发事件的元素的横坐标。
+- `offsetY` 表示鼠标指针位置相对于触发事件的元素的纵坐标。
+- `screenX` 表示鼠标指针位置相对于用户整个显示屏幕的横坐标。
+- `screenY` 表示鼠标指针位置相对于用户整个显示屏幕的纵坐标。
 
 ## 15. JS 垃圾回收机制
 
@@ -442,12 +370,34 @@ const obj = new Proxy(
 
 取到所有 `src` 后，首先加载第一张，监听事件，`onerror` 或者 `onload` 事件被触发后，加载下一张。
 
+加载函数中返回一个 `Promise`，运用 `Async Await` 来实现顺序加载。
+
 ```javascript
-const obj = new Image()
-obj.src = 'XXX.jpg'
-obj.onload = () => {
-  document.getElementById('imageList').innerHTML += `<img src=${src}/>`
+const imgs = [
+  'http://picstore.lliiooiill.cn/2511429-16b18d86d7ea0e23.webp',
+  'http://picstore.lliiooiill.cn/2020031315023375.png',
+  'http://picstore.lliiooiill.cn/img_recreate02-1-1.jpg',
+]
+
+function loadImg(url) {
+  const img = new Image()
+  img.src = url
+  console.log(`开始加载${url}`)
+  return new Promise((resolve) => {
+    img.onload = () => {
+      console.log(`${url}加载完成`)
+      resolve(true)
+    }
+  })
 }
+
+async function orderLoadingImgs(imgs) {
+  for (let url of imgs) {
+    await loadImg(url)
+  }
+}
+
+orderLoadingImgs(imgs)
 ```
 
 ## 18. 实现简单深拷贝
@@ -1704,3 +1654,103 @@ str = str.replace(/\$\{([^}]*)\}/g, function () {
 console.log(str) //你好，web 已经 10岁了
 ```
 
+## 86. JS 如何实现继承？
+
+`call`/`apply`/`bind` 继承：
+
+```javascript
+function Parent() {
+  this.name = 'parent'
+}
+Parent.prototype.printName = function () {
+  console.log(this.name)
+}
+function Child() {
+  Parent.call(this) // Parent.apply(this) | Parent.bind(this)()
+  this.type = 'child'
+}
+const boy = new Child()
+console.log(boy) // {name: 'parent', type: 'child'}
+boy.printName() // boy.printName is not a function
+```
+
+我们可以看出这种继承方式无法继承父构造函数原型中定义的属性，因为我们并没有把 `Child` 的原型对象指向 `Parent`。
+
+因此我们需要手动进行指向：
+
+```javascript
+function Parent() {
+  this.name = 'parent'
+  this.list = [1, 2, 3]
+}
+Parent.prototype.printName = function () {
+  console.log(this.name)
+}
+function Child() {
+  Parent.call(this)
+  this.__proto__ = Parent.prototype
+  this.type = 'child'
+}
+const boy = new Child()
+boy.printName() // 'parent'
+```
+
+但是这样有个问题：
+
+```javascript
+console.log(boy instanceof Child) // false
+```
+
+我们发现 `boy` 并不是 `Child` 的实例，因为我们没有把 `boy` 的原型对象指向 `Child` 而是指向了 `Parent`。
+
+即使 `new` 操作符会自动帮我们指向 `Child`，但被我们覆盖掉了。因此，我们需要将 `Child` 原型对象指向 `Parent`。
+
+```javascript
+function Parent() {
+  this.name = 'parent'
+  this.list = [1, 2, 3]
+}
+Parent.prototype.printName = function () {
+  console.log(this.name)
+}
+function Child() {
+  Parent.call(this)
+  this.type = 'child'
+}
+Child.prototype.constructor = Child
+Child.prototype.__proto__ = Parent.prototype
+const boy1 = new Child()
+```
+
+## 87. substr, substring 和 slice 的区别在哪？
+
+`slice` 接收的是起始位置和结束位置(不包括结束位置)，并且支持负数，当接收的参数是负数时，`slice` 会将它**字符串的长度与对应的负数相加**，结果作为参数。
+
+```javascript
+const test = 'hello world'
+console.log(test.slice(7, 4)) // ''
+console.log(test.slice(4, 7)) // 'o w'
+console.log(test.slice(4, -1)) // 'o worl'
+console.log(test.slice(4, 10)) // 'o worl'
+console.log(test.slice(4, 4)) // ''
+```
+
+`substring` 接收的是起始位置和结束位置(不包括结束位置)。传递负数会被当作 0 处理。但起始位置和结束位置是**通过大小判断而不是传递顺序判断**。
+
+```javascript
+const test = 'hello world'
+console.log(test.substring(7, 4)) // 'o w'
+console.log(test.substring(4, 7)) // 'o w'
+console.log(test.substring(4, -1)) // 'hell'
+console.log(test.substring(4, 4)) // ''
+```
+
+`substr` 接收起始位置和要返回的字符串长度。长度不支持负数，会替换成 0。起始位置为负数，则会将会将它**字符串的长度与对应的负数相加**，结果作为参数。
+
+```javascript
+const test = 'hello world'
+console.log(test.substr(7, 4)) // 'orld'
+console.log(test.substr(-2, 2)) // 'ld'
+console.log(test.substr(4, -1)) // ''
+console.log(test.substr(4)) // 'o world'
+```
