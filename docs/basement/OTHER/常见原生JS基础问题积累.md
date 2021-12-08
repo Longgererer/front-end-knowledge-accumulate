@@ -532,9 +532,7 @@ for (let i = 0; i < arr.length; i++) {
 7. 用 `filter` 去重
 
 ```javascript
-arr.filter((item, index, arr) => {
-  arr.indexOf(item, 0) === index
-})
+arr.filter((item, index, arr) => arr.indexOf(item, 0) === index)
 ```
 
 8. 用 `reduce` + `includes`
@@ -756,7 +754,7 @@ Array.prototype._map = function (callback, thisArg) {
 
 ## 34. 什么是 Web worker?
 
-在 HTML 页面中，如果在执行脚本时，页面的状态是不可响应的，直到脚本执行完成后，页面才变成可响应。web worker 是运行在后台的 js，独立于其他脚本，不会影响页面的性能。并且通过 postMessage 将结果回传到主线程。这样在进行复杂操作的时候，就不会阻塞主线程了。
+在 HTML 页面中，如果在执行脚本时，页面的状态是不可响应的，直到脚本执行完成后，页面才变成可响应。web worker 是运行在后台的 js，独立于其他脚本，不会影响页面的性能。并且通过 `postMessage` 将结果回传到主线程。这样在进行复杂操作的时候，就不会阻塞主线程了。
 
 ## 35. click 在 ios 上有 300ms 延迟，原因及如何解决？
 
@@ -774,7 +772,7 @@ Array.prototype._map = function (callback, thisArg) {
 
 ## 36. addEventListener 是什么？
 
-`addEventListener(event, function, useCapture)` 其中，event 指定事件名；function 指定要事件触发时执行的函数；useCapture 指定事件 是否在捕获或冒泡阶段执行。
+`addEventListener(event, function, useCapture)` 其中，`event` 指定事件名；`function` 指定要事件触发时执行的函数；`useCapture` 指定事件 是否在捕获或冒泡阶段执行。
 
 ## 37. DOM 怎么添加移除移动复制创建？
 
@@ -801,10 +799,10 @@ insertBefore() //并没有insertAfter()
 node.cloneNode()
 ```
 
-## 38. mouseover,mouseenter,mouseleave,mouseout 的区别？
+## 38. mouseover、mouseenter、mouseleave、mouseout 的区别？
 
-`mouseover`：当鼠标移入元素或其子元素都会触发事件，所以有一个重复触发，冒泡的过程。对应的移除事件是 `mouseout`。
-`mouseenter`：当鼠标移出元素本身（不包含元素的子元素）会触发事件，也就是不会冒泡，对应的移除事件是 `mouseleave`。
+- `mouseover`：当鼠标移入元素或其子元素都会触发事件，所以有一个重复触发，冒泡的过程。对应的移除事件是 `mouseout`。
+- `mouseenter`：当鼠标移出元素本身（不包含元素的子元素）会触发事件，也就是不会冒泡，对应的移除事件是 `mouseleave`。
 
 ## 39. 实现一个 once 函数，实现只能执行一次的效果？
 
@@ -822,13 +820,13 @@ function func(fn) {
 
 ## 40. HTML5 Drag API
 
-`dragstart`：事件主体是被拖放元素，在开始拖放被拖放元素时触发。
-`darg`：事件主体是被拖放元素，在正在拖放被拖放元素时触发。
-`dragenter`：事件主体是目标元素，在被拖放元素进入某元素时触发。
-`dragover`：事件主体是目标元素，在被拖放在某元素内移动时触发。
-`dragleave`：事件主体是目标元素，在被拖放元素移出目标元素是触发。
-`drop`：事件主体是目标元素，在目标元素完全接受被拖放元素时触发。
-`dragend`：事件主体是被拖放元素，在整个拖放操作结束时触发。
+- `dragstart`：事件主体是被拖放元素，在开始拖放被拖放元素时触发。
+- `darg`：事件主体是被拖放元素，在正在拖放被拖放元素时触发。
+- `dragenter`：事件主体是目标元素，在被拖放元素进入某元素时触发。
+- `dragover`：事件主体是目标元素，在被拖放在某元素内移动时触发。
+- `dragleave`：事件主体是目标元素，在被拖放元素移出目标元素是触发。
+- `drop`：事件主体是目标元素，在目标元素完全接受被拖放元素时触发。
+- `dragend`：事件主体是被拖放元素，在整个拖放操作结束时触发。
 
 ## 41. 内部属性 `[[class]]` 是什么？
 
@@ -836,37 +834,34 @@ function func(fn) {
 
 ## 42. 判断当前脚本是否运行在 node 中？
 
-`this === window ? 'browser' : 'node';`
+`typeof window === 'undefined' ? 'node' : 'browser';`
 
 通过判断 Global 对象是否为 `window`，如果不为 `window`，当前脚本没有运行在浏览器中。
 
 ## 43. toPrecision 和 toFixed 和 Math.round 的区别？
 
-`toPrecision` 用于处理精度，精度是从左至右第一个不为 0 的数开始数起。
+`toPrecision(n)` 用于处理精度，所接受的参数 `n` 表示整个数字所保留的位数，会进行四舍五入。
 
-`toFixed` 是对小数点后指定位数取整，从小数点开始数起。
+`toFixed(n)` 是对小数点后指定位数取整，所接受的参数 `n` 表示小数点后保留的位数，会进行四舍五入。
 
-`Math.round` 是将一个数字四舍五入到一个整数
+`Math.round` 是将一个数字四舍五入到一个整数。
 
 ## 44. 如何比较两个 DOM 树的差异?
 
-两个树的完全 diff 算法的时间复杂度为 O(n^3) ，但是在前端中，我们很少会跨层级的移动 元素，所以我们只需要比较同一层级的元素进行比较，这样就可以将算法的时间复杂度降低为 O(n)。
+两个树的完全 diff 算法的时间复杂度为 $O(n^3)$ ，但是在前端中，我们很少会跨层级的移动元素，所以我们只需要比较同一层级的元素进行比较，这样就可以将算法的时间复杂度降低为 $O(n)$。
 
 算法首先会对新旧两棵树进行一个深度优先的遍历，这样每个节点都会有一个序号。在深度遍历 的时候，每遍历到一个节点，我们就将这个节点和新的树中的节点进行比较，如果有差异，则将 这个差异记录到一个对象中。
 
 在对列表元素进行对比的时候，由于 TagName 是重复的，所以我们不能使用这个来对比。我们需要给每一个子节点加上一个 key，列表对比的时候使用 key 来进行比较，这样我们才能够复用老的 DOM 树上的节点。
 
-## 45. innerHTML 与 outerHTML 的区别？
+## 45. innerHTML、outerHTML、innerText、outerText 的区别？
 
-对于这样一个 HTML 元素：`<div>content<br/></div>`
+- `innerHTML`：输出当前标签的文本内容，如果标签内有子标签，会连子标签本身和子标签内的文本内容一起输出。
+- `outerHTML`：输出**当前标签的本身**和标签内的文本内容，如果有子标签，那么子标签本身和标签内的文本内容也将一起输出。
+- `innerText`：只输出当前标签内的文本内容，如果标签内有子标签，那么也只输出子标签内的文本内容。
+- `outerText`：只输出当前标签内的文本内容，如果标签内有子标签，那么也只输出子标签内的文本内容。
 
-innerHTML：内部 HTML，`content<br/>`
-
-outerHTML：外部 HTML，`<div>content<br/></div>`
-
-innerText：内部文本，`content`
-
-outerText：内部文本，`content`
+虽然在内容获取方面 `innerText` 与 `outerText` 会得到相同的结果，但在赋值方面则不一样，给 `outerText` 赋值会替换掉整个标签本身，而 `innerText` 仅仅会修改内部文本。
 
 ## 46. JavaScript 类数组对象的定义?
 
@@ -883,14 +878,39 @@ outerText：内部文本，`content`
 
 ## 48. Reflect 对象创建目的？
 
-1. 将 `Object` 对象的一些明显属于语言内部的方法（比如 `Object.defineProperty`，放到 `Reflect` 对象上。
+1. 用一个单一的全局对象去存储这些方法，能够保持其它的 JavaScript 代码的整洁、干净。
 2. 修改某些 `Object` 方法的返回结果，让其变得更合理。
-3. 让 `Object` 操作都变成函数行为。
-4. `Reflect` 对象的方法与 `Proxy` 对象的方法一一对应，只要是 `Proxy` 对象的方法，就能在 `Reflect` 对象上找到对应的方法。这就让 `Proxy` 对象可以方便地调用对应的 `Reflect` 方法，完成默认行为，作为修改行为的基础。
+3. 将一些命令式的操作如 `delete`，`in` 等使用函数来替代，这样做的目的是为了让代码更加好维护，更容易向下兼容；也避免出现更多的保留字。
+4. `Reflect` 对象的方法与 `Proxy` 的 `handler` 对象的方法一一对应，只要是 `Proxy` 对象的方法，就能在 `Reflect` 对象上找到对应的方法。这就让 `Proxy` 对象可以方便地调用对应的 `Reflect` 方法，完成默认行为，作为修改行为的基础。
 
-也就是说，不管 `Proxy` 怎么修改默认行为，你总可以在 `Reflect` 上获取默认行为。
+```js
+let miaoMiao = {
+  _name: '疫苗',
+  get name() {
+    return this._name
+  },
+}
+let miaoXy = new Proxy(miaoMiao, {
+  get(target, prop, receiver) {
+    return Reflect.get(target, prop, receiver)
+    // 也可以简写为 Reflect.get(...arguments)
+  },
+})
+
+let kexingMiao = {
+  __proto__: miaoXy,
+  _name: '科兴疫苗',
+}
+
+// 结果是科兴疫苗
+console.log(kexingMiao.name)
+```
+
+`Reflect` 的所有属性和方法都是静态的，不管 `Proxy` 怎么修改默认行为，你总可以在 `Reflect` 上获取默认行为。
 
 ## 49. 什么是 proxy ？
+
+用法：`new Proxy(target, handler)`
 
 `Proxy` 用于修改某些操作的默认行为，等同于在语言层面做出修改，所以属于一种“元编程”，即对编程语言进行编程。
 
@@ -1753,4 +1773,80 @@ console.log(test.substr(7, 4)) // 'orld'
 console.log(test.substr(-2, 2)) // 'ld'
 console.log(test.substr(4, -1)) // ''
 console.log(test.substr(4)) // 'o world'
+```
+
+## 88. 数组中的 Empty 是怎么回事？
+
+在 JavaScript 的数组是以稀疏数组的形式存在的，所以当在某些位置没有值时，就需要使用某个值去填充。当然对于稀疏数组在各种浏览器中会存在优化的操作，例如在 V8 引擎中就存在快数组与慢数组的转化，此外在 V8 中对于 empty 的描述是一个空对象的引用。
+
+在 JavaScript 中使用 `Array` 构造器创建出的存在空位的问题，默认并不会以 undefined 填充，而是以 empty 作为值，需要注意的是，空位并不是 `undefined`，`undefined` 表示的是没有定义，但是本身 `undefined` 就是一个基本数据类型，是一个值，而是 empty 表示了该处没有任何值，是一个完全为空的位置。
+
+```js
+console.log([, , ,]) // (3) [empty × 3]
+console.log(new Array(3)) // (3) [empty × 3]
+console.log([undefined, undefined, undefined]) // (3) [undefined, undefined, undefined]
+console.log(0 in [undefined, undefined, undefined]) // true
+console.log(0 in [, , ,]) // false // in 是检查索引 此处表示 0 位置是没有值的
+```
+
+一些数组方法会忽略 empty 空位，另外一些则是将空位转为 `undefined`：
+
+```js
+// forEach 忽略空位
+;[1, , 2].forEach((v) => console.log(v)) // 1 2
+
+// for in 忽略空位
+for (let key in [1, , 2]) {
+  console.log(key)
+} // 0 2
+
+// filter 忽略空位
+console.log([1, , 2].filter((v) => true)) // [1, 2]
+
+// every 忽略空位
+console.log([1, , 1].every((v) => v === 1)) // true
+
+// some 忽略空位
+console.log([1, , 1].some((v) => v !== 1)) // false
+
+// map 遍历时忽略空位 新数组保留空位
+console.log([1, , 1].map((v) => 11)) // (3) [11, empty, 11]
+
+// join 将空位与undefined以及null视为空字符串
+console.log([1, , 1, null, undefined].join('|')) // 1||1||
+
+// toString 将空位与undefined以及null视为空字符串
+console.log([1, , 1, null, undefined].toString()) // 1,,1,,
+
+// Array.form 将空位转为undefined
+console.log(Array.from([1, , 2])) // (3) [1, undefined, 2]
+
+// ... 将空位转为undefined
+console.log([...[1, , 2]]) // (3) [1, undefined, 2]
+
+// copyWithin 将空位一并拷贝
+console.log([1, , 2].copyWithin()) // (3) [1, empty, 2]
+
+// for of 遍历空位并将值作为undefined
+for (let key of [1, , 2]) {
+  console.log(key)
+} // 1 undefined 2
+
+// includes 将空位处理成undefined
+console.log([, , ,].includes(undefined)) // true
+
+// entries 将空位处理成undefined
+console.log([...[1, , 2].entries()]) // [[0, 1], [1, undefined], [2, 2]]
+
+// keys 会取出空位的索引
+console.log([...[1, , 2].keys()]) // [0, 1, 2]
+
+// values 将空位处理成undefined
+console.log([...[1, , 2].values()]) // [1, undefined, 2]
+
+// find 将空位处理成undefined
+console.log([, , 1].find((v) => true)) // undefined
+
+// find 将空位处理成undefined
+console.log([, , 1].findIndex((v) => true)) // 0
 ```
