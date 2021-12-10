@@ -1246,7 +1246,7 @@ Web Components 目前的支持度并不高，因此需要谨慎使用。
 
 1. `event.stopPropagation()`
 
-这是阻止事件的冒泡方法，不让事件向 documen 上蔓延，但是默认事件任然会执行，当你掉用这个方法的时候，如果点击一个连接，这个连接仍然会被打开。
+这是阻止事件的冒泡方法，不让事件向 document 上蔓延，但是默认事件任然会执行，当你掉用这个方法的时候，如果点击一个连接，这个连接仍然会被打开。
 
 2. `event.preventDefault()`
 
@@ -1260,7 +1260,7 @@ Web Components 目前的支持度并不高，因此需要谨慎使用。
 
 Generator 引入的“协程”概念，这就意味着我们可以以同步的方式来书写异步代码。
 
-generator 对象同时实现了：可迭代协议（Symbol.iterator）和 迭代器协议（next()）。
+Generator 对象同时实现了：可迭代协议（`Symbol.iterator`）和 迭代器协议（`next()`）。
 
 ```js
 function* g() {
@@ -1352,27 +1352,34 @@ function asyncToGenerator(generatorFunc) {
 ## 73. 手写 Promise.all
 
 ```js
-Promise.myAll = function (promises) {
+Promise.all = function (promises) {
   return new Promise((resolve, reject) => {
-    let res = []
-    promises.forEach((promise, index) => {
-      promise
-        .then((data) => {
-          res.push(data)
-          if (index === promises.length - 1) {
-            resolve(res)
+    if (!promises || typeof promises !== 'object' || typeof promises[Symbol.iterator] !== 'function') {
+      reject(TypeError())
+    }
+    if (promises.length === 0) {
+      resolve([])
+    } else {
+      let ans = []
+      let index = 0
+      for (let i = 0; i < promises.length; i++) {
+        Promise.resolve(promises[i]).then(
+          (data) => {
+            // 不能用Push操作,因为不能确定谁先回来,要用index来记录，否则无法准确获得当前收到的结果的数目
+            index++
+            ans[i] = data
+            if (index === promises.length) {
+              resolve(ans)
+            }
+          },
+          (error) => {
+            reject(error)
           }
-        })
-        .catch((err) => {
-          reject(err)
-        })
-    })
+        )
+      }
+    }
   })
 }
-
-Promise.myAll([p1, p2]).then((res) => {
-  console.log(res)
-})
 ```
 
 ## 74. 对象的深度克隆，包括 function，Date，RegExp 和 symbol 类型？
@@ -1850,3 +1857,9 @@ console.log([, , 1].find((v) => true)) // undefined
 // find 将空位处理成undefined
 console.log([, , 1].findIndex((v) => true)) // 0
 ```
+
+## 89. Symbol 有哪些用处？
+
+## 90. 前端有哪些性能监控方式？
+
+## 91. 

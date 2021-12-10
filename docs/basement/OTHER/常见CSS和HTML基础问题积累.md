@@ -912,3 +912,5 @@ div {
 
 :::
 ::::
+
+## 60. transition 和 animation 的区别？
