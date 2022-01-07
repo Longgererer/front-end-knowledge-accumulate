@@ -633,164 +633,287 @@ Promise.any([timer(100), timer(200), timer(300)]).then((res) => {
 
 ## 深入实现一个 Promise
 
-[深入 Promise(一)——Promise 实现详解](https://zhuanlan.zhihu.com/p/25178630)
-
-```javascript
-function Promise1(fn) {
-  let state = 'pending' // fulfilled | rejected
-  let value = null
-  const callbacks = []
-  function resolve(newValue) {
-    const fn = () => {
-      if (state !== 'pending') return
-      if (newValue && ['function', 'object'].includes(typeof newValue)) {
-        const { then } = newValue
-        if (typeof then === 'function') {
-          then.call(newValue, resolve)
-          return
-        }
-      }
-      state = 'fulfilled'
-      value = newValue
-      handleCb()
-    }
-    setTimeout(fn, 0)
-  }
-  function reject(error) {
-    const fn = () => {
-      if (state !== 'pending') return
-      if (error && ['function', 'object'].includes(typeof error)) {
-        const { then } = error
-        if (typeof then === 'function') {
-          then.call(error, resolve, reject)
-          return
-        }
-      }
-      state = 'rejected'
-      value = error
-      handleCb()
-    }
-    setTimeout(fn, 0)
-  }
-  function handleCb() {
-    while (callbacks.length) {
-      const fulfilled = callbacks.shift()
-      handle(fulfilled)
-    }
-  }
-  function handle(callback) {
-    if (state === 'pending') {
-      callbacks.push(callback)
-      return
-    }
+```js
+class CustomPromise {
+  constructor(fn) {
+    this.state = 'pending' // pending|fulfilled|rejected
+    this.value = void 0
+    this.onFulfilledCallbacks = []
+    this.onRejectedCallbacks = []
     try {
-      if (state === 'fulfilled') {
-        if (!callback.onFulfilled) {
-          callback.resolve(value)
-          return
-        }
-        const ret = callback.onFulfilled(value)
-        callback.resolve(ret) // 处理下一个promise的resolve
-      }
-      if (state === 'rejected') {
-        if (!callback.onRejected) {
-          callback.reject(value)
-          return
-        }
-        const ret = callback.onRejected(value)
-        callback.reject(ret)
-      }
-    } catch (error) {
-      callback.reject(error)
+      fn(this.resolve, this.reject)
+    } catch (err) {
+      this.reject(err)
     }
   }
-  this.then = function (onFulfilled, onRejected) {
-    return new Promise1((resolve, reject) => {
-      handle({
-        onFulfilled,
-        resolve,
-        onRejected,
-        reject,
-      })
-    })
-  }
-  this.catch = function (onError) {
-    this.then(null, onError)
-  }
-  this.finally = function (onDone) {
-    this.then(onDone, onDone)
-  }
-  this.resolve = function (value) {
-    if (value && value instanceof Promise1) {
+  static resolve(value) {
+    if (value instanceof CustomPromise) {
       return value
-    } else if (value && typeof value === 'object' && typeof value.then === 'function') {
-      let { then } = value
-      return new Promise1((resolve) => {
-        then(resolve)
-      })
-    } else if (value) {
-      return new Promise1((resolve) => resolve(value))
-    } else {
-      return new Promise1((resolve) => resolve())
+    }
+    return new CustomPromise((resolve) => {
+      resolve(value)
+    })
+  }
+  static reject(err) {
+    return new CustomPromise((_, reject) => {
+      reject(err)
+    })
+  }
+  resolve = (value) => {
+    if (this.state === 'pending') {
+      this.state = 'fulfilled'
+      this.value = value
+      while (this.onFulfilledCallbacks.length) {
+        this.onFulfilledCallbacks.shift()(value)
+      }
     }
   }
-  this.reject = function (value) {
-    return new Promise1((resolve, reject) => {
-      reject(value)
-    })
+  reject = (err) => {
+    if (this.state === 'pending') {
+      this.state = 'rejected'
+      this.value = err
+      while (this.onRejectedCallbacks.length) {
+        this.onRejectedCallbacks.shift()(err)
+      }
+    }
   }
-  this.all = function (arr) {
-    let args = Array.prototype.slice.call(arr)
-    return new Promise1((resolve, reject) => {
-      if (args.length === 0) return resolve([])
-      let remaining = args.length
-      function res(i, value) {
+  then(onFulfilled, onRejected) {
+    if (typeof onFulfilled !== 'function') {
+      onFulfilled = (value) => value
+    }
+    if (typeof onRejected !== 'function') {
+      onRejected = (err) => {
+        throw err
+      }
+    }
+    const newPromise = new CustomPromise((resolve, reject) => {
+      const fulfilledTask = () => {
+        queueMicrotask(() => {
+          try {
+            // 调用成功回调，并且把值返回
+            const returnVal = onFulfilled(this.value)
+            this.doResolve(returnVal, newPromise, resolve, reject)
+          } catch (err) {
+            reject(err)
+          }
+        })
+      }
+      const rejectedTask = () => {
+        queueMicrotask(() => {
+          try {
+            // 调用失败回调，并且把原因返回
+            const returnVal = onRejected(this.value)
+            this.doResolve(returnVal, newPromise, resolve, reject)
+          } catch (err) {
+            reject(err)
+          }
+        })
+      }
+      if (this.state === 'fulfilled') {
+        // 创建一个微任务以防止newPromise未初始化
+        fulfilledTask()
+      } else if (this.state === 'rejected') {
+        rejectedTask()
+      } else if (this.state === 'pending') {
+        this.onFulfilledCallbacks.push(fulfilledTask)
+        this.onRejectedCallbacks.push(rejectedTask)
+      }
+    })
+    return newPromise
+  }
+  doResolve(returnVal, newPromise, resolve, reject) {
+    if (returnVal === newPromise) {
+      // 如果返回的是本身，就报错，因为这会造成死循环
+      return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+    }
+    if (typeof returnVal === 'function' || typeof returnVal === 'object') {
+      if (returnVal === null) {
+        return resolve(returnVal)
+      }
+      let then
+      try {
+        // 把 returnVal.then 赋值给 then
+        then = returnVal.then
+      } catch (err) {
+        // 如果取 returnVal.then 的值时抛出错误 error ，则以 error 为据因拒绝 promise
+        return reject(err)
+      }
+      if (typeof then === 'function') {
+        let done = false
         try {
-          if (value && ['object', 'function'].includes(typeof value)) {
-            const { then } = value
-            if (typeof then === 'function') {
-              then.call(
-                value,
-                function (val) {
-                  res(i, val)
-                },
-                reject
-              )
-
-              return
+          then.call(
+            returnVal,
+            (res) => {
+              if (!done) {
+                done = true
+                // 再次调用 doResolve，因为返回值 res 仍然可能会是一个 thenable 对象，一直递归直到 res 不是 thenable 对象为止
+                this.doResolve(res, newPromise, resolve, reject)
+              }
+            },
+            (err) => {
+              if (!done) {
+                done = true
+                reject(err)
+              }
             }
+          )
+        } catch (err) {
+          if (!done) {
+            reject(err)
           }
-          args[i] = value
-          if (--remaining === 0) {
-            resolve(args)
-          }
-        } catch (error) {
-          reject(error)
         }
+      } else {
+        resolve(returnVal)
       }
-      for (let i = 0; i < args.length; i++) {
-        res(i, args[i])
-      }
-    })
+    } else {
+      // 普通值，直接调用resolve
+      resolve(returnVal)
+    }
   }
-  this.race = function (values) {
-    return new Promise1((resolve, reject) => {
-      for (let i = 0, len = values.length; i < len; i++) {
-        values[i].then(resolve, reject)
-      }
-    })
-  }
-  fn(resolve, reject)
 }
-new Promise1(() => {})
-  .all([new Promise1((resolve) => resolve('2')), new Promise1((resolve) => test())])
-  .then((res) => {
-    console.log('res', res)
+```
+
+### 练手
+
+我们来看看下面这道题：
+
+```js
+Promise.resolve()
+  .then(() => {
+    console.log(0)
+    return Promise.resolve(4)
   })
-  .catch((error) => {
-    console.log('all', error)
+  .then((res) => {
+    console.log(res)
+  })
+Promise.resolve()
+  .then(() => {
+    console.log(1)
+  })
+  .then(() => {
+    console.log(2)
+  })
+  .then(() => {
+    console.log(3)
   })
 ```
+
+答案是：`0 1 2 3 4`。
+
+为什么 `4` 要在 `2` 和 `3` 的后面输出呢?
+
+我们知道：在 `x` 为非 `Promise`，非 `thenable` 对象时，`Promise.resolve(x)` 实际上等于 `new Promise((resolve)=>{resolve(4)})`。
+
+因此，上面的代码等价于：
+
+```js
+new Promise((resolve) => {
+  // Promise1
+  resolve()
+})
+  .then(() => {
+    // then1
+    console.log(0)
+    return new Promise((resolve) => {
+      // Promise3
+      resolve(4)
+    })
+    // .then(res=>res) 这里有个隐藏的then6
+  })
+  // .then() 这里有个隐藏的then7
+  .then((res) => {
+    // then2
+    console.log(res)
+  })
+new Promise((resolve) => {
+  // Promise2
+  resolve()
+})
+  .then(() => {
+    // then3
+    console.log(1)
+  })
+  .then(() => {
+    // then4
+    console.log(2)
+  })
+  .then(() => {
+    // then5
+    console.log(3)
+  })
+```
+
+因此，执行步骤如下：
+
+1. `Promise1` 执行 `resolve`，将状态变为 `fulfilled` 并将下面的 `then1` 放到微任务队列中。
+2. `Promise2` 执行 `resolve`，将状态变为 `fulfilled` 并将下面的 `then3` 放到微任务队列中。
+3. 同步代码执行完毕，开始清理微任务队列，取出队头的任务 `then1` 放入执行栈。
+4. 输出 `0`，执行返回的 `Promise3` 中的回调，执行 `resolve(4)`，这时会将 `Promise3` 的 `then6` 放到微任务队列中。
+5. 取出队头的任务 `then3` 执行，输出 `1`，并将 `then4` 放到微任务队列中。
+6. 取出队头的任务执行，该任务就是 `Promise3` 的 `then6` 方法，由于我们没有人为的设置这个 `then` 方法的行为，因此相当于执行 `then(res => res)`，然后将 `then7` 放到微任务队列中，为什么会有一个 `then7` 呢？因为 `Promise` 需要判断上一个 `onFulfilled` 函数所返回的值是否为 `Promise` 或 `thenable` 对象。
+7. 取出队头的任务 `then4` 执行，输出 `2`，并将 `then5` 放到微任务队列中。
+8. 取出队头的任务 `then7` 执行，然后将 `then2` 放到微任务队列中。
+9. 取出队头的任务 `then5` 执行，输出 `3`。
+10. 取出队头的任务 `then2` 执行，输出 `4`。
+11. 完毕。
+
+从这道题中我们可以得出一个规律：**处理程序里返回 `thenable` 对象就会导致增加两个任务入列。**根据规范，它就该这样。说不上什么巧合，可以算是有意为之。
+
+:::tip Notice
+只要执行了 `resolve`，就必定执行该 `Promise` 的 `then`，无论有没有人为设置。
+:::
+
+那如果 `x` 为 `Promise` 或 `thenable` 对象呢？我们再来看一题：
+
+```js
+new Promise((resolve) => {
+  resolve(1)
+  Promise.resolve({
+    then: function (resolve, reject) {
+      console.log(2)
+      resolve(3)
+    },
+  }).then((t) => console.log(t))
+  console.log(4)
+}).then((t) => console.log(t))
+console.log(5)
+```
+
+答案是：`4 5 2 1 3`。
+
+1. 首先，执行 `resolve(1)`，外部 `Promise` 的状态变为 `fulfilled`，由于后面还有代码，因此不会先把输出 `1` 的任务入微任务队列。
+2. 然后执行 `Promise.resolve`，这会把传递的 `thenable` 对象转换为 `Promise`，然后将其 `then` 函数入微任务队列。
+3. 输出 `4`。
+4. 外部 `Promise` 回调函数执行完毕，将输出 `1` 的任务入微任务队列。
+5. 输出 `5`。
+6. 清理微任务队列，将第一个入队的函数取出放入执行栈，输出 `2`，执行 `resolve(3)`，将输出 `3` 的任务入队。
+7. 继续取出队头的函数，执行，输出 `1`。
+8. 继续取出队头的函数，执行，输出 `3`。
+9. 为任务栏队列已空，运行结束。
+
+实际上：
+
+```js
+Promise.resolve(x)
+// 等价于
+new Promise((resolve) => {
+  resolve(x)
+})
+// 或者
+Promise.resolve({
+  then(resolve) {
+    resolve(4)
+  },
+})
+```
+
+### Promise.resolve & Promise Resolve Function
+
+`Promise.resolve` 是静态方法，`Promise Resolve Function` 指的是 `resolve, reject` 里面的 `resolve` 函数。
+
+`Promise Resolve Function` 本身的行为只和上一个 `onfulfilled` 的返回值是不是 `thenable` 有关，发现是 `thenable` 就会入列一个新任务。这个新任务之后调用 `thenable` 的 `then`。而 `Promise` 的 `then` 又会加一个任务。
+
+而 `Promise.resolve` 函数是不一样的东西。它会看传入参数是否是原本的 `Promise` 实例。如果是则立刻返回传入参数本身。否则，根据自己的 `this`（一般用法就是全局变量 `Promise`）调用 `new this((resolve, reject)=>...)` 创建新的 Promise-like 对象，而在 `...` 的过程中，它会获取 Promise-like 对象对应的 `resolve`。
 
 ## 参考文章
 
@@ -798,3 +921,4 @@ new Promise1(() => {})
 - [阮一峰 ECMAScript 6 (ES6) 标准入门教程 第三版](https://www.bookstack.cn/read/es6-3rd/spilt.11.docs-promise.md)
 - [ES6 之 promise(resolve 与 reject)](https://www.jianshu.com/p/b511bfc58ae9)
 - [深入 Promise(一)——Promise 实现详解](https://zhuanlan.zhihu.com/p/25178630)
+- [从一道让我失眠的 Promise 面试题开始，深入分析 Promise 实现细节](https://juejin.cn/post/6945319439772434469)

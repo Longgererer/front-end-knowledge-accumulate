@@ -17,7 +17,7 @@
     </template>
     <template #page-bottom>
       <div>这是页脚，放评论的123</div>
-    </template> -->
+    </template>-->
   </Layout>
 </template>
 
@@ -27,13 +27,11 @@ import { useRoute } from 'vue-router'
 import Layout from '@vuepress/theme-default/lib/client/layouts/Layout.vue'
 
 export default defineComponent({
-  setup() {
+  setup () {
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/npm/@docsearch/js@alpha'
+    document.body.append(script)
     const route = useRoute()
-    watch(route, (newValue) => {
-      if (newValue.path === '/') {
-        addBtn()
-      }
-    })
     const hrefList = [
       '/basement/',
       '/algorithm/',
@@ -46,7 +44,7 @@ export default defineComponent({
         <polygon points="446 418 466 418 466 398 446 398"></polygon>
       </g>
     </svg>`
-    function addBtn() {
+    function addBtn () {
       const eleList = document.querySelectorAll('.feature')
       eleList.forEach((el, index) => {
         const newDiv = document.createElement('div')
@@ -56,6 +54,20 @@ export default defineComponent({
     }
     onMounted(() => {
       addBtn()
+      watch(route, (newValue) => {
+        if (newValue.path === '/') {
+          addBtn()
+        } else {
+          const prev = document.querySelector('.prev')
+          const next = document.querySelector('.next')
+          if (prev?.childNodes[0]) {
+            prev.childNodes[0].nodeValue = ''
+          }
+          if (next?.childNodes[1]) {
+            next.childNodes[1].nodeValue = ''
+          }
+        }
+      })
     })
   },
   components: {

@@ -284,7 +284,7 @@ const methodsToPatch = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 're
 /**
  * Intercept mutating methods and emit events
  */
-methodsToPatch.forEach(function(method) {
+methodsToPatch.forEach(function (method) {
   // cache original method
   const original = arrayProto[method]
   def(arrayMethods, method, function mutator(...args) {
@@ -720,7 +720,7 @@ Codegen 时递归的对每一个 AST 节点进行处理。针对 `events` 属性
 
 ```js
 // App.vue 编译后的render函数
-var render = function() {
+var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
@@ -1141,7 +1141,7 @@ const targetNode = document.getElementById('some-id')
 const config = { attributes: true, childList: true, subtree: true }
 
 // 当观察到变动时执行的回调函数
-const callback = function(mutationsList, observer) {
+const callback = function (mutationsList, observer) {
   // Use traditional 'for loops' for IE 11
   for (let mutation of mutationsList) {
     if (mutation.type === 'childList') {
@@ -1239,9 +1239,7 @@ observer.disconnect()
 
 ```html
 <ul>
-  <li v-for="user in users" v-if="user.isActive" :key="user.id">
-    {{ user.name }}
-  </li>
+  <li v-for="user in users" v-if="user.isActive" :key="user.id">{{ user.name }}</li>
 </ul>
 ```
 
@@ -1276,9 +1274,7 @@ this.users.map((user) => {
 ```html
 <ul>
   <template v-for="user in users" :key="user.id">
-    <li v-if="user.isActive">
-      {{ user.name }}
-    </li>
+    <li v-if="user.isActive">{{ user.name }}</li>
   </template>
 </ul>
 ```
@@ -1287,9 +1283,7 @@ this.users.map((user) => {
 
 ```html
 <ul>
-  <li v-for="user in users" v-show="user.isActive" :key="user.id">
-    {{ user.name }}
-  </li>
+  <li v-for="user in users" v-show="user.isActive" :key="user.id">{{ user.name }}</li>
 </ul>
 ```
 
@@ -1323,7 +1317,7 @@ class Bus {
   }
 }
 const EventBus = new EventBusClass()
-EventBus.on('fn1', function(msg) {
+EventBus.on('fn1', function (msg) {
   alert(`订阅的消息是：${msg}`)
 })
 EventBus.emit('fn1', '你好，世界！')
@@ -2063,7 +2057,7 @@ axios
   .get('/user/1', {
     cancelToken: source.token,
   })
-  .catch(function(thrown) {
+  .catch(function (thrown) {
     if (axios.isCancel(thrown)) {
       console.log('Request canceled', thrown.message)
     } else {
@@ -2130,7 +2124,7 @@ if (window.XMLHttpRequest) {
 xhr = new XMLHttpRequest()
 xhr.open('GET', 'https://api')
 xhr.send()
-xhr.onreadystatechange = function() {
+xhr.onreadystatechange = function () {
   if (xhr.readyState === 4 && xhr.status === 200) {
     // success
   } else {
@@ -2292,9 +2286,7 @@ Object.assign(this.$data, this.$options.data())
 ## 85. vue 渲染模板时怎么保留模板中的 HTML 注释呢？
 
 ```html
-<template comments>
-  ...
-</template>
+<template comments> ... </template>
 ```
 
 ## 86. 你知道 style 加 scoped 属性的用途和原理吗？
@@ -2464,7 +2456,7 @@ new Vue({
     tabs: ['Home', 'Posts', 'Archive'],
   },
   computed: {
-    currentTabComponent: function() {
+    currentTabComponent: function () {
       return 'tab-' + this.currentTab.toLowerCase()
     },
   },
@@ -2568,3 +2560,224 @@ export default {
 ## 103. v-on 可以绑定多个方法吗？
 
 可以：`<input v-model="msg" type="text" v-on="{ input:a, focus:b }"/>`
+
+## 104. createElement 函数怎么用？
+
+`createElement` 接受如下参数：
+
+1. `tag`: 一个 HTML 标签名、组件选项对象，或者 `resolve` 了上述任何一种的一个 `async` 函数。必填项。
+2. `data`: 一个与模板中 attribute 对应的数据对象。可选。
+3. `children`: 子级虚拟节点 (VNodes)，由 `createElement()` 构建而成，也可以使用字符串来生成“文本虚拟节点”。可选。
+
+在数据对象中，支持如下选项：
+
+```js
+data = {
+  class: { foo: true, bar: false }, // 与v-bind:class的 API 相同，接受一个字符串、对象或字符串和对象组成的数组
+  style: { color: 'red', fontSize: '14px' }, // 与v-bind:style的 API 相同，接受一个字符串、对象，或对象组成的数组
+  attrs: { id: 'foo' }, // 普通的 HTML attribute
+  props: { myProp: 'bar' }, // 组件 prop
+  domProps: { innerHTML: 'baz' }, // DOM property
+  on: { click: this.clickHandler }, // 事件监听器在on内，但不再支持如v-on:keyup.enter这样的修饰器。需要在处理函数中手动检查keyCode。
+  nativeOn: { click: this.nativeClickHandler }, // 仅用于组件，用于监听原生事件，而不是组件内部使用，vm.$emit触发的事件。
+  directives: [
+    // 自定义指令。注意，你无法对binding中的oldValue赋值，因为 Vue 已经自动为你进行了同步。
+    {
+      name: 'my-custom-directive',
+      value: '2',
+      expression: '1 + 1',
+      arg: 'foo',
+      modifiers: {
+        bar: true,
+      },
+    },
+  ],
+  scopedSlots: {
+    // 作用域插槽的格式为{ name: props => VNode | Array<VNode> }
+    default: (props) => createElement('span', props.text),
+  },
+  slot: 'name-of-slot', // 如果组件是其它组件的子组件，需为插槽指定名称
+  key: 'myKey',
+  ref: 'myRef',
+  refInFor: true, // 如果你在渲染函数中给多个元素都应用了相同的 ref 名，那么$refs.myRef会变成一个数组。
+}
+```
+
+组件树中的所有 VNode 必须是唯一的。这意味着，下面的渲染函数是不合法的：
+
+```js
+function render(createElement) {
+  var myParagraphVNode = createElement('p', 'hi')
+  return createElement('div', [
+    // 错误 - 重复的 VNode
+    myParagraphVNode,
+    myParagraphVNode,
+  ])
+}
+```
+
+如果你真的需要重复很多次的元素/组件，你可以使用工厂函数来实现。例如，下面这渲染函数用完全合法的方式渲染了 20 个相同的段落：
+
+```js
+function render(createElement) {
+  return createElement(
+    'div',
+    Array.apply(null, { length: 20 }).map(function () {
+      return createElement('p', 'hi')
+    })
+  )
+}
+```
+
+对于 `v-if` 和 `v-for`，在 `render` 可以使用 `if/else` 和 `map`：
+
+:::: tabs
+::: tab Template
+
+```html
+<ul v-if="items.length">
+  <li v-for="item in items">{{ item.name }}</li>
+</ul>
+<p v-else>No items found.</p>
+```
+
+:::
+::: tab render
+
+```js
+function render(createElement) {
+  if (this.items.length) {
+    return createElement(
+      'ul',
+      this.items.map((item) => createElement('li', item.name))
+    )
+  } else {
+    return createElement('p', 'No items found.')
+  }
+}
+```
+
+:::
+::::
+
+渲染函数中没有与 `v-model` 的直接对应——你必须自己实现相应的逻辑：
+
+```js
+function render(createElement) {
+  const self = this
+  return createElement('input', {
+    domProps: {
+      value: self.value,
+    },
+    on: {
+      input: function (event) {
+        self.$emit('input', event.target.value)
+      },
+    },
+  })
+}
+```
+
+对于 `.passive`、`.capture` 和 `.once` 这些事件修饰符，Vue 提供了相应的前缀可以用于 `on`：
+
+- `.passive` 对应 `&`。
+- `.capture` 对应 `!`。
+- `.once` 对应 `~`。
+- `.capture.once` 或 `.once.capture` 对应 `~!`。
+
+例如：
+
+```js
+createElement('div', {
+  on: {
+    '!click': this.doThisInCapturingMode,
+    '~keyup': this.doThisOnce,
+    '~!mouseover': this.doThisOnceInCapturingMode,
+  },
+})
+```
+
+对于所有其它的修饰符，私有前缀都不是必须的，因为你可以在事件处理函数中使用事件方法。
+
+![](http://picstore.lliiooiill.cn/1639382621%281%29.jpg)
+
+你可以通过 `this.$slots` 访问静态插槽的内容，每个插槽都是一个 VNode 数组。也可以通过 `this.$scopedSlots` 访问作用域插槽，每个作用域插槽都是一个返回若干 VNode 的函数：
+
+```js
+function render(createElement) {
+  // `<div><slot :text="message"></slot></div>`
+  return createElement('div', [
+    this.$scopedSlots.default({
+      text: this.message,
+    }),
+  ])
+}
+```
+
+如果要用渲染函数向子组件中传递作用域插槽，可以利用 VNode 数据对象中的 `scopedSlots` 字段：
+
+```js
+function render(createElement) {
+  // `<div><child v-slot="props"><span>{{ props.text }}</span></child></div>`
+  return createElement('div', [
+    createElement('child', {
+      // 在数据对象中传递 `scopedSlots`
+      // 格式为 { name: props => VNode | Array<VNode> }
+      scopedSlots: {
+        default: function (props) {
+          return createElement('span', props.text)
+        },
+      },
+    }),
+  ])
+}
+```
+
+实际上，使用 `createElement` 往往让人感到很痛苦，因为太麻烦了，因此 `render` 函数还支持使用 JSX 语法。
+
+```js
+new Vue({
+  el: '#demo',
+  render: function (h) {
+    return (
+      <AnchoredHeading level={1}>
+        <span>Hello</span> world!
+      </AnchoredHeading>
+    )
+  },
+})
+```
+
+## 105. Vue 函数式组件怎么用？
+
+函数式组件只是一个接受一些 `prop` 的函数。在这样的场景下，我们可以将组件标记为 `functional`，这意味它无状态 (没有响应式数据)，也没有实例 (没有 `this` 上下文)，更没有生命周期。一个函数式组件就像这样：
+
+```js
+Vue.component('my-component', {
+  functional: true,
+  // Props 是可选的
+  props: {
+    // ...
+  },
+  // 为了弥补缺少的实例
+  // 提供第二个参数作为上下文
+  render: function (createElement, context) {
+    // ...
+  },
+})
+```
+
+在 2.5.0 及以上版本中，如果你使用了单文件组件，那么基于模板的函数式组件可以这样声明：
+
+```html
+<template functional> </template>
+```
+
+**函数式组件与普通组件的区别**:
+
+1. 函数式组件与普通组件的区别。
+2. 函数式组件不需要实例化，所以没有 `this`，`this` 通过 `render` 函数的第二个参数来代替。
+3. 函数式组件没有生命周期钩子函数，不能使用计算属性，`watch` 等等。
+4. 函数式组件不能通过 `$emit` 对外暴露事件，调用事件只能通过 `context.listeners.click` 的方式调用外部传入的事件。
+5. 因为函数式组件是没有实例化的，所以在外部通过 `ref` 去引用组件时，实际引用的是 `HTMLElement`。
+6. 函数式组件的 `props` 可以只声明一部分或者全都不声明，所有没有在 `props` 里面声明的属性都会被自动隐式解析为 `prop`，而普通组件所有未声明的属性都被解析到 `$attrs` 里面，并自动挂载到组件根元素上面(可以通过 `inheritAttrs` 属性禁止)。

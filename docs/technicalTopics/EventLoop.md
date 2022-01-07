@@ -102,18 +102,19 @@ console.log('end')
 - Object.observe(废弃)
 - MutaionObserver
 - process.nextTick(node.js)
+- queueMicrotask
 
 那么宏任务和微任务的执行顺序又是如何呢？
 
 ```javascript
 console.log('start')
-setTimeout(function() {
+setTimeout(function () {
   console.log('setTimeout')
 }, 0)
-new Promise(function(resolve) {
+new Promise(function (resolve) {
   console.log('newPromise')
   resolve()
-}).then(function() {
+}).then(function () {
   console.log('then')
 })
 console.log('end')
@@ -141,6 +142,12 @@ console.log('end')
 由此可得知，宏任务先于微任务执行，注意：**每执行完一个宏任务，都要检查微任务队列是否为空，否则执行所有微任务**，也就是说，微任务是一个接一个执行的，宏任务是一个一个分开执行的(这样说可能有点别扭，但我一时想不出更好的解释(＠\_＠;))。
 
 > 有一些人认为微任务的优先级是高于宏任务的，这是因为他们忽略了整体 script，实际上整个 script 也是一个宏任务，在执行任何一个 script 文件的时候，js 引擎都会将内容包装在函数中，并将该函数与 start 或 start 事件关联，这个事件将被添加到宏任务中。
+
+#### script 代码块之间的执行顺序？
+
+如果有多个 script 代码块，执行顺序又是如何呢？
+
+实际上如果同时存在两个 script 代码块，会首先在执行第一个 script 代码块中的同步代码，如果这个过程中创建了微任务并进入了微任务队列，第一个 script 同步代码执行完之后，会首先去清空微任务队列，再去开启第二个 script 代码块的执行。所以这里应该就可以理解 script（整体代码块）为什么会是宏任务。
 
 #### 优先级
 
@@ -281,13 +288,13 @@ then1
 ```javascript
 setTimeout(() => {
   console.log('timer1')
-  Promise.resolve().then(function() {
+  Promise.resolve().then(function () {
     console.log('promise1')
   })
 }, 0)
 setTimeout(() => {
   console.log('timer2')
-  Promise.resolve().then(function() {
+  Promise.resolve().then(function () {
     console.log('promise2')
   })
 }, 0)
@@ -371,17 +378,17 @@ async function async2() {
   console.log('async2 end')
 }
 async1()
-setTimeout(function() {
+setTimeout(function () {
   console.log('setTimeout')
 }, 0)
 new Promise((resolve) => {
   console.log('Promise')
   resolve()
 })
-  .then(function() {
+  .then(function () {
     console.log('promise1')
   })
-  .then(function() {
+  .then(function () {
     console.log('promise2')
   })
 console.log('script end')

@@ -66,6 +66,11 @@
     margin-right: 0.5rem;
     margin-top: 0.5rem;
   }
+  #docsearch-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 .navbar-links .navbar-links-item {
   padding: 0 6px;
@@ -225,12 +230,9 @@ main img {
       }
     }
     .prev {
-      .nav-link {
-        margin-left: -1.2rem;
-      }
       &::before {
         content: 'PREVIOUS';
-        left: 1.3rem;
+        left: 1.2rem;
       }
     }
     .next {
@@ -240,11 +242,8 @@ main img {
       justify-self: end;
       min-width: 100px;
       word-wrap: break-word;
-      .nav-link {
-        margin-right: -1.2rem;
-      }
       &::before {
-        right: 1.3rem;
+        right: 1.2rem;
         content: 'NEXT';
       }
     }

@@ -72,7 +72,7 @@ function CustomArray(...args) {
     }
   }
   // 定义Symbol.iterator方法使对象可以进行迭代遍历
-  arr[Symbol.iterator] = function*() {
+  arr[Symbol.iterator] = function* () {
     yield* Object.values(this)
   }
   return arr
@@ -100,7 +100,7 @@ OK！现在我们在此基础上实现其他的数组 API！
 `push` 方法会将参数列表添加进数组尾部，每添加一个元素，`length` 就递增，最后返回数组长度：
 
 ```javascript
-CustomArray.prototype.push = function(...items) {
+CustomArray.prototype.push = function (...items) {
   for (let i of items) {
     this[this.length] = i
     this.length++
@@ -123,7 +123,7 @@ console.log(arr) // {0: 1, 1: 2, 2: 3, 3: 4, length: 4}
 - 返回被删除的元素。
 
 ```javascript
-CustomArray.prototype.pop = function() {
+CustomArray.prototype.pop = function () {
   this.length--
   const removedElement = this[this.length]
   delete this[this.length]
@@ -143,7 +143,7 @@ console.log(arr) // {0: 1, 1: 2, length: 2}
 - 返回被删除的元素，如果数组为空返回 `undefined`。
 
 ```javascript
-CustomArray.prototype.shift = function() {
+CustomArray.prototype.shift = function () {
   this.length--
   const removedElement = this[0]
   for (let i = 1; i <= this.length; i++) {
@@ -170,7 +170,7 @@ console.log(arr) // {0: 2, 1: 3, 2: 4, 3: 5, 4: 6, length: 5}
 - 返回 `length` 值。
 
 ```javascript
-CustomArray.prototype.unshift = function(...args) {
+CustomArray.prototype.unshift = function (...args) {
   const oldLen = this.length
   const argLen = args.length
   this.length += argLen
@@ -201,7 +201,7 @@ console.log(arr) // {0: 2, 1: 3, 2: 4, 3: 5, length: 6}
 - 返回原数组每个元素执行回调函数后的结果组成的新数组。
 
 ```javascript
-CustomArray.prototype.map = function(callback, thisArg) {
+CustomArray.prototype.map = function (callback, thisArg) {
   const arr = thisArg || this
   if (typeof callback !== 'function') {
     throw new TypeError(`${callback} is not a function`)
@@ -228,7 +228,7 @@ console.log(newArr) // {0: 2, 1: 4, 2: 6, length: 3}
 - 返回累加器的结果。
 
 ```javascript
-CustomArray.prototype.reduce = function(callback, initialValue) {
+CustomArray.prototype.reduce = function (callback, initialValue) {
   if (this.length === 0) {
     throw TypeError('Reduce of empty array with no initial value')
   }
@@ -259,7 +259,7 @@ console.log(result) // 6
 :::
 
 ```javascript
-CustomArray.prototype.slice = function(begin, end) {
+CustomArray.prototype.slice = function (begin, end) {
   const len = this.length
   // len是Infinity或没有传值(undefined)的时候默认为数组末尾
   if (end === Infinity || end === undefined) end = len
@@ -307,7 +307,7 @@ console.log(arr.slice(1, -1)) // {0: 1, 1: 2, 2: 3, length: 3}
 - 返回被删除元素组成的数组
 
 ```javascript
-CustomArray.prototype.splice = function(start, deleteCount, ...restArgs) {
+CustomArray.prototype.splice = function (start, deleteCount, ...restArgs) {
   const result = new CustomArray()
   const removedList = new CustomArray()
   let len = this.length
@@ -373,7 +373,7 @@ CustomArray.prototype.splice = function(start, deleteCount, ...restArgs) {
 [MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/flat)有多个方法可以替代 `flat`，这里只展示其中一个：
 
 ```javascript
-Array.prototype.customFlat = function(depth = 1) {
+Array.prototype.customFlat = function (depth = 1) {
   const result = []
   !(function flat(list, depth) {
     for (let item of list) {
@@ -392,7 +392,7 @@ console.log(a.customFlat(1)) // [1, 2, 3, 4, 5, 1, 2, 3, [4, 5, [6]]]
 
 ## 结论
 
-我们在上面实现了许多JS数组常用的方法，不得不说，想实现它们并不难
+我们在上面实现了许多 JS 数组常用的方法，不得不说，想实现它们并不难
 
 ## 参考文章
 

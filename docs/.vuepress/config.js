@@ -48,7 +48,17 @@ module.exports = {
       '@vuepress/plugin-palette',
       { preset: 'sass' },
     ],
-    '@snippetors/vuepress-plugin-tabs'
+    '@snippetors/vuepress-plugin-tabs',
+    [
+      '@vuepress/plugin-docsearch',
+      {
+        apiKey: '041b3e4ba23359787f59d3ac518cb7c5',
+        appId: '2GXCDIZQDB',
+        indexName: 'blog-lliiooiill',
+        placeholder: 'Search',
+        debug: false
+      }
+    ]
   ],
   themeConfig: {
     logo: 'logo.gif',

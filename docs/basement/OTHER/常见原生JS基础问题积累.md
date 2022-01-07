@@ -43,7 +43,7 @@ console.log(c.valueOf()) // true
 就拿变量 `a` 来说，调用 `toString` 时发生了以下行为：
 
 ```javascript
-var a = new Object(123)
+var a = Object(123)
 a.toString()
 a = null
 ```
@@ -53,7 +53,7 @@ a = null
 3. 执行完方法销毁实例。
 
 :::tip
-使用 `new Object` 而不是 `new Number`，因为由于 `Symbol` 和 `BigInt` 两种新的基本类型的出现，对它们调用 `new` 会报错，目前 ES6 规范不建议使用 `new` 来创建基本包装类。
+使用 `Object` 而不是 `new Number`，因为由于 `Symbol` 和 `BigInt` 两种新的基本类型的出现，对它们调用 `new` 会报错。因为围绕原始数据类型创建一个显式包装器对象从 ES6 开始不再被支持。然而，现有的原始包装器对象，如 `new Boolean`、`new String` 以及 `new Number`，因为遗留原因仍可被创建。
 :::
 
 ## 4. 为什么 0.1 + 0.2 !== 0.3？
@@ -293,6 +293,15 @@ foo() // 2
 ```
 
 实际上在定时器、事件监听、Ajax 请求、跨窗口通信，Web Workers 或者任何异步中，只要使用了回调函数，实际上就是在使用闭包。
+
+闭包用途：
+
+1. 能够访问函数定义时所在的词法作用域(阻止其被回收)
+2. 私有化变量
+3. 模拟块级作用域
+4. 创建模块
+
+闭包缺点：会导致函数的变量一直保存在内存中，过多的闭包可能会导致内存泄漏
 
 ## 12. 什么是原型链？
 
@@ -1858,8 +1867,335 @@ console.log([, , 1].find((v) => true)) // undefined
 console.log([, , 1].findIndex((v) => true)) // 0
 ```
 
-## 89. Symbol 有哪些用处？
+## 89. Symbol 是什么？有哪些用处？
 
-## 90. 前端有哪些性能监控方式？
+`Symbol()` 函数只有一个参数，字符串 `description`。这个字符串参数的唯一作用是辅助调试，也就是它的 `toString()` 值。但是请注意，两个具有相同 `description` 的 `symbol` 也是不相等的。
 
-## 91. 
+有一个全局的 `symbol` 注册中心，用 `Symbol.for()` 创建的 `symbol` 会添加到这个注册中心，并用它的 `description` 作为索引键。也就是说，如果你用 `Symbol.for()` 创建带有相同 `description` 的两个 `symbol`，它们就是相等的。
+
+```js
+const symbol1 = Symbol.for('test')
+const symbol2 = Symbol.for('test')
+
+symbol1 === symbol2 // true
+console.log(symbol1) // 'Symbol(test)'
+```
+
+通常来说，除非你有非常好的理由，否则不应该使用全局注册中心，因为这会造成命名冲突。
+
+作用有二：
+
+1. 阻止对象属性名冲突。
+
+Symbol 在不知道对象原有属性名的情况下，扩展对象属性很有用，可以有效地防止属性名冲突的问题。
+
+2. 模拟私有属性，让外界无法访问到。
+
+由于任何两个 `symbol` 都是不相等的，在 JavaScript 里可以很方便地用来模拟私有属性。`symbol` 不会出现在 `Object.keys()` 的结果中，因此除非你明确地 `export` 一个 `symbol`，或者用 `Object.getOwnPropertySymbols()` 函数获取，否则其他代码无法访问这个属性。
+
+```js
+const symbol = Symbol('test')
+const obj = {}
+obj[symbol] = 'test'
+
+Object.keys(obj) // []
+
+// 除非有这个 symbol 的引用，否则无法访问该属性
+obj[Symbol('test')] // undefined
+
+// 用 getOwnPropertySymbols() 依然可以拿到 symbol 的引用
+const [symbol] = Object.getOwnPropertySymbols(obj)
+obj[symbol] // 'test'
+```
+
+还有一个原因是 `symbol` 不会出现在 `JSON.stringify()` 的结果里，确切地说是 `JSON.stringify()` 会忽略 `symbol` 属性名和属性值：
+
+```js
+const symbol = Symbol('test')
+const obj = { [symbol]: 'test', test: symbol }
+
+JSON.stringify(obj) // "{}"
+```
+
+## 90. 前端错误异常的捕获方式？
+
+1. `try catch`
+
+`try catch` 的问题在于：**能捕捉到的异常必须是线程执行已经进入 `try catch` 但 `try catch` 未执行完的时候抛出来的。**
+
+因此，异步代码、语法错误、跨域、Promise 异常都无法被捕获。
+
+如果想要捕获到异步代码产生的错误，需要使用 Async Await：
+
+```js
+const request = async () => {
+  try {
+    const { code, data } = await somethingThatReturnsAPromise()
+  } catch (err) {
+    console.error('request error', err)
+  }
+}
+```
+
+2. `window.onerror = cb`
+
+当 JavaScript 运行时错误（包括语法错误）发生时，`window` 会触发一个 `ErrorEvent` 接口的事件，并执行 `window.onerror()`。
+
+但这里有个信息要注意，语法错误会导致出现语法错误的那个脚本块执行失败，所以语法错误会导致当前代码块运行终止，从而导致整个程序运行中断，如果语法错误这个发生在我们的错误监控语句块中，那么我们就什么也监控不到了。
+
+3. `Promise.then().catch(cb)`
+
+`Promise` 中的错误会被 `Promise.prototype.catch` 捕获，所以我们通过这种方式捕获错误。
+
+4. `element.onerror`
+
+当一项资源（如 `<img>` 或 `<script>`）加载失败，加载资源的元素会触发一个 `Event` 接口的 `error` 事件，并执行该元素上的 `onerror()` 处理函数。
+
+这些 `error` 事件不会向上冒泡到 `window`，不过能被单一的 `window.addEventListener` 捕获。
+
+5. `window.addEventListener("unhandledrejection", cb)`
+
+最新的规范中定义了 `unhandledrejection` 事件用于全局捕获 `promise` 对象没有 `rejection` 处理器时异常情况。
+
+6. `window.addEventListener('error', cb, true)`
+
+资源加载失败，不会冒泡，但是会被 `addEventListener` 捕获，所以我们可以指定在加载失败事件的捕获阶段捕获该错误。
+
+## 91. Array.from 是用来做什么的？
+
+`Array.from()` 方法对一个**类似数组**或**可迭代对象**创建一个新的，**浅拷贝**的数组实例。
+
+它接受如下参数：
+
+1. `arrayLike`：想要转换成数组的伪数组（拥有一个 `length` 属性和若干索引属性的任意对象）对象或可迭代对象（可以获取对象中的元素,如 `Map` 和 `Set` 等）。
+2. `mapFn`：可选，如果指定了该参数，新数组中的每个元素会执行该回调函数。
+3. `thisArg`：可选，执行回调函数 `mapFn` 时 `this` 对象。
+
+## 92. 前端如何进行跨页面通信？
+
+在满足同源策略的情况下，有这些技术可以用来实现跨页面通信：
+
+1. BroadCast Channel
+
+BroadCast Channel 可以帮我们创建一个用于广播的通信频道。当所有页面都监听同一频道的消息时，其中某一个页面通过它发送的消息就会被其他所有页面收到。它的 API 和用法都非常简单。
+
+下面的方式就可以创建一个标识为 TOM 的频道：
+
+```js
+const bc = new BroadcastChannel('TOM')
+```
+
+各个页面可以通过 `onmessage` 来监听被广播的消息：
+
+```js
+bc.onmessage = function (e) {
+  const data = e.data
+  const text = '[receive] ' + data.msg + ' —— tab ' + data.from
+  console.log('[BroadcastChannel] receive message:', text)
+}
+```
+
+要发送消息时只需要调用实例上的 `postMessage` 方法即可
+
+```js
+bc.postMessage(mydata)
+```
+
+2. Service Worker
+
+Service Worker 是一个可以长期运行在后台的 Worker，能够实现与页面的双向通信。多页面共享间的 Service Worker 可以共享，将 Service Worker 作为消息的处理中心（中央站）即可实现广播效果。
+
+```js
+navigator.serviceWorker.register('../util.sw.js').then(function () {
+  console.log('Service Worker 注册成功')
+})
+```
+
+其中 `../util.sw.js` 是对应的 Service Worker 脚本。Service Worker 本身并不自动具备“广播通信”的功能，需要我们添加些代码，将其改造成消息中转站：
+
+```js
+/* ../util.sw.js Service Worker 逻辑 */
+self.addEventListener('message', function (e) {
+  console.log('service worker receive message', e.data)
+  e.waitUntil(
+    self.clients.matchAll().then(function (clients) {
+      if (!clients || clients.length === 0) {
+        return
+      }
+      clients.forEach(function (client) {
+        client.postMessage(e.data)
+      })
+    })
+  )
+})
+```
+
+我们在 Service Worker 中监听了 `message` 事件，获取页面（从 Service Worker 的角度叫 client）发送的信息。然后通过 `self.clients.matchAll()` 获取当前注册了该 Service Worker 的所有页面，通过调用每个 client（即页面）的 `postMessage` 方法，向页面发送消息。这样就把从一处（某个 Tab 页面）收到的消息通知给了其他页面。
+
+处理完 Service Worker，我们需要在页面监听 Service Worker 发送来的消息：
+
+```js
+/* 页面逻辑 */
+navigator.serviceWorker.addEventListener('message', function (e) {
+  const data = e.data
+  const text = '[receive] ' + data.msg + ' —— tab ' + data.from
+  console.log('[Service Worker] receive message:', text)
+})
+```
+
+3. LocalStorage
+
+当 LocalStorage 变化时，会触发 `storage` 事件。利用这个特性，我们可以在发送消息时，把消息写入到某个 LocalStorage 中；然后在各个页面内，通过监听 `storage` 事件即可收到通知。
+
+```js
+window.addEventListener('storage', function (e) {
+  if (e.key === 'ctc-msg') {
+    const data = JSON.parse(e.newValue)
+    const text = '[receive] ' + data.msg + ' —— tab ' + data.from
+    console.log('[Storage I] receive message:', text)
+  }
+})
+```
+
+在各个页面添加如上的代码，即可监听到 LocalStorage 的变化。当某个页面需要发送消息时，只需要使用我们熟悉的 `setItem` 方法即可。
+
+::: tip Notice
+只有值真的变化了，才会触发 `storage` 事件
+:::
+
+4. Shared Worker
+
+Shared Worker 是 Worker 家族的另一个成员。普通的 Worker 之间是独立运行、数据互不相通；而多个 Tab 注册的 Shared Worker 则可以实现数据共享。
+
+Shared Worker 在实现跨页面通信时的问题在于，它无法主动通知所有页面，因此，我们会使用轮询的方式，来拉取最新的数据。思路如下：
+
+让 Shared Worker 支持两种消息。一种是 post，Shared Worker 收到后会将该数据保存下来；另一种是 get，Shared Worker 收到该消息后会将保存的数据通过 postMessage 传给注册它的页面。也就是让页面通过 get 来主动获取（同步）最新消息。具体实现如下：
+
+首先，我们会在页面中启动一个 Shared Worker，启动方式非常简单：
+
+```js
+// 构造函数的第二个参数是 Shared Worker 名称，也可以留空
+const sharedWorker = new SharedWorker('../util.shared.js', 'ctc')
+```
+
+然后，在该 Shared Worker 中支持 get 与 post 形式的消息：
+
+```js
+/* ../util.shared.js: Shared Worker 代码 */
+let data = null
+self.addEventListener('connect', function (e) {
+  const port = e.ports[0]
+  port.addEventListener('message', function (event) {
+    // get 指令则返回存储的消息数据
+    if (event.data.get) {
+      data && port.postMessage(data)
+    }
+    // 非 get 指令则存储该消息数据
+    else {
+      data = event.data
+    }
+  })
+  port.start()
+})
+```
+
+之后，页面定时发送 get 指令的消息给 Shared Worker，轮询最新的消息数据，并在页面监听返回信息：
+
+```js
+// 定时轮询，发送 get 指令的消息
+setInterval(function () {
+  sharedWorker.port.postMessage({ get: true })
+}, 1000)
+
+// 监听 get 消息的返回数据
+sharedWorker.port.addEventListener(
+  'message',
+  (e) => {
+    const data = e.data
+    const text = '[receive] ' + data.msg + ' —— tab ' + data.from
+    console.log('[Shared Worker] receive message:', text)
+  },
+  false
+)
+sharedWorker.port.start()
+```
+
+最后，当要跨页面通信时，只需给 Shared Worker postMessage 即可：
+
+```js
+sharedWorker.port.postMessage(mydata)
+```
+
+5. window.open + window.opener
+
+当我们使用 `window.open` 打开页面时，方法会返回一个被打开页面 `window` 的引用。而在未显示指定 noopener 时，被打开的页面可以通过 `window.opener` 获取到打开它的页面的引用 —— 通过这种方式我们就将这些页面建立起了联系（一种树形结构）。
+
+代码请看[前端跨页面通信，你知道哪些方法？](https://blog.csdn.net/p3118601/article/details/88966864)
+
+## 93. 怎么判断页面是否被嵌套在 iframe 里？
+
+`console.log(window.self === window.top)`，如果返回 `false` 说明页面被嵌套在 `iframe` 中了。
+
+## 94. 函数式编程的特点以及应用场景？
+
+函数式编程 属于声明式编程中的一种，它的主要思想是 将计算机运算看作为函数的计算，也就是把程序问题抽象成数学问题去解决。
+
+函数式编程有以下几个特点：
+
+1. 函数可以和变量一样，可以赋值给其他变量，也可以作为参数，传入一个函数，或者作为别的函数返回值。
+2. 函数式编程中的每一步都是单纯的运算，而且都有返回值。
+3. 无副作用，不会产生除运算以外的其他结果。
+4. 同一个输入永远得到同一个数据。
+5. 函数的运行不依赖于外部变量，只依赖于输入的参数。
+6. 惰性求值：预先定义多个操作，但不立即求值，在需要使用值时才去求值，可以避免不必要的求值，提升性能，柯里化一种惰性求值。
+7. 复用性好。
+
+基于这些特点，又衍生出了许多应用场景：
+
+- **纯函数**：同样的输入得到同样的输出，无副作用。
+- **函数组合**：将多个依次调用的函数，组合成一个大函数，简化操作步骤。
+- **高阶函数**：可以加工函数的函数，接收一个或多个函数作为输入、输出一个函数。
+- **闭包**：函数作用域嵌套，实现的不同作用域变量共享。
+- **柯里化**：将一个多参数函数转化为多个嵌套的单参数函数。
+- **偏函数**：缓存一部分参数，然后让另一些参数在使用时传入，`bind` 就是采用偏函数的思想。
+- **惰性求值**：预先定义多个操作，但不立即求值，在需要使用值时才去求值，可以避免不必要的求值，提升性能。
+- **递归**：控制函数循环调用的一种方式。
+- **尾递归**：避免多层级函数嵌套导致的内存溢出的优化，已废弃。
+- **链式调用**：让代码更加优雅。
+
+## 95. JSX 如何映射为 JavaScript?
+
+使用 JSX 可以在 JS 文件中写 HTML 的语句，但是实际上最终编译时又会被转换为 JavaScript。
+
+我们可以在 [repl](https://babeljs.io/repl/) 上查看转换的 JavaScript。
+
+至于编译本身的工作，是由 Babel 完成的，举个例子：
+
+:::: tabs
+::: tab 转换前
+
+```html
+<div className="App">
+  <h1 className="title">I am the title</h1>
+  <p className="content">I am the content</p>
+</div>
+```
+
+:::
+::: tab 转换后
+
+```js
+'use strict'
+
+React.createElement(
+  'div',
+  { className: 'App' },
+  React.createElement('h1', { className: 'title' }, 'I am the title'),
+  React.createElement('p', { className: 'content' }, 'I am the content')
+)
+```
+
+:::
+::::
+
+所有的 JSX 标签都被转化成了 `React.createElement` 调用，这也就意味着，我们写的 JSX 其实写的就是 `React.createElement`。因此 JSX 完全就是一种语法糖。

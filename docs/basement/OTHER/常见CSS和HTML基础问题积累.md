@@ -913,4 +913,54 @@ div {
 :::
 ::::
 
-## 60. transition 和 animation 的区别？
+## 60. transform、transition 和 animation 的区别？
+
+`transform` 主要用于给元素做变换，主要由以下几种变换：
+
+1. rotate(旋转)
+2. scale(缩放)
+3. skew(扭曲)
+4. translate(移动)
+5. matrix(矩阵变换)
+
+`transition` 用来定义某个 css 属性或者多个 css 属性的变化的过渡效果。
+
+`animation` 动画的定义，先通过 `@(-webkit-)keyframes` 定义动画名称及动画的行为，然后再通过 `animation` 的相关属性定义动画的执行效果.
+
+相比 `transition`，`animation` 可以配合 `@keyframe` 可以不触发事件就触发动画，`transition` 关注的是样式属性的变化，属性值和时间的关系是一个三次贝塞尔曲线；而 `animation` 作用于元素本身而不是样式属性，可以使用关键帧的概念，可以实现更自由的动画效果。
+
+`transition` 触发一次播放一次；而 `animation` 则是可以设置很多的属性，比如循环次数，动画结束的状态等等。
+
+## 61. css 实现一个正三角形
+
+由于 css 没有内置的 `sqrt` 函数，因此使用 `51` 来近似 `sqrt(60*60-30*30)`。
+
+```css
+div {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 30px 0 30px 51px;
+  border-color: transparent;
+  border-left-color: black;
+}
+```
+
+## 62. Canvas 和 SVG 的区别？
+
+Canvas 是使用 JavaScript 程序绘图(动态生成)，SVG 是使用 XML 文档描述来绘图。
+
+SVG 是基于矢量的，所有它能够很好的处理图形大小的改变。适合静态图片展示，高保真文档查看和打印的应用场景。
+
+Canvas 是基于位图的图像，它不能够改变大小，只能缩放显示。因此适合像素处理，动态渲染和大数据量绘制。
+
+## 63. JPEG、JPG、PNG、GIF 图片有什么区别？
+
+- JPG：图片颜色很多的，建议使用这个图片格式掉，可支持有陨压缩、不支持透明、不支持动画、非矢量。
+- JPEG：与 JPG 格式一样，有俩名字纯粹历史遗留。
+- PNG：不支持压缩、支持透明、半透明、不透明、不支持动画、非矢量。
+- GIF：用的最多的就是特点就是图片很小(一般几 kb)、可支持有陨压缩、不支持全透明、支持半透明、支持动画、非矢量。
+
+## 64. WebP 相对于 PNG、JPG 有什么优势?
+
+WebP 的优势体现在它具有更优的图像数据压缩算法，能带来更小的图片体积，而且拥有肉眼识别无差异的图像质量。
