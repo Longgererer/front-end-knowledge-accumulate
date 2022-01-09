@@ -106,12 +106,21 @@ BFC(block formatting context)就是块级格式化上下文，它虽然属于文
 2. 包含了内部所有的**浮动元素**，浮动元素会参与高度计算。
 3. 不会与 BFC 外面的**浮动元素**重叠。
 
-给元素添加以下任意属性会创建 BFC：
+BFC 的生成条件：
 
-1. `float` 值不为 `none`。
-2. `overflow` 值不为 `visible`。
-3. `display` 为非 `block` 的块级容器，包含：`inline-block`、`table-cell`、`table-caption`、`flex`、`inline-flex`、`grid` 和 `inline-grid`。
-4. `position` 为 `absolute` 或 `fixed`。
+1. 根元素或包含根元素的元素。
+2. 浮动元素（元素的 `float` 不是 `none`）。
+3. 绝对定位元素（元素的 `position` 为 `absolute` 或 `fixed`）。
+4. 行内块元素（元素的 `display` 为 `inline-block`）。
+5. 表格单元格（元素的 `display` 为 `table-cell`，HTML 表格单元格默认为该值）。
+6. 表格标题（元素的 `display` 为 `table-caption`，HTML 表格标题默认为该值）。
+7. 匿名表格单元格元素（元素的 `display` 为 `table`、`table-row`、 `table-row-group`、`table-header-group`、`table-footer-group`（分别是 HTML `table`、`row`、`tbody`、`thead`、`tfoot` 的默认属性）或 `inline-table`）。
+8. `overflow` 值不为 `visible` 的块元素。
+9. `display` 值为 `flow-root` 的元素。
+10. `contain` 值为 `layout`、`content` 或 `strict` 的元素。
+11. 弹性元素（`display` 为 `flex` 或 `inline-flex` 元素的直接子元素）。
+12. 网格元素（`display` 为 `grid` 或 `inline-grid` 元素的直接子元素）。
+13. 多列容器（元素的 `column-count` 或 `column-width` 不为 `auto`，包括 `column-count` 为 1）。
 
 ## 10. 外边距重叠是什么？如何避免外边距重叠？
 
@@ -226,7 +235,7 @@ box-shadow: 0 0.5px 0 #000;
    - `transform` 或 `perspective` 的值不是 `none`。
    - `will-change` 的值是 `transform` 或 `perspective`。
    - `filter` 的值不是 `none` 或 `will-change` 的值是 `filter`(只在 Firefox 下生效)。
-   - `contain` 的值是 `paint` (例如: `contain: paint;`)。
+   - `contain` 的值是 `paint` (例如: `contain: paint`)。
 
 ## 17. 幽灵空白节点怎么产生的，如何解决？
 
@@ -964,3 +973,15 @@ Canvas 是基于位图的图像，它不能够改变大小，只能缩放显示�
 ## 64. WebP 相对于 PNG、JPG 有什么优势?
 
 WebP 的优势体现在它具有更优的图像数据压缩算法，能带来更小的图片体积，而且拥有肉眼识别无差异的图像质量。
+
+## 65. position 各种取值意义？
+
+- `static`，默认布局行为，即元素在文档常规流中当前的布局位置。此时 `top`, `right`, `bottom`, `left` 和 `z-index` 属性无效。
+- `relative`，元素先放置在未添加定位时的位置，再在不改变页面布局的前提下调整元素位置（因此会在此元素未添加定位时所在位置留下空白）。
+- `absolute`，元素会被移出正常文档流，并不为元素预留空间，通过指定元素相对于最近的非 `static` 定位祖先元素的偏移，来确定元素位置。绝对定位的元素可以设置外边距（margins），且不会与其他边距合并。
+- `fixed`，元素会被移出正常文档流，并不为元素预留空间，而是通过指定元素相对于屏幕视口（viewport）的位置来指定元素位置。元素的位置在屏幕滚动时不会改变。打印时，元素会出现在的每页的固定位置。`fixed` 属性会创建新的层叠上下文。当元素祖先的 `transform`, `perspective` 或 `filter` 属性非 `none` 时，容器由视口改为该祖先。
+- `sticky`，元素根据正常文档流进行定位，然后相对它的**最近滚动祖先**和**最近块级祖先**，包括 `table-related` 元素，基于 `top`, `right`, `bottom`, 和 `left` 的值进行偏移。偏移值不会影响任何其他元素的位置。
+
+:::tip Notice
+一个 `sticky` 元素会“固定”在离它最近的一个拥有“滚动机制”的祖先上(当该祖先的 `overflow` 是 `hidden`, `scroll`, `auto`, 或 `overlay` 时)，，即便这个祖先不是最近的真实可滚动祖先。
+:::
