@@ -271,6 +271,29 @@ if (!Function.prototype.bind) {
 4. `aArgs.concat( Array.prototype.slice.call( arguments ) )`将剪切下来的第一个参数和 `arguments` 连接
 5. 将调用者的 `prototype` 指向 `fNOP` 的 `prototype`
 
+### 函数里面的函数
+
+但我们需要注意的是，`this` 的改变之作用于当前函数，而不会影响到内部的普通函数！
+
+```js
+var a = 1
+var d = {
+  a: 2,
+}
+function b() {
+  console.log(this)
+  function c() {
+    console.log(this)
+    console.log(this.a)
+  }
+  c()
+}
+b() // window window 1
+b.call(d) // d window 1
+```
+
+可以看到，虽然我们使用 `call` 将 `b` 中的 `this` 指向了 `d`，但不会影响内部 `c` 函数的指向，`c` 实际上还是在 `window` 下执行的，因此 `this` 仍然指向 `window`。
+
 ## new 绑定
 
 看下面的代码：
@@ -346,7 +369,43 @@ b() //Tom
 
 为什么会造成这种结果？因为箭头函数本身无法绑定 `this`！也就是说他根本没有自己的 `this`！它会捕获其所在（即定义的位置）上下文的 `this` 值，作为自己的 `this` 值，它的 `this` 在它定义的时候就已经确定了
 
-虽然箭头函数无法修改`this`绑定，但是其本身的机制可以解决很多防止`this`丢失的问题：
+不过要注意的是，这里所说的上下文表示的是作用域，而不是某个父级对象：
+
+```js
+var a = 1
+var b = {
+  a: 2,
+  c: {
+    a: 3,
+    d: () => {
+      console.log(this.a)
+    },
+  },
+}
+b.c.d() // 1
+```
+
+可以看到虽然箭头函数 `d` 的父对象 `c` 为对象 `b` 的属性，但对象 `b` 并不是一个作用域，因此 `this` 仍然指向 `window`
+
+```js
+var a = 1
+var b = {
+  a: 2,
+  c: {
+    a: 3,
+    d() {
+      return () => {
+        console.log(this.a)
+      }
+    },
+  },
+}
+b.c.d()() // 3
+```
+
+在普通函数内的箭头函数，`this` 会指向普通函数 `d`，而 `d` 中的 `this` 指向 `c`，因此输出 `3`。
+
+虽然箭头函数无法直接修改 `this` 绑定，但是其本身的机制可以解决很多防止 `this` 丢失的问题：
 
 ```javascript
 this.a = 2
@@ -362,4 +421,86 @@ const obj = {
 obj.func()
 ```
 
-这是在箭头函数之前经常用来解决`this`丢失的方法，在函数内把 `this` 存进一个变量中，这样`settimeout`便不会使用默认绑定，如果是箭头函数呢？也能达到同样的效果，箭头函数不需要创建一个变量来储存`this`，听起来蛮不错的，当然它也不是没有缺点，比如可读性较低，混合使用箭头函数和普通函数也会使得代码更加难维护等等。
+这是在箭头函数之前经常用来解决 `this` 丢失的方法，在函数内把 `this` 存进一个变量中，这样 `setTimeout` 便不会使用默认绑定，如果是箭头函数呢？也能达到同样的效果，箭头函数不需要创建一个变量来储存 `this`，听起来蛮不错的，当然它也不是没有缺点，比如可读性较低，混合使用箭头函数和普通函数也会使得代码更加难维护等等。
+
+### 间接修改箭头函数 this 指向
+
+我们虽然不能直接修改箭头函数 `this` 指向，但却可以通过间接修改的形式达到目的：
+
+```js
+var a = 1
+var d = {
+  a: 2,
+}
+function b() {
+  console.log(this)
+  var c = () => {
+    console.log(this)
+    console.log(this.a)
+  }
+  c()
+}
+b() // window window 1
+b.call(d) // d d 1
+```
+
+如果我们套一层普通函数在箭头函数外，由于在这个例子中，内部的箭头函数的 `this` 是默认指向 `b` 的，因此只要改变函数 `b` 的 `this` 指向，就可以间接地改变内部箭头函数的指向了。
+
+## 类中的箭头函数
+
+```js
+class A {
+  constructor() {
+    this.b = 1
+  }
+  c = () => {
+    console.log(this.b)
+  }
+  d() {
+    console.log(this.b)
+  }
+}
+
+new A().c() // 1
+new A().d() // 1
+```
+
+在类中的箭头函数，`this` 和普通函数一样仍然指向该类。
+
+但我们要注意的是，在类中声明箭头函数和普通函数的行为是不一样的：
+
+```js
+A.prototype.c // undefined
+A.prototype.d // d(){console.log(this.b)}
+```
+
+箭头函数并没有被定义到原型上，因为箭头函数不是方法，它们是匿名函数表达式，所以将它们添加到类中的唯一方法是赋值给属性。ES 类以完全不同的方式处理方法和属性。
+
+方法被添加到类的原型中，这正是我们需要它们的地方——这意味着它们只定义一次，而不是每个实例定义一次。
+
+类属性语法是为相同的属性分配给每一个实例的语法糖。实际上，类属性是这样工作的:
+
+```js
+class A {
+  constructor() {
+    this.b = 1
+    this.c = () => {
+      console.log(this.b)
+    }
+  }
+  d() {
+    console.log(this.b)
+  }
+}
+```
+
+换句话说，每次 `A` 的实例对象被创建时，都会重新定义 `c`。
+
+```js
+const a = new A()
+const b = new A()
+a.c === b.c // false
+a.d === b.d // true
+```
+
+这违背了使用类或共享原型的目的，因此**不要盲目地在类中使用箭头函数**。
