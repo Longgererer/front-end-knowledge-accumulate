@@ -475,7 +475,7 @@ Promise.all([timer(100), timer(200), timer(300)]).then(() => {
 ```
 
 结果如下：  
-<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/5c826954c1e7c.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/5c826954c1e7c.jpg)</a>
+![截图未命名.jpg](http://picstore.lliiooiill.cn/5c826954c1e7c.jpg)
 
 可以看到输出的是 `303`，至于为什么不是 `300`，可能是因为执行其他命令也需要消耗时间，总之 `Promise.all()`方法做到了执行完三个 `timer` 再执行 `then`。
 
@@ -530,7 +530,7 @@ Promise.race([timer(100), timer(200), timer(300)]).then((num) => {
 
 输出结果：
 
-<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/5c826954c1e7c.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/5c826954c1e7c.jpg)</a>
+![截图未命名.jpg](http://picstore.lliiooiill.cn/5c826954c1e7c.jpg)
 
 因为 `timer(100)`最先执行完，`Promise` 状态变为 `fulfilled`，执行 `then` 操作，最后输出的是 `100`。
 

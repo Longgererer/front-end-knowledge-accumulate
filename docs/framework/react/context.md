@@ -17,11 +17,11 @@ tags:
 
 正常情况下我们通过 `props` 来将属性传递给深层组件
 
-<a data-fancybox title="1.jpg" href="https://upload-images.jianshu.io/upload_images/1457831-b19e007758f57df7?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp">![1.jpg](https://upload-images.jianshu.io/upload_images/1457831-b19e007758f57df7?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)</a>
+![1.jpg](https://upload-images.jianshu.io/upload_images/1457831-b19e007758f57df7?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
 
 有了 `Context`，我们不再需要那么麻烦的操作：
 
-<a data-fancybox title="1.jpg" href="https://upload-images.jianshu.io/upload_images/1457831-b19e007758f57df7?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp">![1.jpg](https://upload-images.jianshu.io/upload_images/1457831-b19e007758f57df7?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)</a>
+![1.jpg](https://upload-images.jianshu.io/upload_images/1457831-b19e007758f57df7?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
 
 使用 `Context` 一般要用到两个组件：
 
@@ -89,7 +89,7 @@ ReactDOM.render(<Parent />, document.getElementById('root1'))
 
 上述代码执行结果：
 
-<a data-fancybox title="截图未命名.jpg" href="http://picstore.lliiooiill.cn/nlay1BmiPsg6KIf.jpg">![截图未命名.jpg](http://picstore.lliiooiill.cn/nlay1BmiPsg6KIf.jpg)</a>
+![截图未命名.jpg](http://picstore.lliiooiill.cn/nlay1BmiPsg6KIf.jpg)
 
 可以看到 `a` 的值 `1`，而 `b` 的值则获取不到
 
@@ -183,7 +183,7 @@ const StatelessComponent = (props, context) => (
 
 事实上，`React App` 就是一个组件树
 
-<a data-fancybox title="1.jpg" href="https://upload-images.jianshu.io/upload_images/1457831-ca45b0f51cf449ca?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp">![1.jpg](https://upload-images.jianshu.io/upload_images/1457831-ca45b0f51cf449ca?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)</a>
+![1.jpg](https://upload-images.jianshu.io/upload_images/1457831-ca45b0f51cf449ca?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
 
 如图可知，`Child` 的父组件链为 `SubNode` -- `Node` -- `App`
 
@@ -193,7 +193,7 @@ const StatelessComponent = (props, context) => (
 
 但是不建议任何使用都是用 `Context`
 
-<a data-fancybox title="1.jpg" href="https://upload-images.jianshu.io/upload_images/1457831-89e9fca854376012?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp">![1.jpg](https://upload-images.jianshu.io/upload_images/1457831-89e9fca854376012?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)</a>
+![1.jpg](https://upload-images.jianshu.io/upload_images/1457831-89e9fca854376012?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
 
 `Child` 的 `Context` 来自于 `App` 和 `Node`，如果脱离了这两个组件，`Child` 可能就无法正常工作了，这降低了 `Child` 的复用性
 

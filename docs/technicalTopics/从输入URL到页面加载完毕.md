@@ -34,7 +34,7 @@ DNS 的主要目的是人性化导航，每一个域名都有一个分配给它�
 
 ISP 的 DNS 服务器会开始递归搜索，从根到顶级域名服务器，再到二级域名服务器以此类推。。。直到找到匹配的域名。
 
-<a data-fancybox title="" href="http://picstore.lliiooiill.cn/%E5%9F%9F%E5%90%8D%E7%A9%BA%E9%97%B4.png">![](http://picstore.lliiooiill.cn/%E5%9F%9F%E5%90%8D%E7%A9%BA%E9%97%B4.png)</a>
+![](http://picstore.lliiooiill.cn/%E5%9F%9F%E5%90%8D%E7%A9%BA%E9%97%B4.png)
 
 如 `www.google.com`，根服务器会找到 `.com` 域名服务器，接着重定向到 `google.com` 域名服务器，`google.com` 域名服务器将在 DNS 记录中找到 `www.google.com` 匹配的 IP 地址。
 

@@ -2,7 +2,7 @@
 
 React16.3 的生命周期如图所示：
 
-<a data-fancybox title="1.jpg" href="https://user-images.githubusercontent.com/12322740/44473723-89e10a00-a663-11e8-8d54-55eccdcbb126.png">![1.jpg](https://user-images.githubusercontent.com/12322740/44473723-89e10a00-a663-11e8-8d54-55eccdcbb126.png)</a>
+![1.jpg](https://user-images.githubusercontent.com/12322740/44473723-89e10a00-a663-11e8-8d54-55eccdcbb126.png)
 
 相对于之前的生命周期少了 componentWillMount, componentWillReceiveProps, componentWillUpdate 这三个阶段，但实际上这三个生命周期都还在，只是马上就要删除了，因为实在是没有什么用
 
