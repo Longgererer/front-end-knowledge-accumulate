@@ -57,15 +57,6 @@ export default defineComponent({
       watch(route, (newValue) => {
         if (newValue.path === '/') {
           addBtn()
-        } else {
-          const prev = document.querySelector('.prev')
-          const next = document.querySelector('.next')
-          if (prev?.childNodes[0]) {
-            prev.childNodes[0].nodeValue = ''
-          }
-          if (next?.childNodes[1]) {
-            next.childNodes[1].nodeValue = ''
-          }
         }
       })
     })

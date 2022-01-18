@@ -26,7 +26,7 @@ DNS 的主要目的是人性化导航，每一个域名都有一个分配给它�
 为了查找 DNS 记录，浏览器会检查四个缓存：
 
 1. **浏览器缓存**：浏览器会缓存 DNS 记录一段固定的时间，不同浏览器时间不同(2~30 分钟)，因为操作系统不会告诉浏览器每个 DNS 记录的生存时间。
-2. **操作系统缓存**：浏览器检查操作系统缓存。如果它不在浏览器缓存中，浏览器将对您的底层计算机操作系统进行系统调用。
+2. **操作系统缓存**：浏览器检查操作系统缓存。如果它不在浏览器缓存中，浏览器将对您的底层计算机操作系统进行系统调用。操作系统会先查 hosts 件是否有记录，hosts 文件没有就去查本地 dns 解析器有没有缓存，如果有缓存就返回，没有就到下一步。
 3. **路由器缓存**：请求继续发送到您的路由器，路由器通常有自己的 DNS 缓存。
 4. **ISP 缓存**：如果上面步骤都失败了，将转到 ISP 缓存。ISP 维护着自己的 DNS 服务器，其中包括一个 DNS 记录缓存，浏览器将检查这些缓存，以确保找到您请求的 URL。
 
@@ -109,6 +109,12 @@ JS 脚本由于可以访问 CSSOM，因此需要在 CSSOM 构建完成之后才�
 
 关于这部分浏览器的渲染的详细过程，请看[浏览器渲染原理](./浏览器渲染原理.html)
 
+## 总结
+
+1. 输入 url 后，首先需要找到这个 url 域名的服务器 ip，为了寻找这个 ip，浏览器首先会寻找缓存，查看缓存中是否有记录，缓存的查找顺序为：浏览器缓存、操作系统缓存、路由器缓存、ISP 缓存(DNS 服务器)。
+2. 得到服务器的 ip 地址后，浏览器根据这个 ip 以及相应的端口号，构造一个 http 请求，这个请求报文会包括这次请求的信息，主要是请求方法，请求说明和请求附带的数据，并将这个 http 请求封装在一个数据包中，这个数据包会依次经过传输层，网络层，数据链路层，物理层，经过物理传输后再向上到达服务器，与服务器建立 tcp 连接。
+3. 服务器解析这个请求来作出响应，返回相应的 html 给浏览器，HTML 解析器将字符串解析成为一个个 token，根据 token 生成一个个 node，再将 node 根据嵌套结构生成 DOM 树，在 dom 树的构建过程中如果遇到 JS 脚本和外部 JS 连接，则会停止构建 DOM 树来执行和下载相应的代码，这会造成阻塞；同时，浏览器会根据解析的 css 样式表生成 CSSOM，最后将 CSSOM 和 DOM 合并成渲染树。然后根据渲染树计算元素的布局位置，在网页上渲染。因为 html 文件中会含有图片，视频，音频等资源，在解析 DOM 的过程中，遇到这些都会进行并行下载，浏览器对每个域的并行下载数量有一定的限制，一般是 4-6 个，下载这些资源的时候如果有缓存，还需要经过强制缓存、协商缓存的策略进行资源的获取。
+
 ## 参考文章
 
 - [what happens when you type in a URL in browser](https://stackoverflow.com/questions/2092527/what-happens-when-you-type-in-a-url-in-browser)
@@ -116,3 +122,4 @@ JS 脚本由于可以访问 CSSOM，因此需要在 CSSOM 构建完成之后才�
 - [What happens when you type a URL in the browser and press enter?](https://medium.com/@maneesha.wijesinghe1/what-happens-when-you-type-an-url-in-the-browser-and-press-enter-bb0aa2449c1a)
 - [从输入 URL 到页面加载的全过程](https://www.cnblogs.com/xiaohuochai/p/9193083.html)
 - [What really happens when you navigate to a URL](http://igoro.com/archive/what-really-happens-when-you-navigate-to-a-url/)
+- [从输入 URL 开始建立前端知识体系](https://juejin.cn/post/6935232082482298911)

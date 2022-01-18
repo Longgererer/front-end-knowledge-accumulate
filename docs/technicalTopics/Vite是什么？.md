@@ -197,6 +197,10 @@ Vite 在开发环境下使用的是 `ESBuild` 进行依赖预构建，最大的�
 
 Vite 虽然是 Vue 的作者开发的，但是不仅支持 Vue，其他框架如 React 也支持，甚至支持 SSR(服务器渲染)。
 
+## Webpack 和 vite 的区别
+
+
+
 ## 最后
 
 更多的有关 Vite 的说明，配置等，请看 [Vite 官中文档](https://cn.vitejs.dev/)

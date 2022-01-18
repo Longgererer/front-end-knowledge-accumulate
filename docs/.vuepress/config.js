@@ -192,7 +192,8 @@ module.exports = {
             '/technicalTopics/WEB安全及防护原理.md',
             '/technicalTopics/三次握手与四次挥手.md',
             '/technicalTopics/HTTPS原理.md',
-            '/technicalTopics/详解TCPIP.md'
+            '/technicalTopics/详解TCPIP.md',
+            '/technicalTopics/ECVOAOGO.md'
           ]
         }
       ]

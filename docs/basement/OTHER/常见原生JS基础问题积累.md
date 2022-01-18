@@ -2199,3 +2199,57 @@ React.createElement(
 ::::
 
 所有的 JSX 标签都被转化成了 `React.createElement` 调用，这也就意味着，我们写的 JSX 其实写的就是 `React.createElement`。因此 JSX 完全就是一种语法糖。
+
+## 96. 两个 iframe 怎么通信？
+
+同源情况下：
+
+- 父页面调用子 iframe 页面。
+  1. 根据 id 获取 iframe。
+  2. 根据 iframe 的 name 获取 iframe。
+  3. 根据 `window.frames` 数组获取 iframe。
+- 子 iframe 页面调用父页面
+  1. 通过 `parent.window` 和 `top.window` 获取父页面的 window 对象。
+- 页面内兄弟 iframe 页面相互调用
+  1. 在子页面中获取父页面（parent）或顶层页面（top）的 window 元素，然后再根据兄弟 iframe 的 name 或 id 获取兄弟页面的 window 对象，得到 window 对象后就可以随意操作了。
+
+非同源情况下，因为安全机制则不能使用同域名下的通信方式了：
+
+1. `otherWindow.postMessage` 向目标窗口发送信息。`postMessage`可以允许来自不同源的脚本采用异步方式进行有限的通信，可以实现跨文本档、多窗口、跨域消息传递。
+2. `location.hash` 通过它传递通信数据，我们只需要在父页面设置 iframe 的 src 后面多加个 #data 字符串（data 就是你要传递的数据）
+3. 在子页面中通过 `setInterval` 方法设置定时器， 监听 `location.href` 的变化即可获得上面的 data 信息。
+4. 如果是**子页面向父页面传递数据**，实现的技巧就是利用一个代理 iframeC，它嵌入到子页面中，并且和父页面必须保持是同域，然后我们通过它充分利用上面第一种通信方式的实现原理就能把子页面的数据传递给 iframeC。因为，iframeC 和主页面是同域的，所以它们之间传递数据就变得简单多了，属于同域名下的通信问题了，使用上面的方法获取到最顶层 window 对象就好了。
+
+## 97. encodeURIComponent 比 encodeURI 有什么区别?
+
+`encodeURI` 主要用于整个 URI，而 `encodeURIComponent` 主要用于对 URI 中的某一段进行编码。
+
+`encodeURI` 不会对本身属于 URI 的特殊字符进行编码，例如冒号、正斜杠、问号和井字号等，而 `encodeURIComponent` 则会对它发现的任何非标准字符进行编码。
+
+来看下面的例子：
+
+```js
+encodeURI('http://google.com/search?q=http://x.com/你好?a=1')
+// 'http://google.com/search?q=http://x.com/%E4%BD%A0%E5%A5%BD?a=1&b=2'
+
+encodeURIComponent('http://google.com/search?q=http://x.com/你好?a=1&b=2')
+// 'http%3A%2F%2Fgoogle.com%2Fsearch%3Fq%3Dhttp%3A%2F%2Fx.com%2F%E4%BD%A0%E5%A5%BD%3Fa%3D1%26b%3D2'
+```
+
+在上面使用 `encodeURI` 编码后的结果是除了空格和中文之外的其他字符都原封不动，`encodeURIComponent` 方法则会使用对应的编码替换所有非字母数字字符。
+
+这也正是可以对整个 URI 使用 `encodeURI`，而只能对附加在现有 URI 后面的字符串使用 `encodeURIComponent` 的原因所在。
+
+一般来说,我们使用 `encodeURIComponent` 方法的时候要比使用 `encodeURI` 更多,因为在实践中更常见的是对查询字符串参数而不是对基础 URL 进行编码。
+
+## 98. SPA是什么？
+
+## 99. Worker线程之间如何通信？
+
+## 100. typeof(NaN) 返回什么？
+
+## 101. 数组中的方法如何实现 break？
+
+## 102. arguments 类数组，如何遍历类数组？
+
+## 103. 
