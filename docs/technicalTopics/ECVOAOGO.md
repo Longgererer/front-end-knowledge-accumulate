@@ -87,10 +87,12 @@ foo()
 ```js
 ExecutionEnvironment: {
   LexicalEnvironment: {
-    a: 10,
-    bar: function() {},
+    EnvironmentRecord: {
+      a: 10,
+      bar: function() {},
+    },
     outer: <ParentLexicalEnvironment>,
-    this: ...
+    ThisBinding: <globalObject>
   },
   ...
 }

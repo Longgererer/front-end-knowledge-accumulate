@@ -563,7 +563,7 @@ arr.reduce((prev, cur) => (prev.includes(cur) ? prev : [...prev, cur]), [])
 
 事件委托是利用事件冒泡，注册一个事件在父元素上就可以管理子元素某一类型的所有事件。
 
-## 23. cookie，localStorage，sessionStorage 的区别
+## 23. cookie，localStorage，sessionStorage，indexDB 的区别
 
 `cookie` 可设置**失效时间**，没有设置的话，默认是关闭浏览器后失效；数据**大小为 4kb 左右并且有个数限制**；每次请求都会**携带在 HTTP 头中**，如果使用 `cookie` 保存过多数据会带来性能问题。`cookie` **不可跨域**，只有绑定的域名才能访问。非顶级域名，如二级域名或者三级域名，设置的 `cookie` 的 `domain` 只能为顶级域名或者二级域名或者三级域名本身，不能设置其他二级域名。
 
@@ -2242,14 +2242,101 @@ encodeURIComponent('http://google.com/search?q=http://x.com/你好?a=1&b=2')
 
 一般来说,我们使用 `encodeURIComponent` 方法的时候要比使用 `encodeURI` 更多,因为在实践中更常见的是对查询字符串参数而不是对基础 URL 进行编码。
 
-## 98. SPA是什么？
+## 98. SPA 是什么？
 
-## 99. Worker线程之间如何通信？
+SPA（single-page application），翻译过来就是单页面应用，是一种网络应用程序或网站的模型，它通过动态重写当前页面来与用户交互，这种方法避免了页面之间切换打断用户体验。
+
+所有必要的代码（HTML、JavaScript 和 CSS）都通过单个页面的加载而检索，或者根据需要（通常是为响应用户操作）动态装载适当的资源并添加到页面。
+
+SPA 难以实现 SEO，数据传递容易。
+
+### SPA 和 MPA 的区别？
+
+MPA（MultiPage-page application），翻译过来就是多页应用，每个页面都是一个主页面，都是独立的当我们在访问另一个页面的时候，都需要重新加载 `html`、`css`、`js` 文件。切换加载资源，速度慢，用户体验差。
+
+MPA 容易实现 SEO 优化，页面间通过 url、cookie、localStorage 传递信息。
+
+## 99. Worker 线程之间如何通信？
+
+```js
+// main.js
+var worker = new Worker('./worker.js')
+// 监听事件
+worker.addEventListener('message', function (e) {
+  console.log('MAIN: ', 'RECEIVE', e.data)
+})
+// 或者可以使用 onMessage 来监听事件：
+// worker.onmessage = function () {
+//  console.log('MAIN: ', 'RECEIVE', e.data);
+//};
+// 触发事件，传递信息给 Worker
+worker.postMessage('Hello Worker, I am main.js')
+```
 
 ## 100. typeof(NaN) 返回什么？
 
-## 101. 数组中的方法如何实现 break？
+返回字符串 `"number`。`NaN` 只是表示特定值不能在数值类型的限制范围内表示。
 
-## 102. arguments 类数组，如何遍历类数组？
+## 101. arguments 类数组，如何遍历类数组？
 
-## 103. 
+1. 使用 `forEach`。
+2. 使用 `for` 循环。
+3. 转换为数组再遍历。
+
+## 102. with 怎么用？
+
+```js
+with (expression) {
+  statement
+}
+```
+
+优点：
+
+`with` 语句可以在不造成性能损失的情況下，减少变量的长度。其造成的附加计算量很少。可以减少不必要的指针路径解析运算，需要注意的是，很多情況下，也可以不使用 `with` 语句，而是使用一个临时变量来保存指针，来达到同样的效果。
+
+缺点：
+
+`with` 语句使得程序在查找变量值时，都是先在指定的对象中查找。所以那些本来不是这个对象的属性的变量，查找起来将会很慢。`with` 语句使得代码不易阅读，同时使得 JavaScript 编译器难以在作用域链上查找某个变量，难以决定应该在哪个对象上来取值。
+
+## 103. 怎么理解 JS 静态作用域？和动态作用域有什么区别？
+
+JavaScript 采用的是静态作用域，函数定义的位置就决定了函数的作用域。
+
+静态作用域好处是结果是分析代码就可以得出的，不需要运行。
+
+```js
+var val = 1
+function test() {
+  console.log(val)
+}
+function bar() {
+  var val = 2
+  test()
+}
+bar()
+```
+
+当执行 `test` 函数时，先从 `test` 函数内部查找是否有变量 `val`，如果没有，就沿定义函数的位置，查找上一层的代码，查找到全局变量 `val`，其值为 `1`。
+
+作用域查找始终从运行时所处的最内层作用域开始查找，逐级向外查找，直到遇见第一个匹配的标识符为止。
+
+无论函数在哪里被调用，无论如何被调用，它的作用域只由函数定义所处的位置决定。
+
+对于动态作用域，执行 `test` 函数，首先从函数内部查询 `val` 变量，如果没有，就从调用函数的作用域，即 `bar` 函数的作用域内部查找变量 `val`，所以打印结果 `2`。
+
+## 104. canvas 如何进行局部刷新(局部重绘)？
+
+```js
+context.clearRect(x, y, width, height)
+```
+
+## 105. ajax 的 readyState 有哪几个状态，含义分别是什么？
+
+5 个状态，分别是 0-4
+
+- 0: 还没调用 open 方法
+- 1: 未调用 send 方法，也就是还没发送数据给服务器
+- 2: 还没有接收到响应
+- 3: 开始接收到了部分数据
+- 4: 接收完成，数据可以在客户端使用了
