@@ -52,7 +52,7 @@ module.exports = {
     [
       '@vuepress/plugin-docsearch',
       {
-        apiKey: '041b3e4ba23359787f59d3ac518cb7c5',
+        apiKey: '2f0bf4f8a16b358765f9dd54d1a3146a',
         appId: '2GXCDIZQDB',
         indexName: 'blog-lliiooiill',
         placeholder: 'Search',
@@ -183,7 +183,7 @@ module.exports = {
             '/technicalTopics/状态管理.md',
             '/technicalTopics/浏览器缓存机制.md',
             '/technicalTopics/Git详解.md',
-            '/technicalTopics/14种JavaScript设计模式.md',
+            '/technicalTopics/JavaScript设计模式.md',
             '/technicalTopics/Vite是什么？.md',
             '/technicalTopics/AST详解.md',
             '/technicalTopics/从输入URL到页面加载完毕.md',

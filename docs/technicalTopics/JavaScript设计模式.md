@@ -5,9 +5,23 @@ tags:
   - 设计模式
 ---
 
-# 14 种 JavaScript 设计模式
+# JavaScript 常用设计模式
 
-看了 《JavaScript 设计模式与开发实践》 一书，深有感触，想总结一下
+1. S – Single Responsibility Principle **单一职责**原则。
+   - 一个程序只做好一件事。
+   - 如果功能过于复杂就拆分开，每个部分保持独立。
+2. O – OpenClosed Principle **开放/封闭**原则。
+   - 对扩展开放，对修改封闭。
+   - 增加需求时，扩展新代码，而非修改已有代码。
+3. L – Liskov Substitution Principle **里氏替换**原则。
+   - 子类能覆盖父类。
+   - 父类能出现的地方子类就能出现。
+4. I – Interface Segregation Principle **接口隔离**原则。
+   - 保持接口的单一独立。
+   - 类似单一职责原则，这里更关注接口。
+5. D – Dependency Inversion Principle **依赖倒转**原则。
+   - 面向接口编程，依赖于抽象而不依赖于具体。
+   - 使用方只关注接口而不关注具体类的实现。
 
 ## 单例模式
 
@@ -19,13 +33,13 @@ tags:
 
 ```javascript
 let loginBtn = document.getElementById('login')
-loginBtn.onclick = function() {
+loginBtn.onclick = function () {
   let pupUp = createPupUp()
   pupUp.style.display = 'block'
 }
-let createPupUp = (function() {
+let createPupUp = (function () {
   let pupUp
-  return function() {
+  return function () {
     if (!pupUp) {
       pupUp = document.createElement('div')
       pupUp.innerText = 'login'
@@ -49,9 +63,9 @@ if (!obj) {
 我们可以根据固定逻辑封装一个可复用的函数中
 
 ```javascript
-let singleMode = function(fn) {
+let singleMode = function (fn) {
   let ele
-  return function() {
+  return function () {
     ele = ele || fn.apply(this, arguments)
     return ele
   }
@@ -61,25 +75,205 @@ let singleMode = function(fn) {
 由于创建不同对象的代码是有差异的，所以将创建对象的方法 `fn` 分离开作为参数传入，用变量 `ele` 保存 `fn` 的结果，由于闭包的机制，`ele` 永远不会被销毁，这就保证了创建对象的唯一性
 
 ```javascript
-let createPupUp = function() {
+let createPupUp = function () {
   pupUp = document.createElement('div')
   pupUp.innerText = 'login'
   pupUp.style.display = 'none'
   document.body.appendChild(pupUp)
   return pupUp
 }
-let singleMode = function(fn) {
+let singleMode = function (fn) {
   let ele
-  return function() {
+  return function () {
     ele = ele || fn.apply(this, arguments)
     return ele
   }
 }
 let CreateSinglePupUp = singleMode(createPupUp)
-loginBtn.onclick = function() {
+loginBtn.onclick = function () {
   let pupUp = CreateSinglePupUp()
   pupUp.style.display = 'block'
 }
+```
+
+## 观察者模式
+
+观察者模式非常简单，就是作为一个对象(Subject)，维护着一个依赖列表，当对象的任何状态发生变化，所有依赖于它的对象都得到通知并被自动更新。
+
+可以看出，观察者模式中只有**被观察者**和**观察者**两种角色，关系为一对多。
+
+```js
+let observerID = 0
+class Observer {
+  constructor() {
+    this.id = observerID++
+  }
+  update(observed) {
+    console.log(`观察者${this.id}检测到被观察者${observed.id}变化`)
+  }
+}
+let observedID = 0
+class Observed {
+  constructor() {
+    this.id = observedID++
+    this.observers = []
+  }
+  addObserver(observer) {
+    this.observers.push(observer)
+  }
+  removeObserver(observer) {
+    this.observers = this.observers.filter((ob) => {
+      return ob.id !== observer.id
+    })
+  }
+  notify() {
+    this.observers.forEach((observer) => {
+      observer.update(this)
+    })
+  }
+}
+```
+
+## 发布订阅模式
+
+![](http://picstore.lliiooiill.cn/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20220122152031.jpg)
+
+通过这个图，我们可以看出，观察者和发布订阅的根本区别在于：
+
+- 观察者模式为一对多关系，发布订阅为多对多关系。
+- 发布订阅模式需要一位调度中心，用来接收发布者的发布信息并传递给所有订阅者。
+- 观察者模式的角色需要知道彼此的存在，发布订阅则不需要，因为调度中心将发布者和订阅者的关系解耦了。
+
+```js
+let publisherID = 0
+class Publisher {
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher
+    this.id = publisherID++
+  }
+  publish(info) {
+    this.dispatcher.publish(this, info)
+  }
+}
+
+let subscriberID = 0
+class Subscriber {
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher
+    this.id = subscriberID++
+  }
+  subscribe(pID) {
+    this.dispatcher.subscribe(pID, this)
+  }
+  update(publisher, info) {
+    console.log(`接受到${publisher.id}的消息${info}`)
+  }
+}
+
+class Dispatcher {
+  constructor() {
+    this.dispatcherMap = {}
+  }
+  subscribe(pID, subscriber) {
+    const dispatcherMap = this.dispatcherMap
+    if (!dispatcherMap[pID]) {
+      dispatcherMap[pID] = []
+    }
+    dispatcherMap[pID].push(subscriber)
+  }
+  unsubscribe(pID, subscriber) {
+    const dispatcherMap = this.dispatcherMap
+    const subscribers = dispatcherMap[pID]
+    if (!subscribers || !subscribers.length) {
+      return void 0
+    }
+    dispatcherMap[pID] = subscribers.filter((item) => {
+      return item.id !== subscriber.id
+    })
+  }
+  publish(publisher, info) {
+    const subscribers = this.dispatcherMap[publisher.id]
+    if (!subscribers || !subscribers.length) {
+      return void 0
+    }
+    subscribers.forEach((item) => {
+      item.update(publisher, info)
+    })
+  }
+}
+```
+
+## 中介者模式
+
+![](http://picstore.lliiooiill.cn/65895629-5633f000-e3de-11e9-8b9e-bc9fbd3b77b6.png)
+
+在中介者模式中，所有相关对象都通过中介者对象来通信，而不是互相引用，所以当一个对象发生改变时，只需要通知中介者对象即可。中介者使各对象之间耦合松散，而且可以独立地改变它们之间的交互。中介者模式使网状的多对多关系变成了相对简单的一对多关系。
+
+比如一场测试结束后, 公布结果: 告知解答出题目的人挑战成功, 否则挑战失败。
+
+```js
+class Middler {
+  constructor() {
+    this.players = []
+    this.winners = []
+    this.losers = []
+  }
+  add(player) {
+    this.players.push(player)
+  }
+  win(player) {
+    const { players, winners, losers } = this
+    winners.push(player)
+    if (players.length === winners.length + losers.length) {
+      this.showResult()
+    }
+  }
+  lose(player) {
+    const { players, winners, losers } = this
+    losers.push(player)
+    if (players.length === winners.length + losers.length) {
+      this.showResult()
+    }
+  }
+  showResult() {
+    const { winners, losers } = this
+    for (let winner of winners) {
+      console.log(`玩家${winner.name}挑战成功！`)
+    }
+    for (let loser of losers) {
+      console.log(`玩家${loser.name}挑战失败！`)
+    }
+  }
+}
+
+const middler = new Middler()
+let playerID = 0
+class Player {
+  constructor(name) {
+    this.id = playerID++
+    this.name = name
+    this.middler = middler
+  }
+  add() {
+    this.middler.add(this)
+  }
+  win() {
+    this.middler.win(this)
+  }
+  lose() {
+    this.middler.lose(this)
+  }
+}
+
+const a = new Player('A')
+const b = new Player('B')
+const c = new Player('C')
+a.add()
+b.add()
+c.add()
+a.win()
+b.win()
+c.lose()
 ```
 
 ## 策略模式
@@ -92,17 +286,17 @@ loginBtn.onclick = function() {
 
 ```javascript
 const reward = {
-  s: function(salary) {
+  s: function (salary) {
     return salary * 4
   },
-  a: function(salary) {
+  a: function (salary) {
     return salary * 3
   },
-  b: function(salary) {
+  b: function (salary) {
     return salary * 2
   },
 }
-let calcReward = function(level, salary) {
+let calcReward = function (level, salary) {
   return reward[level](salary)
 }
 ```
@@ -113,17 +307,17 @@ let calcReward = function(level, salary) {
 
 ```javascript
 const formCheck = {
-  isNoEmpty: function(value, err) {
+  isNoEmpty: function (value, err) {
     if (value === '') {
       return err
     }
   },
-  minLength: function(value, length, err) {
+  minLength: function (value, length, err) {
     if (value.length < length) {
       return err
     }
   },
-  isMobile: function(value, err) {
+  isMobile: function (value, err) {
     if (!/(^1[3|5|9][0-9]{9}$)/.test(value)) {
       return err
     }
@@ -135,7 +329,7 @@ const formCheck = {
 
 ```javascript
 const form = document.getElementById('form')
-let validatorFunc = function() {
+let validatorFunc = function () {
   let validator = new validator()
   validator.add(form.userName, 'isNoEmpty', '用户名不能为空')
   validator.add(form.password, 'minLength:6', '密码长度不能少于六位')
@@ -148,7 +342,7 @@ let validatorFunc = function() {
 然后给表单绑定提交事件
 
 ```javascript
-form.onsubmit = function() {
+form.onsubmit = function () {
   const err = validatorFunc()
   if (err) {
     alert(err)
@@ -160,19 +354,19 @@ form.onsubmit = function() {
 `Validator` 类的实现：
 
 ```javascript
-let Validator = function() {
+let Validator = function () {
   this.rules = []
 }
-Validator.prototype.add = function(dom, rule, err) {
+Validator.prototype.add = function (dom, rule, err) {
   let ary = rule.split(':')
-  this.rules.push(function() {
+  this.rules.push(function () {
     let choose = ary.shift()
     ary.unshift(dom.value)
     ary.push(err)
     return formCheck[choose].apply(dom, ary)
   })
 }
-Validator.prototype.start = function() {
+Validator.prototype.start = function () {
   for (let i = 0, validatorFunc; (validatorFunc = this.rules[i++]); ) {
     let msg = validatorFunc()
     if (msg) return msg
@@ -195,11 +389,11 @@ Validator.prototype.start = function() {
 我们可以写一个创建 `img` 节点并设置图片 `src` 的方法
 
 ```javascript
-let createImg = (function() {
+let createImg = (function () {
   const imgNode = document.createElement('img')
   document.body.appendChild(imgNode)
   return {
-    setSrc: function(src) {
+    setSrc: function (src) {
       imgNode.src = src
     },
   }
@@ -209,13 +403,13 @@ let createImg = (function() {
 然后创建代理：
 
 ```javascript
-let proxyImg = (function() {
+let proxyImg = (function () {
   const img = new Image()
-  img.onload = function() {
+  img.onload = function () {
     createImg.setSrc(this.src)
   }
   return {
-    setSrc: function(src) {
+    setSrc: function (src) {
       createImg.setSrc('./loading.gif')
       img.src = src
     },
@@ -244,17 +438,17 @@ proxyImg.setSrc('./image1.gif')
 解决方法是收集一段时间内的请求再一次性发给服务器
 
 ```javascript
-let sendReq = function(id) {
+let sendReq = function (id) {
   console.log(`发送请求${id}`)
   // 执行代码
 }
-let proxyReq = (function() {
+let proxyReq = (function () {
   let cache = []
   let timer = null
-  return function(id) {
+  return function (id) {
     cache.push(id)
     if (timer) return
-    timer = setTimeout(function() {
+    timer = setTimeout(function () {
       sendReq(cache.join(','))
       clearTimeout(timer)
       timer = null
@@ -264,7 +458,7 @@ let proxyReq = (function() {
 })()
 let checkbox = document.getElementsByTagName('input')
 for (let i = checkbox.length; i--; ) {
-  checkbox[i].onclick = function() {
+  checkbox[i].onclick = function () {
     if (this.checked === true) proxyReq(this.id)
   }
 }
@@ -350,9 +544,9 @@ img {
 ```javascript
 const img = document.getElementsByTagName('img')
 const num = img.length
-let proxyLazy = (function() {
+let proxyLazy = (function () {
   let n = 0
-  return function() {
+  return function () {
     const height = document.documentElement.clientHeight
     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
     for (let i = n; i < num; i++) {
@@ -377,16 +571,16 @@ window.onscroll = proxyLazy
 真实的缓存代理可能是很复杂的，这里用一个求乘积的例子代替
 
 ```javascript
-let multiply = function(...arr) {
+let multiply = function (...arr) {
   let result = 1
   for (let i = arr.length; i--; ) {
     result *= arr[i]
   }
   return result
 }
-let proxyMultiply = function(fn) {
+let proxyMultiply = function (fn) {
   let cache = {}
-  return function(...args) {
+  return function (...args) {
     let argsStr = args.join(',')
     if (argsStr in cache) {
       return cache[argsStr]
@@ -408,7 +602,7 @@ console.log(calc(1, 2, 3, 4))
 ### 内部迭代器和外部迭代器
 
 ```javascript
-let each = function(arr, fn) {
+let each = function (arr, fn) {
   for (let i = 0; i < arr.length; i++) {
     fn.call(arr[i], i)
   }
@@ -422,15 +616,15 @@ let each = function(arr, fn) {
 外部迭代器需要显式地请求迭代下一个元素
 
 ```javascript
-let Iterator = function(obj) {
+let Iterator = function (obj) {
   let current = 0
-  let next = function() {
+  let next = function () {
     current++
   }
-  let isOver = function() {
+  let isOver = function () {
     return current >= obj.length
   }
-  let getItem = function() {
+  let getItem = function () {
     return obj[current]
   }
   return {
@@ -443,59 +637,6 @@ let Iterator = function(obj) {
 ```
 
 迭代器模式也是很常用的，但是我不认为它是一种模式，因为很多语言都内置了迭代器，不需要自己编写迭代器
-
-## 发布-订阅模式
-
-假如我想买房，询问售楼处得知房价太贵买不起，客服告诉我过几天会打折，但具体时间也不知道，那么我需要每天都打电话给客服问他有没有打折，这样非常麻烦，我们想要的是当房价打折的时候，客服主动打电话通知我们
-
-实际上往往有一个中介公司帮我们收集各个售楼处的信息，这样订阅者不必关心是哪个售楼处的信息，售楼处也不必知道信息要发给哪个订阅者，但是发布者和订阅者都需要知道中介公司的存在
-
-```javascript
-let Event = (function() {
-  let list = {}
-  let listen = function(key, fn) {
-    if (!list[key]) list[key] = []
-    list[key].push(fn)
-  }
-  let trigger = function() {
-    let key = Array.prototype.shift.call(arguments)
-    let fns = list[key]
-    if (!fns || fns.length === 0) return false
-    for (let i = fns.length; i--; ) {
-      fns[i].apply(this, arguments)
-    }
-  }
-  let remove = function(key, fn) {
-    let fns = list[key]
-    if (!fns) return false
-    if (!fn) fns && (fns.length = 0)
-    else {
-      for (let l = fns.length - 1; l >= 0; l--) {
-        let fnsItem = fns[l]
-        if (fnsItem === fn) fns.splice(l, 1)
-      }
-    }
-  }
-  return {
-    listen,
-    trigger,
-    remove,
-  }
-})()
-let installEvent = function(obj) {
-  for (let i in event) {
-    obj[i] = event[i]
-  }
-}
-Event.listen('info1', function(price) {
-  console.log(price)
-})
-Event.listen('info2', function(price) {
-  console.log(price)
-})
-salesOffices.trigger('info1', 1000)
-salesOffices.trigger('info2', 2000)
-```
 
 ## 命令模式
 
@@ -511,24 +652,24 @@ salesOffices.trigger('info2', 2000)
 
 ```javascript
 let btn1 = document.getElementById('button1')
-let setCommand = function(btn, fn) {
-  btn.onclick = function() {
+let setCommand = function (btn, fn) {
+  btn.onclick = function () {
     fn()
   }
 }
 let selectBar = {
-  add: function() {
+  add: function () {
     console.log('添加')
   },
-  edit: function() {
+  edit: function () {
     console.log('修改')
   },
-  del: function() {
+  del: function () {
     console.log('删除')
   },
 }
-let addCommand = function(receiver) {
-  return function() {
+let addCommand = function (receiver) {
+  return function () {
     receiver.add()
   }
 }
@@ -549,26 +690,26 @@ setCommand(btn1, add)
 我们定义文件夹类和文件类，给他们加上 `add` 和 `scan` 方法用于添加和扫描文件
 
 ```javascript
-let Folder = function(name) {
+let Folder = function (name) {
   this.name = name
   this.files = []
 }
-Folder.prototype.add = function(file) {
+Folder.prototype.add = function (file) {
   this.files.push(file)
 }
-Folder.prototype.scan = function() {
+Folder.prototype.scan = function () {
   console.log(`扫描文件夹${this.name}`)
   for (let i = this.files.length; i--; ) {
     this.files[i].scan()
   }
 }
-let File = function(name) {
+let File = function (name) {
   this.name = name
 }
-File.prototype.add = function() {
+File.prototype.add = function () {
   throw new Error('文件下面不能添加文件')
 }
-File.prototype.scan = function() {
+File.prototype.scan = function () {
   console.log(`扫描文件${this.name}`)
 }
 let folder = new Folder('0')
@@ -608,47 +749,47 @@ folder.scan()
 首先我们要创建一个饮料类，在创建咖啡和茶类继承饮料类
 
 ```javascript
-let Beverage = function() {}
-Beverage.prototype.boilWater = function() {
+let Beverage = function () {}
+Beverage.prototype.boilWater = function () {
   console.log('烧水')
 }
-Beverage.prototype.brew = function() {}
-Beverage.prototype.pourCup = function() {}
-Beverage.prototype.addCondiments = function() {}
+Beverage.prototype.brew = function () {}
+Beverage.prototype.pourCup = function () {}
+Beverage.prototype.addCondiments = function () {}
 
-Beverage.prototype.init = function() {
+Beverage.prototype.init = function () {
   this.boilWater()
   this.brew()
   this.pourCup()
   this.addCondiments()
 }
 
-let Coffee = function() {}
+let Coffee = function () {}
 Coffee.prototype = new Beverage()
 
-let Tea = function() {}
+let Tea = function () {}
 Tea.prototype = new Beverage()
 ```
 
 接下来 `Coffee` 和 `Tea` 要重写 `Beverage` 类的方法
 
 ```javascript
-Coffee.prototype.brew = function() {
+Coffee.prototype.brew = function () {
   console.log('冲咖啡')
 }
-Coffee.prototype.pourCup = function() {
+Coffee.prototype.pourCup = function () {
   console.log('将咖啡倒进杯子')
 }
-Coffee.prototype.addCondiments = function() {
+Coffee.prototype.addCondiments = function () {
   console.log('加糖')
 }
-Tea.prototype.brew = function() {
+Tea.prototype.brew = function () {
   console.log('泡茶')
 }
-Tea.prototype.pourCup = function() {
+Tea.prototype.pourCup = function () {
   console.log('将茶倒进杯子')
 }
-Tea.prototype.addCondiments = function() {
+Tea.prototype.addCondiments = function () {
   console.log('加柠檬')
 }
 ```
@@ -686,10 +827,10 @@ tea.init()
 我们需要将外部状态剥离出来，这样就只剩下了可以共享的内部状态
 
 ```javascript
-const Model = function(gender) {
+const Model = function (gender) {
   this.gender = gender
 }
-Model.prototype.takephoto = function() {
+Model.prototype.takephoto = function () {
   console.log(`${this.gender}穿着${this.underwear}`)
 }
 const maleModel = new Model('male')
@@ -723,21 +864,21 @@ for (let i = 1; i < 51; i++) {
 - stock：表示当前用于普通用户购买的手机库存数量，已经支付过超过 500 或 300 的用户不受此限制
 
 ```javascript
-let order500 = function(orderType, pay, stock) {
+let order500 = function (orderType, pay, stock) {
   if (orderType === 1 && pay === true) {
     console.log('得到100元优惠券')
   } else {
     order200(orderType, pay, stock)
   }
 }
-let order300 = function(orderType, pay, stock) {
+let order300 = function (orderType, pay, stock) {
   if (orderType === 2 && pay === true) {
     console.log('得到50元优惠券')
   } else {
     orderNormal(orderType, pay, stock)
   }
 }
-let order300 = function(orderType, pay, stock) {
+let order300 = function (orderType, pay, stock) {
   if (orderType > 0) {
     console.log('没有优惠券')
   } else {
@@ -749,21 +890,21 @@ let order300 = function(orderType, pay, stock) {
 当然，这还不能完全体现职责链模式的特点，因为每一个节点都必须知道后面的节点是什么，这样大大降低了代码的灵活性
 
 ```javascript
-let order500 = function(orderType, pay, stock) {
+let order500 = function (orderType, pay, stock) {
   if (orderType === 1 && pay === true) {
     console.log('得到100元优惠券')
   } else {
     return 'next'
   }
 }
-let order300 = function(orderType, pay, stock) {
+let order300 = function (orderType, pay, stock) {
   if (orderType === 2 && pay === true) {
     console.log('得到50元优惠券')
   } else {
     return 'next'
   }
 }
-let order300 = function(orderType, pay, stock) {
+let order300 = function (orderType, pay, stock) {
   if (orderType > 0) {
     console.log('没有优惠券')
   } else {
@@ -775,14 +916,14 @@ let order300 = function(orderType, pay, stock) {
 然后我们定义一个 chain 类，在实例化的时候传递一个需要被包装的函数
 
 ```javascript
-let Chain = function(fn) {
+let Chain = function (fn) {
   this.fn = fn
   this.next = null
 }
-Chain.prototype.setNext = function(next) {
+Chain.prototype.setNext = function (next) {
   this.next = next
 }
-Chain.prototype.passRequest = function() {
+Chain.prototype.passRequest = function () {
   let ret = this.fn.apply(this, arguments)
   if (ret === 'next') {
     return this.next && this.next.passRequest.apply(this.next, arguments)
@@ -814,77 +955,6 @@ chainOrder500.passRequest(1, true, 500) // 输出500元定金预购，得到100�
 
 这种方式大大增加了灵活性，以后我们要是想加入新的优惠券，直接在职责链中加入一个新的节点即可
 
-## 中介者模式
-
-有一个人 `A`，他和 `B`，`C`，`D`，`E` 是好朋友，假如有一天 `A` 发生了改变，那么必须同时通知 `B`，`C`，`D`，`E`，我们可以在这五个人之间创建一个中介者，这样只要通知中介者就够了
-
-银行在存款人和贷款人之间也能看成一个中介。存款人 `A` 并不关心他的钱最后被谁借走。贷款人 `B` 也不关心他借来的钱来自谁的存款。因为有中介的存在，这场交易才变得如此方便
-
-```javascript
-var goods = {
-  //库存
-  'red|32G': 3,
-  'red|16G': 5,
-  'blue|32G': 3,
-  'blue|16G': 6,
-}
-//中介者
-var mediator = (function() {
-  function id(id) {
-    return document.getElementById(id)
-  }
-  var colorSelect = id('colorSelect'),
-    memorySelect = id('memorySelect'),
-    numberInput = id('numberInput'),
-    colorInfo = id('colorInfo'),
-    memoryInfo = id('memoryInfo'),
-    numberInfo = id('numberInfo'),
-    nextBtn = id('nextBtn')
-  return {
-    changed: function(obj) {
-      var color = colorSelect.value,
-        memory = memorySelect.value,
-        number = numberInput.value,
-        stock = goods[color + '|' + memory]
-      if (obj === colorSelect) {
-        colorInfo.innerHTML = color
-      } else if (obj === memorySelect) {
-        memoryInfo.innerHTML = memory
-      } else if (obj === numberInput) {
-        numberInfo.innerHTML = number
-      }
-      if (!color) {
-        nextBtn.disabled = true
-        nextBtn.innerHTML = '请选择手机颜色'
-        return
-      }
-      if (!memory) {
-        nextBtn.disabled = true
-        nextBtn.innerHTML = '请选择内存大小'
-        return
-      }
-      if (Number.isInteger(number - 0) && number > 0) {
-        nextBtn.disabled = true
-        nextBtn.innerHTML = '请输入正确的购买数量'
-        return
-      }
-      nextBtn.disabled = false
-      nextBtn.innerHTML = '放入购物车'
-    },
-  }
-})()
-//添加事件
-colorSelect.onchange = function() {
-  mediator.changed(this)
-}
-memorySelect.onchange = function() {
-  mediator.changed(this)
-}
-numberInput.onchange = function() {
-  mediator.changed(this)
-}
-```
-
 ## 装饰者模式
 
 假设我们在制作一款飞行射击游戏，随着经验值的增加，我们操作的飞机对象可以升级成更厉害的飞机，一级的飞机只能发射子弹，二级的飞机可以发射火箭弹，三级的飞机可以发射导弹
@@ -893,23 +963,23 @@ numberInput.onchange = function() {
 
 ```javascript
 let plane = {
-  fire: function() {
+  fire: function () {
     console.log('发射子弹')
   },
 }
-let rocketShell = function() {
+let rocketShell = function () {
   console.log('发射火箭弹')
 }
-let guidedMissile = function() {
+let guidedMissile = function () {
   console.log('发射导弹')
 }
 let fire1 = plane.fire
-plane.fire = function() {
+plane.fire = function () {
   fire1()
   rocketShell()
 }
 let fire2 = plane.fire
-plane.fire = function() {
+plane.fire = function () {
   fire2()
   guidedMissile()
 }
@@ -925,7 +995,7 @@ function a() {
   console.log('这是原函数')
 }
 let _a = a
-a = function() {
+a = function () {
   _a()
   console.log('这是新添加的功能')
 }
@@ -934,11 +1004,11 @@ a = function() {
 假如我想给 `window.onload` 事件绑定一个函数，但又不知道这个事件有没有被其他人绑定过，可以这样写
 
 ```javascript
-window.onload = function() {
+window.onload = function () {
   console.log(1)
 }
-let _onload = window.onload || function() {}
-window.onload = function() {
+let _onload = window.onload || function () {}
+window.onload = function () {
   _onload()
   console.log(2)
 }
@@ -953,11 +1023,11 @@ window.onload = function() {
 同一个开关按钮，在不同状态下，表现出来的行为是不一样的
 
 ```javascript
-let Light = function() {
+let Light = function () {
   this.state = 'off'
   this.button = null
 }
-Light.prototype.init = function() {
+Light.prototype.init = function () {
   let button = document.createElement('button')
   button.innerText = '开关'
   this.button = document.body.appendChild(button)
@@ -965,7 +1035,7 @@ Light.prototype.init = function() {
     this.buttonWasPressed()
   }
 }
-Light.prototype.buttonWasPressed = function() {
+Light.prototype.buttonWasPressed = function () {
   if (this.state === 'off') {
     console.log('开灯')
     this.state = 'on'
@@ -984,22 +1054,22 @@ light.init()
 
 ```javascript
 let googleMap = {
-  show: function() {
+  show: function () {
     console.log('开始渲染谷歌地图')
   },
 }
 let baiduMap = {
-  display: function() {
+  display: function () {
     console.log('开始渲染百度地图')
   },
 }
-let renderMap = function(map) {
+let renderMap = function (map) {
   if (map.show instanceof Function) {
     map.show()
   }
 }
 let baiduMapAdapter = {
-  show: function() {
+  show: function () {
     return baiduMap.display()
   },
 }

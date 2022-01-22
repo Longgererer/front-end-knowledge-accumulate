@@ -338,6 +338,10 @@ import { nextTick, observable } from 'vue'
 nextTick(() => {})
 ```
 
+## nextTick 策略
+
+
+
 ## 源码结构
 
 Vue3 不同于 Vue2 也体现在源码结构上，Vue3 把耦合性比较低的包分散在 `packages` 目录下单独发布成 `npm` 包。 这也是目前很流行的一种大型项目管理方式 **Monorepo**。

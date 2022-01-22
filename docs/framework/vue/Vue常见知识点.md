@@ -58,7 +58,7 @@ vm.$set(vm.items, indexOfItem, newValue)
 // Array.prototype.splice
 vm.items.splice(indexOfItem, 1, newValue)
 // 强制更新视图
-vm.$forceUpdated()
+vm.$forceUpdate()
 ```
 
 可以使用如下方式解决第二个问题：
@@ -127,7 +127,7 @@ new Vue({
 - `beforeDestroy`：组件销毁前调用。组件开始进入销毁阶段，实例上所有的属性还处于可用状态。
 - `destroyed`：组件销毁后调用。组件已完全销毁，所有属性都没有了。
 
-无论是组件本身的数据变更，还是从父组件接收到的 `props` 或者从 VueX 里面拿到的数据有变更，都会触发虚拟 DOM 重新渲染和打补丁，并在之后调用 `updated`。只有涉及到页面渲染的响应式数据发生变化或者子组件发生了卸载或挂载才会触发更新。
+无论是组件本身的数据变更，还是从父组件接收到的 `props` 或者从 VueX 里面拿到的数据有变更，都会触发虚拟 DOM 重新渲染和打补丁，并在之后调用 `updated`。只有涉及到页面渲染的响应式数据发生变化或者子组件发生了卸载或挂载(包括因为 keep-alive 消失出现)才会触发更新。
 
 ## 8. 父子组件的生命周期执行顺序？
 
@@ -229,10 +229,11 @@ methods: {
 4. `$attrs/$listeners` 适用于 隔代组件通信。
 5. `provide / inject` 适用于 隔代组件通信。
 6. VueX 适用于 父子、隔代、兄弟组件通信。
+7. `Vue.observable` 可以代替 VueX 作为小型项目的全局状态托管。
 
 ## 17. 对象删除属性不触发视图更新怎么解决？
 
-使用 `delete` 删除对象属性不会触发视图更新：`delete this.obj.pro`。这是因为 Vue 不能检测到对象属性的删除。
+使用 `delete` 删除对象属性不会触发视图更新：`delete this.obj.pro`。这是因为 Vue2 不能检测到对象属性的添加和删除。
 
 使用 `vm.$delete` 就可以触发更新了。
 
@@ -508,8 +509,8 @@ Attribute 对象包含标签里定义的所有属性，Property 只包含 HTML �
     </header>
     <!-- 作用域插槽 -->
     <footer>
-      <slot name="footer" testProps="子组件的值">
-        <h3>没传footer插槽</h3>
+      <slot name="footer" v-bind:user="user">
+        {{ user.lastName }}
       </slot>
     <footer>
   </div>
@@ -520,7 +521,7 @@ Attribute 对象包含标签里定义的所有属性，Property 只包含 HTML �
 
 - `slot` 属性弃用，`v2.6+` 具名插槽通过指令参数 `v-slot:插槽名` 的形式传入，可以简化为 `#插槽名`。
 - `slot-scope` 属性弃用，`v2.6+` 作用域插槽通过 `v-slot:xxx="slotProps"` 的 `slotProps` 来获取子组件传出的属性。
-- `v-slot` 属性只能在 `<template>` 上使用，但在【只有默认插槽时】可以在组件标签上使用。
+- `v-slot` 属性只能在 `<template>` 上使用，但在【只有默认插槽时】可以在组件标签上使用，而 `2.5` 以下的 `slot` 则可以在普通 HTML 标签中使用。
 
 ```html
 <!-- Parent -->
@@ -535,10 +536,9 @@ Attribute 对象包含标签里定义的所有属性，Property 只包含 HTML �
       <div>具名插槽</div>
     </template>
     <!--作用域插槽-->
-    <template #footer="slotProps">
-      <div>{{slotProps.testProps}}</div>
-    </template>
-  <child>
+    <template slot="default" slot-scope="slotProps"> 这是作用域插槽（老版）{{slotProps.test}} </template>
+    <template v-slot:scopedSlots="scopeProps"> 这是作用域插槽（新版）{{scopeProps.test}} </template>
+  </child>
 </template>
 ```
 
@@ -561,6 +561,14 @@ Attribute 对象包含标签里定义的所有属性，Property 只包含 HTML �
 在 2.5 之前，如果是普通插槽就直接是 `VNode` 的形式了，而如果是作用域插槽，由于子组件需要在父组件访问子组件的数据，所以父组件下是一个未执行的函数 `(slotScope) => return h('div', slotScope.msg)`，接受子组件的 `slotProps` 参数，在子组件渲染实例时会调用该函数传入数据。
 
 在 2.6 之后，两者合并，普通插槽也变成一个函数，只是不接受参数了。
+
+作用域插槽与普通插槽相比，主要区别在于插槽内容可以获取到子组件作用域变量。由于需要注入子组件变量，相比于具名插槽，作用域插槽有以下几点不同：
+
+作用域插槽在父组件编译和渲染阶段并不会直接生成 `VNode`，而是在父节点 `VNode` 的 `data` 中保留一个 `scopedSlots` 对象，存储着不同名称的插槽以及它们对应的渲染函数，创建子组件实例时，将这个属性挂载到子组件的 `vm.$scopedSlots` 中；当创建子组件的渲染 `VNode` 时，将子组件响应式属性传入并执行这个渲染函数从而创建传入的插槽 `VNode`；创建过程中会将子组件的 Render Watcher 添加到响应式属性的 `dep.subs` 中。
+
+当子组件修改响应式属性时（不管这个属性有没有应用到作用域插槽中），触发 Watcher 更新。重新获取 `vm.$scopedSlots`；在创建渲染 VNode 过程中，执行插槽函数创建插槽 VNode 并传入子组件属性。
+
+当父组件修改某响应式属性时，通知父组件 Render Watcher 更新。执行 `render` 函数过程中，创建新的插槽对象，如果新老插槽对象中有动态插槽则调用 `vm.$forceUpdate()` 触发子组件更新，反之不触发。
 
 ## 32. nextTick 知道吗，实现原理是什么？
 
@@ -692,7 +700,7 @@ export function nextTick(cb? Function, ctx: Object) {
 
 ## 34. Vue 事件绑定原理是什么？
 
-原生事件绑定是通过 `addEventListener` 绑定给真实元素的，组件事件绑定是通过 Vue 自定义的 `$on` 实现的。
+原生事件绑定是通过 `addEventListener` 绑定给真实元素的，组件事件绑定是通过 Vue 自定义的 `$on` 将事件添加到注册表中，使用 `$emit` 触发。
 
 ## 35. v-on 实现原理？
 
@@ -809,6 +817,13 @@ Vue3.x 借鉴了 ivi 算法和 inferno 算法。
 在创建 `VNode` 时就确定其类型，以及在 `mount/patch` 的过程中采用位运算来判断一个 `VNode` 的类型，在这个基础之上再配合核心的 Diff 算法，使得性能上较 Vue2.x 有了提升。
 
 该算法中还运用了动态规划的思想求解最长递归子序列。
+
+整体来说相对于 Vue2.X 的 Diff 算法，Vue3 的改进如下：
+
+1. 事件缓存，事件变成静态的了。
+2. 静态标记，Vue2 是对所有节点进行 Diff，Vue3 对于静态节点会添加标记，Diff 时会跳过静态节点。
+3. 静态提升，创建节点时保存，后续直接使用。
+4. 使用最长递归子序列优化了对比流程。
 
 ## 38. created 使用 async 之后，会阻塞后续生命周期的执行么？
 
@@ -1663,7 +1678,7 @@ Vue.mixin({
 
 在 `main.js` 中注册全局方法，所有组件都可以调用该方法了，不过要注意的是，如果组件有与之同名的 `loadPage` 方法，则会覆盖 `mixin` 中的方法。
 
-## 71. Vue.\$forceUpdated 是什么？
+## 71. Vue.\$forceUpdate 是什么？
 
 `$forceUpdate` 方法用来强制更新视图，但 Vue 不推荐我们这样去做，如果你调用了这个函数，十有八九是写的代码有问题。
 
