@@ -52,7 +52,7 @@ module.exports = {
     [
       '@vuepress/plugin-docsearch',
       {
-        apiKey: '2f0bf4f8a16b358765f9dd54d1a3146a',
+        apiKey: 'c2f713128486b6f235ed05af4c55133b',
         appId: '2GXCDIZQDB',
         indexName: 'blog-lliiooiill',
         placeholder: 'Search',

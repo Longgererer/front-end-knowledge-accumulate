@@ -852,12 +852,16 @@ Vue3.x 借鉴了 ivi 算法和 inferno 算法。
 **参数或查询的改变并不会触发进入/离开的导航守卫**!
 
 - `beforeEach` ：全局前置守卫，进入路由之前被调用。
-- `beforeResolve`：全局解析守卫(2.5.0+) 在 `beforeRouteEnter` 调用之后调用。
+- `beforeResolve`：全局解析守卫(2.5.0+) 在 `beforeRouteEnter` 调用之后调用。和 `beforeEach` 区别是在导航被确认之前，同时在所有组件内守卫和异步路由组件被解析之后，解析守卫就被调用。
 - `afterEach`：全局后置钩子，进入路由之后 注意:**不支持 next()**。
+
+---
 
 - `beforeEnter`：路由只独享这一个钩子，在 `routes` 里配置。
 
-- `beforeRouteEnter`：进入路由前，此时实例还没创建，无法获取到 `this`。但是回调的执行时机在 `mounted` 后面。
+---
+
+- `beforeRouteEnter`：进入路由前，此时实例还没创建，无法获取到 `this`。但是 `next` 传入的回调的执行时机在 `mounted` 后面。这是为了提供一个在路由生命周期中修改组件数据和操作 DOM 的方式。
 - `beforeRouteUpdate`：路由复用同一个组件时，可以访问组件的 `this`，比如 `/foo/1` 跳转到 `/foo/2` 时用到了同样的 `Foo` 组件，产生了组件复用，就会触发这个钩子。
 - `beforeRouteLeave`：离开当前路由，此时可以用来保存数据，或数据初始化，或关闭定时器等等，可以访问组件的 `this`。我们用它来禁止用户离开，比如还未保存草稿，或者在用户离开前，将 `setInterval` 销毁，防止离开之后，定时器还在调用。
 
@@ -1135,6 +1139,14 @@ C.__proto__ = D
 那么 把两个对象合并，有相同属性，以 权重大的为主，组件的 `name` 会替换 `mixin` 的 `name`。
 
 **直接替换**是默认的处理方式，当选项不属于上面的处理方式的时候，就会像这样处理，包含选项：**el**，**template**，**propData** 等，因为这些属性只允许存在一个，因此只使用权重最大的选项。
+
+**替换型**合并有 `props`、`methods`、`inject`、`computed`。权重高的同名属性替换权重低的。
+
+**合并型**合并有：`data`。通过 `set` 方法进行合并和重新赋值。
+
+**队列型**合并有：全部生命周期和 `watch`。生命周期钩子和 `watch` 被合并为一个数组，然后正序遍历一次执行。
+
+**叠加型**合并有：`component`、`directives`、`filters`。通过原型链进行层层的叠加。
 
 ## 47. Vuex 为什么要分模块并且加命名空间？
 
@@ -2802,3 +2814,79 @@ Vue.component('my-component', {
 ## 106. vue.js 的两大核心？
 
 数据驱动、组件系统。
+
+## 107. Vue.observable 是什么？
+
+`Vue.observable`，让一个对象变成响应式数据。Vue 内部会用它来处理 `data` 函数返回的对象。
+
+返回的对象可以直接用于渲染函数和计算属性内，并且会在发生变更时触发相应的更新。也可以作为最小化的跨组件状态存储器。
+
+## 108. Vue.extend 和 Vue.component 的区别？
+
+`Vue.extend` 返回的是一个扩展实例构造器，也就是预设了部分选项的 Vue 实例构造器。其主要用来服务于 `Vue.component`。构造器创建好了之后，可以创建相应的实例并挂载到页面上，ElementUI 的 `this.$message('hello')` 就是动态创建构造器，将其挂载到页面上的。
+
+```js
+// 创建构造器
+var Profile = Vue.extend({
+  template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>',
+  data: function () {
+    return {
+      firstName: 'Walter',
+      lastName: 'White',
+      alias: 'Heisenberg',
+    }
+  },
+})
+// 创建 Profile 实例，并挂载到一个元素上。
+new Profile().$mount('#mount-point')
+```
+
+理解 `Vue.extend()` 和 `Vue.component()` 是很重要的。由于 Vue 本身是一个构造函数(constructor)，`Vue.extend()` 是一个继承于方法的类（class），参数是一个包含组件选项的对象。它的目的是**创建一个 Vue 的子类并且返回相应的构造函数**。
+
+`Vue.component()` 将通过 `Vue.extend` 生成的扩展实例构造器注册（命名）为一个全局组件之后 Vue 可以把它用作模板。参数可以是 `Vue.extend()` 扩展的实例,也可以是一个对象(会自动调用 `extend` 方法)，两个参数，一个组件名，一个 `extend` 构造器或者对象。
+
+## 109. Vue 实例中 extends 和 mixins 选项的区别？
+
+`mixins` 的值可以是一个混合对象数组，混合实例可以包含选项，将相同的选项合并 `mixins` 代码。
+
+```js
+var mixin = {
+  data: { mixinData: '我是mixin的data' },
+  created() {
+    console.log('这是mixin的created')
+  },
+  methods: {
+    getSum() {
+      console.log('这是mixin的getSum里面的方法')
+    },
+  },
+}
+var mixinTwo = {
+  data: { mixinData: '我是mixinTwo的data' },
+  created() {
+    console.log('这是mixinTwo的created')
+  },
+  methods: {
+    getSum() {
+      console.log('这是mixinTwo的getSum里面的方法')
+    },
+  },
+}
+var vm = new Vue({
+  el: '#app',
+  data: { mixinData: '我是vue实例的data' },
+  created() {
+    console.log('这是vue实例的created')
+  },
+  methods: {
+    getSum() {
+      console.log('这是vue实例里面getSum的方法')
+    },
+  },
+  mixins: [mixin, mixinTwo],
+})
+```
+
+`mixins` 执行的顺序为 `mixins > mixinTwo > created`。选项中数据属性如 `data`，`methods`，后面执行的回覆盖前面的，而生命周期钩子都会执行。
+
+`extends` 用法和 `mixins` 很相似，只不过接收的参数是简单的选项对象或构造函数，所以 `extends` 只能单次扩展一个组件。`extends` 中定义的属性覆盖规则和 `mixins` 一致。
