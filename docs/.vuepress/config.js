@@ -56,7 +56,6 @@ module.exports = {
         appId: '2GXCDIZQDB',
         indexName: 'blog-lliiooiill',
         placeholder: 'Search',
-        debug: false
       }
     ]
   ],

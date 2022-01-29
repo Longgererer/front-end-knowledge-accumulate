@@ -108,6 +108,7 @@ BFC(block formatting context)就是块级格式化上下文，它虽然属于文
 1. 内部所有元素的**上下**边距，它不会与 BFC 外部的元素产生**外边距重叠**。
 2. 包含了内部所有的**浮动元素**，浮动元素会参与高度计算。
 3. 不会与 BFC 外面的**浮动元素**重叠。
+4. 属于同一个 BFC 的两个相邻的元素垂直外边距会发生重叠。
 
 BFC 的生成条件：
 
@@ -149,6 +150,40 @@ BFC 的生成条件：
 
 根据 BFC 的定义，**两个元素只有在同一 BFC 内，才有可能发生垂直外边距的重叠，包括相邻元素、嵌套元素**。要解决 `margin` 重叠问题，**只要让它们不在同一个 BFC 内就行。**对于相邻元素，只要给它们加上 BFC 的外壳，就能使它们的 `margin` 不重叠。对于嵌套元素，只要让父级元素触发 BFC，就能使父级 `margin` 和当前元素的 `margin` 不重叠。
 
+下面就是使用 `display: flex` 生成新的 BFC，将本会导致外边距重叠的两个元素 `div1` 和 `div2` 隔开：
+
+:::: tabs
+::: tab HTML
+
+```html
+<div class="div3">
+  <div class="div1">div1</div>
+</div>
+<div class="div2">div2</div>
+```
+
+:::
+::: tab CSS
+
+```css
+.div1,
+.div2 {
+  width: 200px;
+  height: 200px;
+  background: red;
+  margin: 20px;
+}
+.div3 {
+  display: flex; /* 在 div1 上加一层 BFC div3 */
+}
+.div2 {
+  background: blue;
+}
+```
+
+:::
+::::
+
 对于父子元素之间的外边距重叠，除了 BFC 还有两种解决方式：
 
 1. 父元素设置上下边框。
@@ -158,13 +193,19 @@ BFC 的生成条件：
 
 IFC 是行内格式化上下文。
 
-display 属性为 `inline`，`inline-block`，`inline-table` 的元素会生成 IFC。
+`display` 属性为 `inline`，`inline-block`，`inline-table` 的元素会生成 IFC。
 
-行内格式化上下文中，盒是从包含块的顶部开始一个挨一个水平放置的。这些盒之间的水平外边距，边框和内边距都有效。包含来自同一行的盒的矩形区域叫做行框。
+行内格式化上下文中，盒是从包含块的顶部开始一个挨一个水平放置的。这些盒之间的水平外边距，边框和内边距都有效。包含来自同一行的盒的矩形区域叫做行框(line box)。
+
+line box 的高度由其包含行内元素中最高的实际高度计算而来（不受到竖直方向的 padding/margin 影响)IFC 中的 line box 一般左右都贴紧整个 IFC，但是会因为 float 元素而扰乱。float 元素会位于 IFC 与 line box 之间，使得 line box 宽度缩短。 同个 IFC 下的多个 line box 高度会不同。
 
 IFC 的行框由其包含行内元素中最高的实际高度来计算，不受竖直 `padding` 和 `margin` 影响。计算规则如下：
 
 计算行框中每个行内级盒的高度时，对于替换元素，`inline-block` 元素和 `inline-table` 元素，这个值就是其外边距框的高度；对于行内元素，这个值是其 `line-height` 决定的。当元素 B 的高度小于它所在的行框的高度时，行框中 B 的垂直对齐方式由 `vertical-align` 属性决定。当一行的行内元素的总宽度小于它们所在的行框的宽度时，它们在行框里的水平分布由 `text-align` 属性决定。行框高度是最高的盒的顶端与最低的盒的底端之间的距离。
+
+水平居中：当一个块要在环境中水平居中时，设置其为 `inline-block` 则会在外层产生 IFC，通过 `text-align` 则可以使其水平居中。
+
+垂直居中：创建一个 IFC，用其中一个元素撑开父元素的高度，然后设置其 `vertical-align:middle`，其他行内元素则可以在此父元素下垂直居中。
 
 ## 12. 如何画一条 0.5px 的线
 
@@ -200,8 +241,6 @@ box-shadow: 0 0.5px 0 #000;
 
 `scale` 默认是**居中**缩放。可以通过 `transform-origin` 属性改变缩放中心。
 
-`zoom` **受浏览器最小字号限制**，文字只能缩小到最小字号；而 `scale` 是纯粹地进行文字缩小。
-
 ## 14. CSS 定位
 
 - `fixed`：元素的位置相对于浏览器窗口是固定位置，即使窗口是滚动的它也不会移动。`fixed` 定位会使得元素脱离当前文档流，因此不占据空间。
@@ -210,7 +249,7 @@ box-shadow: 0 0.5px 0 #000;
 
 ## 15. relative 相对于谁进行定位?
 
-定位为 `relative` 的元素脱离正常的文档流，但其在文档流中的位置依然存在，只是视觉上相对原来的位置有移动。
+定位为 `relative` 的元素不会脱离正常的文档流，因为文档会为其预留初始的位置，只是视觉上相对原来的位置有移动。
 
 他是默认参照父级的原始点为原始点（父级不是必须设定 `position` 属性），无论父级存在不存在，无论有没有 TRBL(`Top`、`Right`、`Bottom`、`Left`)，均是以父级的左上角进行定位，但是父级的 `Padding` 属性会对其影响。
 
@@ -232,13 +271,15 @@ box-shadow: 0 0.5px 0 #000;
 确定一个元素的包含块完全依赖于这个元素的 `position` 属性：
 
 1. 如果 `position` 属性为 `static` 、 `relative` 或 `sticky`，包含块可能由它的**最近的祖先块元素**的内容区的边缘组成，也可能会建立格式化上下文。
-2. 如果 `position` 属性为 `absolute` ，包含块就是由它的最近的 `position` 的值不是 `static` （也就是值为 `fixed`, `absolute`, `relative` 或 `sticky`）的祖先元素的**内边距区的边缘**组成。
+2. 如果 `position` 属性为 `absolute` ，包含块就是由它的最近的 `position` 的值不是 `static` （也就是值为 `fixed`, `absolute`, `relative` 或 `sticky`）的祖先元素的内容区组成。
 3. 如果 `position` 属性是 `fixed`，在连续媒体的情况下(continuous media)包含块是 **viewport**(可视视口) ,在分页媒体(paged media)下的情况下包含块是分页区域(page area)。
 4. 如果 `position` 属性是 `absolute` 或 `fixed`，包含块也可能是由满足以下条件的最近父级元素的内边距区的边缘组成的。
    - `transform` 或 `perspective` 的值不是 `none`。
    - `will-change` 的值是 `transform` 或 `perspective`。
    - `filter` 的值不是 `none` 或 `will-change` 的值是 `filter`(只在 Firefox 下生效)。
-   - `contain` 的值是 `paint` (例如: `contain: paint`)。
+   - `contain` 的值是 `paint` 或 `layout` 或 包含它们其中之一的合成值 (例如: `contain: strict`，`contain: content`)。
+
+实际上，上面这些使得元素包含块所改变的原因是生成了**层叠上下文**。
 
 ## 17. 幽灵空白节点怎么产生的，如何解决？
 
@@ -344,8 +385,10 @@ FALLBACK: /
 
 1. `iframe` 会阻塞主页面的 `Onload` 事件。
 2. 搜索引擎的检索程序无法解读这种页面，不利于 SEO。
-3. `iframe` **和主页面共享连接池**，而浏览器对相同域的连接有限制，所以会影响页面的并行加载。
+3. `iframe` **和主页面共享连接池**，而浏览器对相同域名的连接有限制，所以会影响页面的并行加载。
 4. 使用 `iframe` 之前需要考虑这两个缺点。如果需要使用 `iframe`，最好通过 `JavaScript` 动态给 `iframe` 添加 `src` 属性值，这样可以绕开以上两个问题。
+
+绝大部分浏览器，主页面和其中的 `iframe` 是共享这些连接的。这意味着 `iframe` 在加载资源时可能用光了所有的可用连接，从而阻塞了主页面资源的加载。如果 `iframe` 中的内容比主页面的内容更重要，这当然是很好的。但通常情况下，`iframe` 里的内容是没有主页面的内容重要的。这时 `iframe` 中用光了可用的连接就是不值得的了。Safari 3+ 和 Opera 9+ 可同时对一个域名打开 4 个连接，Chrome 1+, IE 8 以及 Firefox 3 可以同时打开 6 个。
 
 ## 25. FOUC 是什么？
 
@@ -386,13 +429,17 @@ FOUC(flash of unstyled content)——浏览器样式闪烁。页面加载解析�
 2. 页面被加载的时，`link` 会同时被加载，而 `@import` 被引用的 CSS 会等到引用它的 CSS 文件被加载完再加载。
 3. `@import` 只在 IE5 以上才能识别，而 `link` 是 HTML 标签，无兼容问题。
 4. `@import` 一定要写在除 `@charset` 外的其他任何 CSS 规则之前，如果置于其它位置将会被浏览器忽略，而且，在 `@import` 之后如果存在其它样式，则 `@import` 之后的分号是必须书写，不可省略的。
-5. `link` 比 `@import` 优先加载，虽然 `@import` 比 `link` 样式后加载，但在渲染时，浏览器会用加载好的 css 代码替换掉 `@import`，因此仍然会置于样式表的最顶部，因此相同样式会被 `link` 覆盖。
+5. `link` 比 `@import` 优先加载，虽然 `@import` 比 `link` 样式后加载，但在渲染时，浏览器会用加载好的 CSS 代码替换掉 `@import`，因此仍然会置于样式表的最顶部，因此相同样式会被 `link` 覆盖。
 
 ## 28. position:absolute 和 float 属性的异同？
 
 共同点：`float` 和 `absolute` 都可以让元素脱离文档流，对于行内元素还可以设置宽高。
 
-不同点：`float` 仍然会占据位置，这体现在浮动元素和同级的元素不会互相重叠，而同级中的 `absolute` 元素则会覆盖其他文档流中的元素。
+不同点：`float` 仍然会占据位置，这体现在浮动元素和同级的非 `display: block` 的元素不会互相重叠，而同级中的 `absolute` 元素则会覆盖其他文档流中的元素。
+
+::: tip Notice
+浮动元素不会与同级的 `display: block` 进行重叠，原因是为了在网页上进行报纸一样的排版，但同级的块元素却不会为浮动元素预留位置，导致重叠。当然，如果该块元素中有非 `display: block` 元素，那么这些元素仍然不会与浮动元素发生重叠，反之则仍然会重叠。
+:::
 
 ## 29. 有多少种 Doctype 文档类型？
 
@@ -544,13 +591,15 @@ JS 中可以通过 `ele.dataset.testValue` 来访问到，任何破折号都会�
 
 ## 43. 有哪些⽅式（CSS）可以隐藏页面元素？
 
-- `opacity:0`：本质上是将元素的透明度将为 0，就看起来隐藏了，但是依然占据空间且可以交互。
-- `visibility:hidden` : 与上⼀个⽅法类似的效果，占据空间，但是不可以交互了。
-- `overflow:hidden` : 这个只隐藏元素溢出的部分，但是占据空间且不可交互。
-- `display:none` : 这个是彻底隐藏了元素，元素从⽂档流中消失，既不占据空间也不交互，也不影响布局。
-- `z-index:-9999` : 原理是将层级放到底部，这样就被覆盖了，看起来隐藏了。
-- `transform: scale(0,0)` : 平⾯变换，将元素缩放为 0，但是依然占据空间，但不可交互。
-- 依靠定位将元素移出可见区域外。
+- `opacity: 0`：本质上是将元素的透明度将为 0，就看起来隐藏了，但是依然占据空间且可以交互。
+- `visibility: hidden`：与上⼀个⽅法类似的效果，占据空间，但是不可以交互了。
+- `display: none`：这个是彻底隐藏了元素，元素从⽂档流中消失，既不占据空间也不交互，也不影响布局。
+- `z-index: -9999`：原理是将层级放到底部，这样就被覆盖了，看起来隐藏了。
+- `transform: scale(0,0)`：平⾯变换，将元素缩放为 0，但是依然占据空间，但不可交互。
+- `width: 0;height: 0;overflow: hidden;`。
+- `width: 0;height: 0;contain: paint;`：`contain: paint` 表示这个元素的子孙节点不会在它边缘外显示。
+- `position: fixed;top: -1000px;`：利用 `position: fixed` 让元素以 viewport 为定位的包含块。
+- `clip-path: polygon(0px 0px);`：通过剪裁元素实现。
 
 ## 44. 层叠上下文和层叠顺序？
 
@@ -558,7 +607,7 @@ JS 中可以通过 `ele.dataset.testValue` 来访问到，任何破折号都会�
 
 普通元素的层叠水平优先由层叠上下文决定，因此，层叠水平的比较只有在当前层叠上下文元素中才有意义。
 
-需要注意的是，诸位千万不要把层叠水平和 CSS 的 z-index 属性混为一谈。没错，某些情况下 z-index 确实可以影响层叠水平，但是，只限于定位元素以及 Flex 盒子的孩子元素；而层叠水平所有的元素都存在。
+需要注意的是，诸位千万不要把层叠水平和 CSS 的 `z-index` 属性混为一谈。没错，某些情况下 `z-index` 确实可以影响层叠水平，但是，只限于定位元素以及 Flex 盒子的孩子元素；而层叠水平所有的元素都存在。
 
 [参考文章 1](https://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/)
 
@@ -566,14 +615,17 @@ JS 中可以通过 `ele.dataset.testValue` 来访问到，任何破折号都会�
 
 以下情况会生成新的层叠上下文：
 
-1. `z-index` 值不为 `auto` 的 `flex` 项(父元素 `display:flex`|`inline-flex`)。
-2. 元素的 `opacity` 值不是 `1`。
-3. 元素的 `transform` 值不是 `none`。
-4. 元素 `mix-blend-mode` 值不是 `normal`。
-5. 元素的 `filter` 值不是 `none`。
-6. 元素的 `isolation` 值是 `isolate`。
-7. `will-change` 指定的属性值为上面任意一个。
-8. 元素的 `-webkit-overflow-scrolling` 设为 `touch`。
+1. `flex` 容器的子元素，且 `z-index` 值不为 `auto`。
+2. `grid` 容器的子元素，且 `z-index` 值不为 `auto`。
+3. `position` 值为 `absolute`（绝对定位）或 `relative`（相对定位）且 `z-index` 值不为 `auto` 的元素。
+4. 元素的 `opacity` 值小于 `1`。
+5. 元素的 `transform` 值不是 `none`。
+6. 元素的 `perspective` 值不是 `none`。
+7. 元素 `mix-blend-mode` 值不是 `normal`。
+8. 元素的 `filter` 值不是 `none`。
+9. 元素的 `isolation` 值是 `isolate`。
+10. `will-change` 指定的属性值为上面任意一个。
+11. 元素的 `-webkit-overflow-scrolling` 设为 `touch`。
 
 ![](https://pic1.zhimg.com/v2-52469579956b97b6b7ac6894e1ab4e28_b.jpg)
 
@@ -1005,3 +1057,5 @@ WebP 的优势体现在它具有更优的图像数据压缩算法，能带来更
 ## 67. 脱离文档流指的是什么？
 
 是一个元素脱离文档流之后，其他的元素在定位的不会被它影响，两者位置重叠都是可以的。但是脱离文档流的元素仍然在 dom 树中。
+
+目前：`position` 为 `absolute` 和 `fixed`，`float` 为 `left` 和 `right` 的元素会脱离文档流。
