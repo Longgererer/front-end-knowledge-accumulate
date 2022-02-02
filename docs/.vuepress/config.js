@@ -158,6 +158,9 @@ module.exports = {
           children: [
             '/framework/vue/简单梳理vue3新特性.md',
             '/framework/vue/Vue3对于Vue2的深层次优化.md',
+            '/framework/vue/keep-alive原理.md',
+            '/framework/vue/observable.md',
+            '/framework/vue/vue响应式原理',
             '/framework/vue/Vue常见知识点.md'
           ],
         },
@@ -168,6 +171,7 @@ module.exports = {
             '/framework/react/React生命周期.md',
             '/framework/react/ReactRouter.md',
             '/framework/react/ReactHook.md',
+            '/framework/react/React-Fiber.md',
             '/framework/react/React常见知识点.md'
           ]
         }

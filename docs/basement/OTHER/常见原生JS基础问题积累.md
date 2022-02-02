@@ -565,7 +565,7 @@ arr.reduce((prev, cur) => (prev.includes(cur) ? prev : [...prev, cur]), [])
 
 ## 23. cookie，localStorage，sessionStorage，indexDB 的区别
 
-`cookie` 可设置**失效时间**，没有设置的话，默认是关闭浏览器后失效；数据**大小为 4kb 左右并且有个数限制**；每次请求都会**携带在 HTTP 头中**，如果使用 `cookie` 保存过多数据会带来性能问题。`cookie` **不可跨域**，只有绑定的域名才能访问。非顶级域名，如二级域名或者三级域名，设置的 `cookie` 的 `domain` 只能为顶级域名或者二级域名或者三级域名本身，不能设置其他二级域名。
+`cookie` 可设置**失效时间**，没有设置的话，默认是关闭浏览器后失效；数据**大小为 4kb 左右并且有个数限制**；每次请求都会**携带在 HTTP 头中**，如果使用 `cookie` 保存过多数据会带来性能问题。`cookie` 存在访问作用域，子域名可以访问并定义父域名的 `cookie`，但父域名不能访问和修改子域名的 `cookie`。
 
 修改、删除 `cookie` 时，除 `value`、`maxAge` 之外的所有属性如 `name`、`path`、`domain` 等，都要与原 `cookie` 完全一样，否则，浏览器将视为两个不同的 `cookie`。
 

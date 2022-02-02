@@ -2890,3 +2890,39 @@ var vm = new Vue({
 `mixins` 执行的顺序为 `mixins > mixinTwo > created`。选项中数据属性如 `data`，`methods`，后面执行的回覆盖前面的，而生命周期钩子都会执行。
 
 `extends` 用法和 `mixins` 很相似，只不过接收的参数是简单的选项对象或构造函数，所以 `extends` 只能单次扩展一个组件。`extends` 中定义的属性覆盖规则和 `mixins` 一致。
+
+## 110. VueX 怎么挂载到每一个组件上的？
+
+`Vue.mixin` 全局混入：
+
+```js
+let install = function (Vue) {
+  Vue.mixin({
+    beforeCreate() {
+      if (this.$options && this.$options.store) {
+        // 如果是根组件
+        this.$store = this.$options.store
+      } else {
+        //如果是子组件
+        this.$store = this.$parent && this.$parent.$store
+      }
+    },
+  })
+}
+```
+
+## 111. Vue 中是如何防御 XSS（注入攻击）的？
+
+```html
+<template>
+   <div>{{ xssText  }}<div>
+</template>
+```
+
+上面一段模板代码生成的 `render` 函数类似于：
+
+```js
+createElement('div', {}, xxsText) // 创建VNode
+```
+
+Vue 在将虚拟 dom 生成真实 dom 如果 VNode 子节点为基本类型如字符串，那么该文本会通过 `createTextNode` 方法生成文本节点，然后插入父节点，所以很明显 `xssText` 被 `createTextNode` 处理成了纯字符串了，变成无害的了。
