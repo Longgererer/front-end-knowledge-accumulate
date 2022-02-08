@@ -571,9 +571,11 @@ arr.reduce((prev, cur) => (prev.includes(cur) ? prev : [...prev, cur]), [])
 
 `localStorage` 除非被手动清除，否则将会永久保存；有专门的监听变化事件：`setItemEvent`，可以用 `addEventListener` 监听。页面必须来自同一个域名（子域名无效）和端口。
 
-`sessionStorage` 仅在当前网页会话下有效，关闭页面或浏览器后就会被清除，不同页面间无法共享 `sessionStorage` 的信息；如果一个页面包含多个 `iframe` 且他们属于同源页面，那么他们之间是可以共享 `sessionStorage` 的。
+`sessionStorage` 仅在当前网页会话下有效，关闭页面或浏览器后就会被清除，不同页面间无法共享 `sessionStorage` 的信息；如果一个页面包含多个 `iframe` 且他们属于同源页面，那么他们之间是可以共享(不是拷贝) `sessionStorage` 的。
 
 `localStorage` 和 `sessionStorage` 可以保存 5MB 的信息(注意：这里说的是**每个域名 5M**)；仅在客户端（即浏览器）中保存，不参与和服务器的通信；会将任何数据转换成字符串存储。因此存储时最好用 JSON 序列化一下。
+
+从 A 页面打开同源的 B 页面，B 页面会得到一份 A 页面 `sessionStorage` 的拷贝，一个页面修改 `sessionStorage` 不会影响另一个页面。但 `localStorage` 则是一种共享状态，一个页面修改了 `localStorage` 会反映到其他页面上。
 
 ## 24. 前端如何实现并发请求数量限制？
 
@@ -700,9 +702,120 @@ ES5 的继承是先创建子类的实例对象，再将父类的原型链与子�
 
 ## 27. DOMContentLoaded 与 onload 的区别
 
-`DOMContentLoaded` 事件是在 HTML 文档完全加载完的时候就触发。
+测试代码：
 
-`onload` 事件是在页面上的所有资源(CSS、JavaScript、Image、Iframe 等)完全加载完毕后触发。
+:::: tabs
+::: tab Index
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" onload="headLinkLoaded()" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <iframe src="./index2.html" frameborder="0" onload="iframeLoaded()"></iframe>
+    <script src="./index.js" defer onload="deferLoaded()"></script>
+    <script src="./index1.js" async onload="asyncLoaded()"></script>
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        console.log('DOMContentLoaded')
+      })
+      window.onload = () => {
+        console.log('onload')
+      }
+
+      const iframeLoaded = () => {
+        console.log('iframe loaded')
+      }
+      const headLinkLoaded = () => {
+        console.log('head link loaded')
+      }
+      const deferLoaded = () => {
+        console.log('defer script loaded')
+      }
+      const asyncLoaded = () => {
+        console.log('async script loaded')
+      }
+
+      const img = new Image()
+      img.src = 'https://files.cnblogs.com/files/moqiutao/a.gif'
+      img.onload = () => {
+        console.log('image loaded')
+      }
+
+      const script = document.createElement('script')
+      script.src = './index2.js'
+      document.body.appendChild(script)
+      script.onload = () => {
+        console.log('dynamic script loaded')
+      }
+
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = './style.css'
+      document.body.appendChild(link)
+      link.onload = () => {
+        console.log('dynamic link loaded')
+      }
+    </script>
+  </body>
+</html>
+```
+
+:::
+::: tab Iframe
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        console.log('iframe DOMContentLoaded')
+      })
+      window.onload = () => {
+        console.log('iframe onload')
+      }
+    </script>
+  </body>
+</html>
+```
+
+:::
+::::
+
+输出顺序：
+
+```
+head link loaded
+async script loaded
+dynamic link loaded
+defer script loaded
+DOMContentLoaded
+iframe DOMContentLoaded
+iframe onload
+iframe loaded
+dynamic script loaded
+image loaded
+onload
+```
+
+`DOMContentLoaded` 事件是在文档解析完毕，页面渲染完成，当页面引用的所有内联和外链 JS 同步代码执行完毕，触发 `DOMContentLoaded` 事件。
+
+`onload` 事件是在 HTML 文档中的图片资源，JS 代码中有异步加载的脚本、图片、iframe 等外部资源全部加载完之后再执行，并且 iframe 也要执行了 `onload` 之后才执行。
 
 ## 28. 创建 AJAX 的过程？
 
@@ -888,9 +1001,10 @@ function func(fn) {
 ## 48. Reflect 对象创建目的？
 
 1. 用一个单一的全局对象去存储这些方法，能够保持其它的 JavaScript 代码的整洁、干净。
-2. 修改某些 `Object` 方法的返回结果，让其变得更合理。
-3. 将一些命令式的操作如 `delete`，`in` 等使用函数来替代，这样做的目的是为了让代码更加好维护，更容易向下兼容；也避免出现更多的保留字。
-4. `Reflect` 对象的方法与 `Proxy` 的 `handler` 对象的方法一一对应，只要是 `Proxy` 对象的方法，就能在 `Reflect` 对象上找到对应的方法。这就让 `Proxy` 对象可以方便地调用对应的 `Reflect` 方法，完成默认行为，作为修改行为的基础。
+2. 修改某些 `Object` 方法的返回结果，让其变得更合理，比如，`Object.defineProperty(obj, name, desc)` 在无法定义属性时，会抛出一个错误，而 `Reflect.defineProperty(obj, name, desc)` 则会返回 `false`。
+3. 将 `Object` 对象的一些明显属于语言内部的方法（比如 `Object.defineProperty`），放到 `Reflect` 对象上。
+4. 将一些命令式的操作如 `delete`，`in` 等使用函数来替代，这样做的目的是为了让代码更加好维护，更容易向下兼容；也避免出现更多的保留字。
+5. `Reflect` 对象的方法与 `Proxy` 的 `handler` 对象的方法一一对应，只要是 `Proxy` 对象的拦截方法，就能在 `Reflect` 对象上找到对应的方法。这就让 `Proxy` 对象可以方便地调用对应的 `Reflect` 方法，完成默认行为，作为修改行为的基础。
 
 ```js
 let miaoMiao = {
@@ -915,6 +1029,16 @@ let kexingMiao = {
 console.log(kexingMiao.name)
 ```
 
+有了 `Reflect` 对象以后，很多操作会更易读：
+
+```js
+// 老写法
+Function.prototype.apply.call(Math.floor, undefined, [1.75]) // 1
+
+// 新写法
+Reflect.apply(Math.floor, undefined, [1.75]) // 1
+```
+
 `Reflect` 的所有属性和方法都是静态的，不管 `Proxy` 怎么修改默认行为，你总可以在 `Reflect` 上获取默认行为。
 
 ## 49. 什么是 proxy ？
@@ -925,9 +1049,33 @@ console.log(kexingMiao.name)
 
 `Proxy` 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。`Proxy` 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。
 
+`Proxy` 的局限性在于不能拦截一些内置对象如(`Map`, `Set`, `Date`, `Promise`)的行为，例如，`Map` 将项目存储在 `[[MapData]]` 中，通过内置方法直接访问它们，而不通过 `[[Get]]/[[Set]]` 内部方法。所以 `Proxy` 不能拦截。在像这样的内置对象被代理后，代理对象没有这些内部插槽，因此内置方法将失败。
+
+```js
+let map = new Map()
+let proxy = new Proxy(map, {})
+proxy.set('test', 1) // Error
+```
+
+在内部，一个 `Map` 将所有数据存储在其 `[[MapData]]` 内部插槽中。代理对象没有这样的插槽。内建方法 `Map.prototype.set` 方法试图访问内部属性 `this.[[MapData]]`，但由于 `this=proxy` 在 `proxy` 中不能找到它，只能失败。
+
+```js
+let map = new Map()
+
+let proxy = new Proxy(map, {
+  get(target, prop, receiver) {
+    let value = Reflect.get(...arguments)
+    return typeof value == 'function' ? value.bind(target) : value
+  },
+})
+
+proxy.set('test', 1)
+alert(proxy.get('test')) // 1 (works!)
+```
+
 ## 50. 前端需要注意哪些 SEO？
 
-1. 合理的 title、description、keywords：搜索对着三项的权重逐个减小，title 值强调重 点即可，重要关键词出现不要超过 2 次，而且要靠前，不同页面 title 要有所不同； description 把页面内容高度概括，长度合适，不可过分堆砌关键词，不同页面 description 有所不同； keywords 列举出重要关键词即可。
+1. 合理的 title、description、keywords：搜索对着三项的权重逐个减小，title 值强调重点即可，重要关键词出现不要超过 2 次，而且要靠前，不同页面 title 要有所不同； description 把页面内容高度概括，长度合适，不可过分堆砌关键词，不同页面 description 有所不同； keywords 列举出重要关键词即可。
 2. 语义化的 HTML 代码，符合 W3C 规范：语义化代码让搜索引擎容易理解网页。
 3. 重要内容 HTML 代码放在最前：搜索引擎抓取 HTML 顺序是从上到下，有的搜索引 擎对抓取长度有限制，保证重要内容肯定被抓取。
 4. 重要内容不要用 js 输出：爬虫不会执行 js 获取内容。
@@ -1050,7 +1198,7 @@ const intervalId = function simulateInterval(callback, interval) {
 
 - `find`：`find()` 方法接受一个函数，返回数组中第一个满足条件的**元素**，找不到返回 `undefined`。
 - `findIndex`：`findIndex()` 方法返回数组中满足提供的测试函数的第一个**元素的索引**。若没有找到对应元素则返回 `-1`。
-- `indexOf`：`indexOf()` 方法返回在数组中可以找到指定元素的第一个**索引**，找不到返回-1。
+- `indexOf`：`indexOf()` 方法返回在数组中可以找到指定元素的第一个**索引**，找不到返回 `-1`；第二个参数接受一个数字，表示从哪个位置开始寻找，取值是 `0` 到 `stringObject.length - 1`。
 
 ## 59. 什么是纯函数？
 
@@ -1071,7 +1219,8 @@ foo(2) // => 3
 1. 同样的输入必定得到同样的输出。
 2. 不得改写参数。
 3. 不能调用系统 I/O 的 API。
-4. 能调用 `Date.now()` 或者 `Math.random()` 等不纯的方法。
+4. 不能调用 `Date.now()` 或者 `Math.random()` 等不纯的方法。
+5. 不会产生任何副作用，例如网络请求，输入和输出的设备。
 
 ## 60. 什么是高阶函数？
 
@@ -1255,7 +1404,7 @@ Web Components 目前的支持度并不高，因此需要谨慎使用。
 
 1. `event.stopPropagation()`
 
-这是阻止事件的冒泡方法，不让事件向 document 上蔓延，但是默认事件任然会执行，当你掉用这个方法的时候，如果点击一个连接，这个连接仍然会被打开。
+这是阻止事件的冒泡方法，不让事件向 `document` 上蔓延，但是默认事件任然会执行，当你掉用这个方法的时候，如果点击一个连接，这个连接仍然会被打开。
 
 2. `event.preventDefault()`
 
@@ -2275,11 +2424,11 @@ worker.postMessage('Hello Worker, I am main.js')
 
 ## 100. typeof(NaN) 返回什么？
 
-返回字符串 `"number`。`NaN` 只是表示特定值不能在数值类型的限制范围内表示。
+返回字符串 `"number"`。`NaN` 只是表示特定值不能在数值类型的限制范围内表示。
 
 ## 101. arguments 类数组，如何遍历类数组？
 
-1. 使用 `forEach`。
+1. 对一些特殊的类数组，如 DOM 集合可以使用 `forEach` 或者扩展运算符。
 2. 使用 `for` 循环。
 3. 转换为数组再遍历。
 
@@ -2331,12 +2480,20 @@ bar()
 context.clearRect(x, y, width, height)
 ```
 
-## 105. ajax 的 readyState 有哪几个状态，含义分别是什么？
+## 105. createElement 与 createDocumentFragment 的区别？
 
-5 个状态，分别是 0-4
+`createDocumentFragment` 是 DOM 节点。 它们不是主 DOM 树的一部分。通常的用例是创建文档片段，将元素附加到文档片段，然后将文档片段附加到 DOM 树。在 DOM 树中，文档片段被其所有的子元素所代替。
 
-- 0: 还没调用 open 方法
-- 1: 未调用 send 方法，也就是还没发送数据给服务器
-- 2: 还没有接收到响应
-- 3: 开始接收到了部分数据
-- 4: 接收完成，数据可以在客户端使用了
+因为文档片段存在于内存中，并不在 DOM 树中，所以将子元素插入到文档片段时不会引起页面回流（对元素位置和几何上的计算）。因此，使用文档片段通常会带来更好的性能。
+
+`createElement` 创建的是**元素节点**，节点类型(nodeType)为 `1`。
+
+`createDocumentFragment` 创建的是**文档碎片**，节点类型(nodeType)为 `11`。
+
+`createElement` 创建的元素可以直接使用 `innerHTML` 添加子元素。
+
+`createDocumentFragment` 创建的文档碎片不能直接使用 `innerHTML` 添加子元素，只会变成一个普通属性。（能通过间接的方式添加，下面会提到）。
+
+`createElement` 使用 `appendChild` 追加子元素时，如果将被插入的节点已经存在于当前文档的文档树中，那么 `appendChild` 只会将它从原先的位置移动到新的位置（不需要事先移除要移动的节点）；如果把它追加进页面中，则插入的是它本身和它的所有子孙节点；即便它已经添加进了页面，我们依旧能继续重复操作。
+
+`createDocumentFragment` 使用 `appendChild` 追加子元素时，会把页面中的原来存在的元素删除；如果把它追加进页面中，则插入的不是 `DocumentFragment` 自身，而是它的所有子孙节点；如果它已经添加进了页面，我们就不能继续操作，它属于一次性操作。

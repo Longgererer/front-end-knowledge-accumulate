@@ -38,11 +38,34 @@ class User {}
 const User = class {}
 // 类也是函数
 console.log(typeof User) // function
+// 并且类本身就指向构造函数
+User === User.prototype.constructor // true
 ```
 
 :::tip Notice
 类和函数有一个重要的不同就是：函数存在声明提升，而类不会，你必须在类声明了之后再实例化。
 :::
+
+实例的属性除非显式定义在其本身（即定义在 `this` 对象上），否则都是定义在原型上（即定义在 `class` 上）：
+
+```js
+//定义类
+class Point {
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+  }
+  toString() {
+    return '(' + this.x + ', ' + this.y + ')'
+  }
+}
+var point = new Point(2, 3)
+point.toString() // (2, 3)
+point.hasOwnProperty('x') // true
+point.hasOwnProperty('y') // true
+point.hasOwnProperty('toString') // false
+point.__proto__.hasOwnProperty('toString') // true
+```
 
 ## 构造函数
 
@@ -51,6 +74,27 @@ console.log(typeof User) // function
 :::tip Notice
 一个类必须拥有 `constructor` 方法！如果没有显式定义，则会默认添加一个返回当前实例对象 `this` 的 `constructor`。
 :::
+
+## getter&setter
+
+与 ES5 一样，在 `class` 的内部可以使用 `get` 和 `set` 关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
+
+```js
+class MyClass {
+  constructor() {
+    // ...
+  }
+  get prop() {
+    return 'getter'
+  }
+  set prop(value) {
+    console.log('setter: ' + value)
+  }
+}
+let inst = new MyClass()
+inst.prop = 123 // setter: 123
+inst.prop // 'getter'
+```
 
 ## `static`
 
@@ -87,9 +131,33 @@ class User {
 new User() // log: This is static method 2
 ```
 
-### 使用场景
+**静态属性**（ES7）：同 ES6 的静态方法声明方式，可以在 `Class` 内部声明，声明方式为在属性声明前加上 `static` 关键字：
 
-### `super`
+```js
+//ES6:
+class Foo {}
+Foo.prop = 1 //静态属性（类的属性）
+
+//ES7:
+class Foo {
+  static prop = 1 //静态属性
+}
+
+class MyClass {
+  static myStaticProp = 42
+  constructor() {
+    console.log(MyClass.myProp) // 42
+  }
+}
+```
+
+## 类的 `prototype` 属性和 `__proto__` 属性
+
+大多数浏览器的 ES5 实现之中，每一个对象都有 `__proto__` 属性，指向对应的构造函数的 `prototype` 属性。`Class` 作为构造函数的语法糖，同时有 `prototype` 属性和 `__proto__` 属性，因此同时存在两条继承链。
+
+子类的 `__proto__` 属性，表示构造函数的继承，总是指向父类。子类 `prototype` 属性的 `__proto__` 属性，表示方法的继承，总是指向父类的 `prototype` 属性。
+
+## `super`
 
 `super` 可以当作函数使用：
 
@@ -102,9 +170,9 @@ class Child extends Parent {
 }
 ```
 
-在 ES6 中，子类想要继承父类，必须调用 `super`，因为**子类实际上没有自己的 `this` 对象，而是继承父类的 `this` 再进行二次加工**。因此，当你在子类构造函数中操作 `this` 的代码必须写在 `super` 后面。
+ES5 的继承，实质是先创造子类的实例对象 `this`，然后再将父类的方法添加到 `this` 上面，而在 ES6 中，子类想要继承父类，必须调用 `super`，实质是先将父类实例对象的属性和方法，加到 `this` 上面（所以必须先调用 `super` 方法），然后再用子类的构造函数修改 `this`。因此，当你在子类构造函数中操作 `this` 的代码必须写在 `super` 后面。
 
-执行了 `super` 就是执行了父类构造函数，但 `super` 内部的 `this` 指向的是子类。
+执行了 `super` 就是执行了父类构造函数，但 `super` 内部的 `this` 指向的是子类，`super` 执行后返回的也是子类的实例，因此相当于执行 `Parent.prototype.constructor.call(this)`
 
 `super` 也可以调用父类上的静态方法：
 
@@ -224,6 +292,51 @@ console.log(rectangle.#height) // error: Private field '#height' must be declare
 console.log(rectangle.getHeight()) // log: 12
 ```
 
+除了这个新特性之外，还有几种方法可以实现：
+
+```js
+class SimCard {
+  constructor(number, type, pinCode) {
+    this.number = number
+    this.type = type
+    let _pinCode = pinCode
+    // this property is intended to be a private one
+    this.getPinCode = () => {
+      return _pinCode
+    }
+  }
+}
+const card = new SimCard('444-555-666', 'Nano SIM', 1515)
+console.log(card._pinCode) // outputs undefined
+console.log(card.getPinCode()) // outputs 1515
+```
+
+在 JS 界约定俗成使用 `_` 开头作为私有属性，然后配合 `getter` 实现私有属性机制。
+
+也可以使用 `Symbol` 定义唯一属性来实现：
+
+```js
+const SimCard = (() => {
+  const _pinCode = Symbol('PinCode')
+  class SimCard {
+    constructor(number, type, pinCode) {
+      this.number = number
+      this.type = type
+      this[_pinCode] = pinCode
+    }
+    get pinCode() {
+      return this[_pinCode]
+    }
+  }
+  return SimCard
+})()
+const card = new SimCard('444-555-666', 'Nano SIM', 1515)
+console.log(card._pinCode) // outputs undefined
+console.log(card.pinCode) // outputs 1515
+```
+
+不过外部仍然可以使用 `Object.getOwnPropertySymbols(SimCard)` 来获取使用 `Symbol` 定义的属性。
+
 ## `new.target`
 
 `new.target` 属性允许你检测函数和或者构造方法是否是通过 `new` 被调用的，如果是 `new` 调用的，`new.target` 就会返回一个指向构造方法或函数的引用。在普通函数调用中，`new.target` 的值是 `undefined`。
@@ -253,7 +366,6 @@ class Child extends Parent {
     super()
   }
 }
-
 new Parent() // 报错：本类不能被实例化！
 new Child() // 正确
 ```
@@ -285,7 +397,7 @@ console.log(tom.__proto__.constructor === User) // true
 function User(name) {
   this.name = name
 }
-User.prototype.getName = function() {
+User.prototype.getName = function () {
   return this.name
 }
 const tom = new User('tom')
@@ -306,6 +418,45 @@ class User {
 const tom = new User('tom')
 ```
 
+## 箭头函数和普通函数
+
+我们知道类中可以定义箭头函数也可以定义普通函数：
+
+```js
+class A {
+  constructor() {}
+  b() {}
+  c = () => {}
+}
+```
+
+但实际上两者完全不同，我们来看一个例子：
+
+```js
+class A {
+  constructor() {}
+  b() {}
+  c = () => {}
+}
+const d = new A()
+const e = new A()
+console.log(d.b === e.b) // true
+console.log(d.c === e.c) // false
+```
+
+在类中箭头函数的定义实际上会变成：
+
+```js
+class A {
+  constructor() {
+    this.c = () => {}
+  }
+}
+A.prototype.b = function () {}
+```
+
+也就是说，箭头函数和普通属性的行为一样，每创建一个子类都会重新定义，而普通函数则是定义在类的原型上的。
+
 ## 总结
 
 `class` 的本质还是 ES5 的原型链和构造函数，但是比原来的语法更加方便。`class` 没有声明提升，也不能覆写，但是函数有声明提升，也可以覆写。
@@ -316,3 +467,6 @@ const tom = new User('tom')
 - [理解 es6 class 中 constructor 方法 和 super 的作用](https://juejin.cn/post/6844903638674980872)
 - [阮一峰 ECMAScript 6 (ES6) 标准入门教程 第三版](https://www.bookstack.cn/read/es6-3rd/spilt.6.docs-class.md)
 - [详解 ES6 关键字 Class](https://zhuanlan.zhihu.com/p/365598749)
+- [JavaScript ES6 类的静态方法、属性和实例方法、属性](https://www.jianshu.com/p/d886052ac98c)
+- [一万字 ES6 的 class 类，再学不懂，请把我锤死（语法篇）](https://juejin.cn/post/7000891889465425957)
+- [一万字 ES6 的 class 类，再学不懂，请把我锤死（继承篇）](https://juejin.cn/post/7001284277291712526)
