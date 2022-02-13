@@ -100,7 +100,8 @@ module.exports = {
             '/basement/JS/变量存储.md',
             '/basement/JS/Class.md',
             '/basement/JS/源码映射.md',
-            '/basement/JS/BOM.md'
+            '/basement/JS/BOM.md',
+            '/basement/JS/传统ajax与fetch.md'
           ],
         },
         {

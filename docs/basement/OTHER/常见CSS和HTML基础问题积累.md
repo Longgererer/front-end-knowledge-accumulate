@@ -193,19 +193,28 @@ BFC 的生成条件：
 
 IFC 是行内格式化上下文。
 
-`display` 属性为 `inline`，`inline-block`，`inline-table` 的元素会生成 IFC。
+行内格式化上下文的布局首先要根据水平、垂直和左右书写模式来讨论：
 
-行内格式化上下文中，盒是从包含块的顶部开始一个挨一个水平放置的。这些盒之间的水平外边距，边框和内边距都有效。包含来自同一行的盒的矩形区域叫做行框(line box)。
+在水平书写模式 `writing-mode: hortizontal-tb` 下，盒子会在水平方向上从左到右排列，空间不够时换到下一行继续。
 
-line box 的高度由其包含行内元素中最高的实际高度计算而来（不受到竖直方向的 padding/margin 影响)IFC 中的 line box 一般左右都贴紧整个 IFC，但是会因为 float 元素而扰乱。float 元素会位于 IFC 与 line box 之间，使得 line box 宽度缩短。 同个 IFC 下的多个 line box 高度会不同。
+在垂直书写模式下 `writing-mode: vertical-rl | vertical-lr`，盒子会在垂直方向上从上到下排列，空间不够时换到下一行继续。只是这里的“下一行”有左右之分。`writing-mode: vertical-rl` 时就像古代人书写以及日本台湾书籍的格式一样，从右到左排列。`writing-mode: vertical-lr` 则是从左到右排列。
 
-IFC 的行框由其包含行内元素中最高的实际高度来计算，不受竖直 `padding` 和 `margin` 影响。计算规则如下：
+每“行”在浏览器中会被作为一个盒子处理，这个盒子叫行框（line box），line box 的高度由其包含行内元素中最高的实际高度计算而来（不受到竖直方向的 margin 影响)IFC 中的 line box 一般左右都贴紧整个 IFC，但是会因为 float 元素而扰乱。float 元素会位于 IFC 与 line box 之间，使得 line box 宽度缩短。 同个 IFC 下的多个 line box 高度会不同。
+
+IFC 的行框由其包含行内元素中最高的实际高度来计算，不受 `margin` 影响。计算规则如下：
 
 计算行框中每个行内级盒的高度时，对于替换元素，`inline-block` 元素和 `inline-table` 元素，这个值就是其外边距框的高度；对于行内元素，这个值是其 `line-height` 决定的。当元素 B 的高度小于它所在的行框的高度时，行框中 B 的垂直对齐方式由 `vertical-align` 属性决定。当一行的行内元素的总宽度小于它们所在的行框的宽度时，它们在行框里的水平分布由 `text-align` 属性决定。行框高度是最高的盒的顶端与最低的盒的底端之间的距离。
 
 水平居中：当一个块要在环境中水平居中时，设置其为 `inline-block` 则会在外层产生 IFC，通过 `text-align` 则可以使其水平居中。
 
 垂直居中：创建一个 IFC，用其中一个元素撑开父元素的高度，然后设置其 `vertical-align:middle`，其他行内元素则可以在此父元素下垂直居中。
+
+满足以下条件时，行框会被当作高度为 0 的盒子处理：
+
+1. 不含文字。
+2. 非 `white-space: pre` | `pre-wrap` | `pre-line`。
+3. 不含 `margin`、`padding`、`border` 值不为零的元素。
+4. 不含在常规流中的元素，如图片、表格之类。
 
 ## 12. 如何画一条 0.5px 的线
 
