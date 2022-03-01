@@ -137,7 +137,6 @@ var pollingWorker = createWorker(function (e) {
   setInterval(function () {
     fetch('/my-api-endpoint').then(function (res) {
       var data = res.json();
-
       if (!compare(data, cache)) {
         cache = data;
         self.postMessage(data);
@@ -149,4 +148,25 @@ pollingWorker.onmessage = function () {
   // render data
 }
 pollingWorker.postMessage('init');
+```
+
+## MessageChannel
+
+简单来说，MessageChannel 创建了一个通信的管道，这个管道有两个口子，每个口子都可以通过 `postMessage` 发送数据，而一个口子只要绑定了 `onmessage` 回调方法，就可以接收从另一个口子传过来的数据。
+
+MessageChannel 常用于渲染线程和多个 worker 线程之间的交流：
+
+```js
+var channel = new MessageChannel();
+var para = document.querySelector('p');
+var ifr = document.querySelector('iframe');
+var otherWindow = ifr.contentWindow;
+
+ifr.addEventListener("load", function () {
+  otherWindow.postMessage('Hello from the main page!', '*', [channel.port2]);
+}, false);
+
+channel.port1.onmessage = function (e) {
+  para.innerHTML = e.data;
+}  
 ```

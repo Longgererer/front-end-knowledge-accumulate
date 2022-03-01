@@ -101,7 +101,8 @@ module.exports = {
             '/basement/JS/Class.md',
             '/basement/JS/源码映射.md',
             '/basement/JS/BOM.md',
-            '/basement/JS/传统ajax与fetch.md'
+            '/basement/JS/传统ajax与fetch.md',
+            '/basement/JS/函数声明与函数表达式.md'
           ],
         },
         {
@@ -134,6 +135,8 @@ module.exports = {
             '/basement/OTHER/常见网络基础问题积累.md',
             '/basement/OTHER/常见webpack问题积累.md',
             '/basement/OTHER/常见TypeScript问题积累.md',
+            '/basement/OTHER/常见应用问题积累.md',
+            '/basement/OTHER/常见Node基础问题积累.md'
           ]
         }
       ],
@@ -150,6 +153,7 @@ module.exports = {
             '/algorithm/常见算法/摩尔投票法.md',
             '/algorithm/常见算法/字符串匹配算法.md',
             '/algorithm/常见算法/缓存淘汰策略.md',
+            '/algorithm/常见算法/洗牌算法.md'
           ]
         },
       ],
@@ -161,7 +165,7 @@ module.exports = {
             '/framework/vue/Vue3对于Vue2的深层次优化.md',
             '/framework/vue/keep-alive原理.md',
             '/framework/vue/observable.md',
-            '/framework/vue/vue响应式原理',
+            '/framework/vue/vue响应式原理.md',
             '/framework/vue/Vue常见知识点.md'
           ],
         },

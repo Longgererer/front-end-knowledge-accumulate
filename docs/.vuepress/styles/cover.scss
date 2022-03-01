@@ -199,6 +199,12 @@ main img {
   box-shadow: var(--c-offset-shadow, 0 0 #0000), var(--c-offset-shadow, 0 0 #0000), var(--c-code-block-shadow);
 }
 
+.page-meta {
+  .contributors {
+    float: left;
+  }
+}
+
 // footer
 .page-nav {
   .inner {

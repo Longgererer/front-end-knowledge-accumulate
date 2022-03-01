@@ -174,7 +174,7 @@ ES5 的继承，实质是先创造子类的实例对象 `this`，然后再将父
 
 执行了 `super` 就是执行了父类构造函数，但 `super` 内部的 `this` 指向的是子类，`super` 执行后返回的也是子类的实例，因此相当于执行 `Parent.prototype.constructor.call(this)`
 
-`super` 也可以调用父类上的静态方法：
+`super` 也可以调用父类上的静态方法，但只有在子类的静态方法上才可以这么做，非静态方法中还是要通过父类名字调用静态方法：
 
 ```js
 class Parent {
@@ -250,6 +250,27 @@ class Child extends Parent {
     console.log(super) // error
   }
 }
+```
+
+### super 只能在类中使用么？
+
+不是，`super` 还可以在对象字面量中使用：
+
+```js
+const obj1 = {
+  method1() {
+    console.log("method 1");
+  }
+}
+
+const obj2 = {
+  method2() {
+   super.method1();
+  }
+}
+
+Object.setPrototypeOf(obj2, obj1);
+obj2.method2(); // logs "method 1"
 ```
 
 ## 公共字段

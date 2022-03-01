@@ -2926,3 +2926,40 @@ createElement('div', {}, xxsText) // 创建VNode
 ```
 
 Vue 在将虚拟 dom 生成真实 dom 如果 VNode 子节点为基本类型如字符串，那么该文本会通过 `createTextNode` 方法生成文本节点，然后插入父节点，所以很明显 `xssText` 被 `createTextNode` 处理成了纯字符串了，变成无害的了。
+
+## 112. element ui 怎么进行按需加载？
+
+1. 安装 `babel-plugin-component`。
+2. 在 `src` 目录下面创建 `plugins` 目录，在该目录下面创建 `element.js` 文件，在该文件中导入所需要的组件。示例代码如下：
+
+```js
+import Vue from "vue";
+// 在下面的大括号中按需导入所需 Element-UI 中的组件即可
+import { Button, Form, FormItem, Input, Message } from "element-ui";
+ 
+// 注意：导入的组件都需要使用 Vue.use() 进行注册
+Vue.use(Button);
+Vue.use(Form);
+Vue.use(FormItem);
+Vue.use(Input);
+// 还可以在此文件中将 Element-UI 中的组件注册为 Vue 的全局方法，如下
+// 为 Vue 挂载一个全局的弹窗提示方法，在组件中使用 this.$message 即可调用
+```
+
+3. 在 `main.js` 文件中导入 `element.js` 文件。
+4. 在项目根目录下的 `babel.config.js` 文件中添加如下 `plugins` 的配置信息：
+
+```js
+module.exports = {
+  presets: ["@vue/cli-plugin-babel/preset"],
+  plugins: [
+    [
+      "component",
+      {
+        libraryName: "element-ui",
+        styleLibraryName: "theme-chalk",
+      },
+    ],
+  ],
+};
+```

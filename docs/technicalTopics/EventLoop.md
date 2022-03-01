@@ -32,13 +32,13 @@ a()
 
 这段代码执行的时候，执行栈中发生了这些事情：
 
-- 首先执行函数 a，a 入栈
+- 首先执行函数 `a`，`a` 入栈
 - 执行`console.log('123')`，`console.log('123')`入栈
-- `console.log('123')`出栈，执行函数 b，b 入栈
+- `console.log('123')`出栈，执行函数 `b`，`b` 入栈
 - 执行`console.log('456')`，`console.log('456')`入栈
 - `console.log('456')`出栈
-- 函数 b 出栈
-- 函数 a 出栈
+- 函数 `b` 出栈
+- 函数 `a` 出栈
 
 配合 gif 食用更好理解：
 
@@ -87,22 +87,22 @@ console.log('end')
 **宏任务**：
 
 - script 整体代码
-- setTimeout
-- setInterval
+- `setTimeout`
+- `setInterval`
 - I/O
 - dom 绑定事件
-- postMessage
-- MessageChannel
-- requestAnimationFrame
-- setImmediate(node.js)
+- `postMessage`
+- `MessageChannel`
+- `requestAnimationFrame`
+- `setImmediate(node.js)`
 
 **微任务**：
 
-- Promise.then
-- Object.observe(废弃)
-- MutaionObserver
-- process.nextTick(node.js)
-- queueMicrotask
+- `Promise.then`
+- `Object.observe`(废弃)
+- `MutationObserver`
+- `process.nextTick`(node.js)
+- `queueMicrotask`
 
 那么宏任务和微任务的执行顺序又是如何呢？
 
@@ -125,17 +125,17 @@ console.log('end')
 简要说下大致执行流程：
 
 - 执行宏任务(整个 script)
-- 输出 start
-- 将 setTimeout 回调放入宏任务队列
-- 输出 newPromise
-- 将 promise.then 回调放入微任务队列
-- 输出 end
+- 输出 `start`
+- 将 `setTimeout` 回调放入宏任务队列
+- 输出 `newPromise`
+- 将 `promise.then` 回调放入微任务队列
+- 输出 `end`
 - 第一轮结束，检查微任务队列是否为空
 - 执行所有微任务
-- 输出 then
+- 输出 `then`
 - 第二轮结束，检查宏任务队列是否为空
 - 执行所有宏任务
-- 输出 setTimeout
+- 输出 `setTimeout`
 
 ![GIF.gif](http://picstore.lliiooiill.cn/sBJuhIkD8Wv9XoK.gif)
 
@@ -157,15 +157,15 @@ console.log('end')
 
 **宏任务优先级**：
 
-script 整体代码 > setImmediate > MessageChannel > setTimeout / setInterval
+script 整体代码 > `setImmediate` > `MessageChannel` > `setTimeout` / `setInterval`
 
 **微任务优先级**：
 
-process.nextTick > Promise > MutationObserver
+`process.nextTick` > `Promise.then` > `MutationObserver`
 
 #### setTimeout 和 setImmediate 孰先孰后
 
-我们说 setImmediate 优先级是高于 setTimeout，那为什么还要讨论呢，我们来看看下面的代码：
+我们说 `setImmediate` 优先级是高于 `setTimeout`，那为什么还要讨论呢，我们来看看下面的代码：
 
 ```javascript
 setTimeout(() => {
@@ -176,17 +176,17 @@ setImmediate(() => {
 })
 ```
 
-按照优先级排序，答案很明显是先输出 789，后输出 end，然鹅：
+按照优先级排序，答案很明显是先输出 `789`，后输出 `end`，然鹅：
 
 ![1606192520.png](http://picstore.lliiooiill.cn/GIDE7RPl4MUKAJy.png)
 
-没错，我运行了两遍，因为第一次执行得出的结果和我预想的不同，执行第二次我发现 setImmediate 和 setTimeout 的回调执行顺序完全是随机的！
+没错，我运行了两遍，因为第一次执行得出的结果和我预想的不同，执行第二次我发现 `setImmediate` 和 `setTimeout` 的回调执行顺序完全是随机的！
 
 这是为什么呢？来看看 node 官方文档的解释：
 
 > For example, if we run the following script which is not within an I/O cycle (i.e. the main module), the order in which the two timers are executed is non-deterministic, as it is bound by the performance of the process
 
-意思是说，如果我们**直接在主模块下面直接调用这两个方法，其回调执行顺序是随机的**，因为这受到了进程性能的限制(这可能会受到计算机上运行的其他应用程序的影响)，但如果我们在一个 I/O 周期内调用这两个方法，那么就符合 setImmediate>setTimeout 这个说法：
+意思是说，如果我们**直接在主模块下面直接调用这两个方法，其回调执行顺序是随机的**，因为这受到了进程性能的限制(这可能会受到计算机上运行的其他应用程序的影响)，但如果我们在一个 I/O 周期内调用这两个方法，那么就符合 `setImmediate` > `setTimeout` 这个说法：
 
 ```javascript
 const fs = require('fs')
@@ -225,6 +225,9 @@ new Promise((resolve) => {
 }).then(() => {
   console.log('then2')
 })
+Promise.resolve(123).then(res => {
+  console.log(res)
+})
 process.nextTick(() => {
   console.log('process1')
 })
@@ -234,37 +237,41 @@ console.log('end')
 来分析分析：
 
 - 首先输出 `start`
-- 第一个 setTimeout 简称 Timer1 的回调进入了宏任务队列
+- 第一个 `setTimeout` 简称 Timer1 的回调进入了宏任务队列
 - 输出 `promise2`
-- 第二个 setTimeout 简称 Timer2 的回调进入了宏任务队列
-- process.nextTick 的回调进入了微任务队列
+- 第二个 `setTimeout` 简称 Timer2 的回调进入了宏任务队列
+- `Promise.resolve(123).then` 的回调进入了微任务队列
+- `process.nextTick` 的回调进入了微任务队列
 - 输出 `end`
 
-至此第一轮循环结束，开始第二轮，检测微任务队列：process.nextTick
+至此第一轮循环结束，开始第二轮，检测微任务队列：`Promise.resolve(123).then`、`process.nextTick`
 
-- process.nextTick 入栈，输出`process1`
+由于 `process.nextTick` 优先级高于 `Promise.then`，因此优先执行 `process.nextTick` 回调。
+
+- `process.nextTick` 入栈，输出 `process1`
+- `promise.then` 入栈，输出 `123`
 
 微任务队列清空，检测宏任务队列：Timer1，Timer2
 
-- Timer1 入栈，输出`timer1`
+- Timer1 入栈，输出 `timer1`
 - 输出 `promise1`
-- 第一个 promise.then 简称 Then1 的回调进入了微任务队列
+- 第一个 `Promise.then` 简称 Then1 的回调进入了微任务队列
 
 检测微任务队列：Then1
 
-- Then1 入栈，第三个 setTimeout 简称 Timer3 的回调进入了宏任务队列
+- Then1 入栈，第三个 `setTimeout` 简称 Timer3 的回调进入了宏任务队列
 
 微任务队列清空，检测宏任务队列：Timer2，Timer3
 
-- Timer2 入栈，第二个 promise.then 简称 Then2 的回调进入了微任务队列
+- Timer2 入栈，第二个 `Promise.then` 简称 Then2 的回调进入了微任务队列
 
 检测微任务队列：Then2
 
-- Then2 入栈，输出`then2`
+- Then2 入栈，输出 `then2`
 
 微任务队列清空，检测宏任务队列：Timer3
 
-- Timer3 入栈，输出`then1`
+- Timer3 入栈，输出 `then1`
 
 完整的输出为：
 
@@ -273,6 +280,7 @@ start
 promise2
 end
 process1
+123
 timer1
 promise1
 then2

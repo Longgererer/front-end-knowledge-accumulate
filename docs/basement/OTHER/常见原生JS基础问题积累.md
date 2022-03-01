@@ -2497,3 +2497,95 @@ context.clearRect(x, y, width, height)
 `createElement` 使用 `appendChild` 追加子元素时，如果将被插入的节点已经存在于当前文档的文档树中，那么 `appendChild` 只会将它从原先的位置移动到新的位置（不需要事先移除要移动的节点）；如果把它追加进页面中，则插入的是它本身和它的所有子孙节点；即便它已经添加进了页面，我们依旧能继续重复操作。
 
 `createDocumentFragment` 使用 `appendChild` 追加子元素时，会把页面中的原来存在的元素删除；如果把它追加进页面中，则插入的不是 `DocumentFragment` 自身，而是它的所有子孙节点；如果它已经添加进了页面，我们就不能继续操作，它属于一次性操作。
+
+## 106. replaceAll 和 replace 的区别？
+
+两种方法都返回一个新字符串，原始字符串保持不变。并且改方法可以传两个参数。
+
+- 参数一：`pattern`。 `pattern` 可以是一个 字符串 或一个 正则表达式。
+- 参数二：`replacement`。 `replacement` 可以是一个字符串或一个在每次匹配被调用的函数。
+
+当 `pattern` 是字符串时：`replace` 只替换匹配到的第一个位置，`replaceAll` 会替换每一个匹配到的地方。
+
+当 `pattern` 都是正则表达式时，`replace` 可以在正则表达式后加上修饰符 `g` 替换所有匹配项，但 `replaceAll` 则要求必须加上 `g`。
+
+## 107. 哪些方法会修改原数组？
+
+1. `reverse`
+2. `shift`
+3. `push`
+4. `pop`
+5. `sort`
+6. `splice`
+7. `unshift`
+
+## 108. for..in for...of 区别？
+
+`for...in` 以**任意顺序**遍历一个对象的除 `Symbol` 以外的可枚举属性，包括继承的可枚举属性；因此 `for...in` 不应该用于迭代一个关注索引顺序的 `Array`。
+
+而 `for...of` 适合遍历数组，不过它遍历的不是键名而是元素值，它不仅仅可以迭代数组，还可以迭代如 `arguments` 对象、`Map`、`Set`、`string`、DOM 集合等具有迭代属性(`Symbol.iterable`)的类数组。
+
+## 109. instanceof 跨框架问题是什么？怎么解决？
+
+在浏览器中，我们的脚本可能需要在多个窗口之间进行交互。多个窗口意味着多个全局环境，不同的全局环境拥有不同的全局对象，从而拥有不同的内置类型构造函数。这可能会引发一些问题。比如：
+
+```js
+;[] instanceof window.frames[0].Array // false
+```
+
+因为：`Array.prototype !== window.frames[0].Array.prototype`。
+
+想解决这个问题可以使用 `Array.isArray(myObj)` 或者 `Object.prototype.toString.call(myObj) === "[object Array]"`。
+
+## 110. Array.isArray 的原理？
+
+`Array.isArray` 实际上就是：
+
+```js
+Array.isArray = function (value) {
+  return Object.prototype.toString.call(value) === '[object Array]'
+}
+```
+
+## 111. JS 代码是如何被浏览器引擎编译、执行的？
+
+对于 V8 引擎来说，分为 4 个阶段：
+
+1. Parse 阶段：V8 引擎负责将 JS 代码转换成 AST（抽象语法树）。
+   1. 词法分析，将源代码拆成最小的、不可再分的词法单元，称为 token。
+   2. 语法分析，将词法单元转换成一个由元素逐级嵌套所组成的代表了程序语法结构的树，这个树被称为抽象语法树。
+2. Ignition 阶段：解释器将 AST 转换为字节码，解析执行字节码也会为下一个阶段优化编译提供需要的信息。
+3. TurboFan 阶段：编译器利用上个阶段收集的信息，将字节码优化为可以执行的机器码。
+4. Orinoco 阶段：垃圾回收阶段，将程序中不再使用的内存空间进行回收。
+
+## 112. 数组 some 和 every 方法的区别？
+
+`some` 方法用于检测数组中的元素是否有满足指定条件的，若满足返回 `true`，否则返回 `false`；如果用一个空数组进行测试，在任何情况下它返回的都是 `false`。
+
+`every` 方法用于检测数组中所有元素是否都符合指定条件，若符合返回 `true`，否则返回 `false`；若收到一个空数组，此方法在一切情况下都会返回 `true`。
+
+## 113. Object.setPrototypeOf 与 Object.create 区别？
+
+两者其实都可以改变一个对象的原型指向，但具体表现上有些不同。
+
+`Object.setPrototypeOf` 往往是更改一个已经存在的对象的原型指向，而 `Object.create` 则往往是在创建对象的时候初始化它的原型。
+
+在效果上，如果执行：
+
+`A.prototype = Object.create(B.prototype)`
+
+那么 `A.prototype` 将会指向一个空对象，空对象的原型属性指向 `B` 的 `prototype`。因此不能够再访问 `A` 原有 `prototype` 上的属性了。
+
+但是，如果执行：
+
+`Object.setPrototypeOf(A.prototype,B.prototype)`
+
+会使 `A.prototype` 指向 `A` 原有 `prototype`，后这个 `prototype` 的 `__proto__` 再指向 `B` 的 `prototype`。
+
+## 114. 什么是 arguments 对象？
+
+`arguments` 对象是所有（非箭头）函数中都可用的局部变量，它是一个类数组，包含传递给函数的每个参数。`arguments.callee` 引用函数自身。
+
+## 115. 为什么 var 可以重复声明？
+
+因为编辑器会在判断有已经声明的同名变量时忽略 `var`，然后直接赋值。

@@ -8,7 +8,7 @@ Webpack 整体流程图如下：
 
 ## webpack.config.js 和 shell 解析
 
-webpack.config.js 大致结构如下：
+`webpack.config.js` 大致结构如下：
 
 ```javascript
 var path = require('path');
@@ -57,15 +57,15 @@ module.exports = {
 
 整个流程的**第一步就是对 config 文件和 shell 进行解析**
 
-每次在命令行输入 webpack 后，操作系统都会去调用 ./node_modules/.bin/webpack 这个 shell 脚本。这个脚本会去调用./node_modules/webpack/bin/webpack.js 并追加输入的参数，如 -p , -w 。(图中 webpack.js 是 webpack 的启动文件，而 \$@ 是后缀参数)。
+每次在命令行输入 `webpack` 后，操作系统都会去调用 `./node_modules/.bin/webpack` 这个 shell 脚本。这个脚本会去调用 `./node_modules/webpack/bin/webpack.js` 并追加输入的参数，如 `-p` , `-w` 。(图中 `webpack.js` 是 webpack 的启动文件，而 `$@` 是后缀参数)。
 
-在 webpack.js 这个文件中 **webpack 通过 optimist 将用户配置的 webpack.config.js 和 shell 脚本传过来的参数整合成 options 对象**传到了下一个流程的控制对象中。
+在 `webpack.js` 这个文件中 **webpack 通过 optimist 将用户配置的 webpack.config.js 和 shell 脚本传过来的参数整合成 options 对象**传到了下一个流程的控制对象中。
 
 ### optimist
 
 optimist 可以对 node 命令行进行解析，**用于激活 webpack 的加载项和插件**
 
-在获取到参数以后，optimist 分析参数并以键值对的形式把参数对象保存在 optimist.argv 中。
+在获取到参数以后，optimist 分析参数并以键值对的形式把参数对象保存在 `optimist.argv` 中。
 
 假如我在命令行输入：
 
@@ -73,7 +73,7 @@ optimist 可以对 node 命令行进行解析，**用于激活 webpack 的加载
 webpack --hot -w
 ```
 
-那么 optimist.argv 的内容就会是：
+那么 `optimist.argv` 的内容就会是：
 
 ```javascript
 {
@@ -86,9 +86,9 @@ webpack --hot -w
 
 ### config 的合并与插件加载
 
-在 shell 解析完毕后，需要进行 config 的合并与插件加载。
+在 shell 解析完毕后，需要进行 `config` 的合并与插件加载。
 
-webpack 将 webpack.config.js 中的各个配置项拷贝到 options 对象中，并加载用户配置在 webpack.config.js 的 plugins 。接着 optimist.argv 会被传入 **./node_modules/webpack/bin/convert-argv.js** 中，通过判断 argv 中参数的值决定是否去加载对应插件。
+webpack 将 `webpack.config.js` 中的各个配置项拷贝到 `options` 对象中，并加载用户配置在 `webpack.config.js` 的 `plugins` 。接着 `optimist.argv` 会被传入 **./node_modules/webpack/bin/convert-argv.js** 中，通过判断 `argv` 中参数的值决定是否去加载对应插件。
 
 最后的 options 对象包含了构建阶段所需要的重要信息。
 
@@ -103,13 +103,13 @@ webpack 将 webpack.config.js 中的各个配置项拷贝到 options 对象中�
 }
 ```
 
-相对于 webpack.config.js 文件的配置只是多了一些 shell 传入的插件对象。
+相对于 `webpack.config.js` 文件的配置只是多了一些 shell 传入的插件对象。
 
-插件对象初始化完毕，options 将被传入下一个流程。
+插件对象初始化完毕，`options` 将被传入下一个流程。
 
 ## 编译与构建
 
-在获取 options 对象后，webpack 将开始初始化。
+在获取 `options` 对象后，webpack 将开始初始化。
 
 这时 Compiler 开始运作：
 
@@ -133,9 +133,9 @@ function webpack(options) {
 
 ### 构建 Compilation
 
-`compiler.run` 方法会构建出 Compilation 对象。
+`compiler.run` 方法会构建出 `Compilation` 对象。
 
-Compilation 的作用如下：
+`Compilation` 的作用如下：
 
 - 负责组织整个打包过程，包含每个构建环节及输出环节所对应的方法。
 - 存放着所有 module ，chunk，生成的 asset 以及用来生成最后打包文件的 template 的信息。
@@ -171,12 +171,12 @@ NormalModule.prototype.build = function build(options, compilation, resolver, fs
     compilation,
     resolver,
     fs,
-    function(err) {
+    function (err) {
       // 指定模块引用，不经acorn解析
       if (options.module && options.module.noParse) {
         if (Array.isArray(options.module.noParse)) {
           if (
-            options.module.noParse.some(function(regExp) {
+            options.module.noParse.some(function (regExp) {
               return typeof regExp === 'string' ? this.request.indexOf(regExp) === 0 : regExp.test(this.request)
             }, this)
           )
@@ -227,3 +227,19 @@ webpack 会调用 Compilation 中的 `createChunkAssets` 方法进行打包后�
 - 生成 assets
 
 各模块进行 doBlock 后，把 module 的最终代码循环添加到 source 中。一个 source 对应着一个 asset 对象，该对象保存了单个文件的文件名( name )和最终代码( value )。
+
+## 总结
+
+总的来说，webpack 的整个生命周期如下：
+
+1. **初始化参数**：从配置文件和 Shell 语句中读取与合并参数，得出最终的配置对象。
+2. **开始编译**：用上一步得到的参数初始化 Compiler 对象，加载所有配置的插件，执行对象的 run 方法开始执行编译。
+3. **确定入口**：根据配置中的 entry 找出所有的入口文件。
+4. **编译模块**：从入口文件出发，调用所有配置的 Loader 对模块进行编译，再找出该模块被编译后的最终内容以及它们之间的依赖关系。
+5. **完成模块编译**：在经过第 4 步使用 Loader 翻译完所有模块后，得到了每个模块被翻译后的最终内容以及它们之间的依赖关系。
+6. **输出资源**：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk，再把每个 Chunk 转换成一个单独的文件加入到输出列表，这步是可以修改输出内容的最后机会。
+7. **输出完成**：在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统。
+
+## 参考文章
+
+- [Webpack 的整个生命周期](https://juejin.cn/post/6960284931213754398)

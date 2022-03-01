@@ -182,3 +182,69 @@ module.exports = {
 import { Search } from 'app_two/Search'
 ```
 
+## 14. Webpack 怎么打包配置公共模块、分包处理？
+
+在 `webpack.config.js` 文件中配置：
+
+```js
+config = {
+  optimization: {
+    minimize: false,
+    concatenateModules: true,
+    splitChunks: {
+      chunks: 'all', // 拆分
+      minSize: 30, // 提取出的chunk的最小大小
+      minChunks: 2, // 模块被引用2次以上的才抽离
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3, //允许入口并行加载的最大请求数
+      name: false,
+      cacheGroups: {
+        vendor: {
+          //拆分第三方库（通过npm|yarn安装的库）
+          name: 'vendor',
+          chunks: 'initial',
+          priority: -10,
+          reuseExistingChunk: true,
+          test: /node_modules\/(.*)\.js/,
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+        styles: {
+          name: 'styles',
+          test: /\.(s?css|vue|less)$/,
+          chunks: 'all',
+          enforce: true,
+        },
+        common: {
+          name: 'common',
+          chunks: 'all',
+          minChunks: 2,
+          priority: 10,
+        },
+      },
+    },
+  },
+}
+```
+
+## 15. Webpack 的优缺点？
+
+优点：
+
+1. 代码拆分 — 形成项目依赖树，每个依赖都可拆分成一个模块，进行按需加载。
+2. Loader – webpack 核心模块之一，主要处理各类型文件编译转换 webpack 处理模块，babel 语法转换。
+3. 智能解析 – 对 CommonJS,AMD，CMD 等支持性很好。
+4. Plugin(插件系统) – 强大的插件系统，可实现对代码压缩，分包 chunk，模块热替换等，自定义模块，图片 base64 等，文档非常全面，自动化工作都有直接的解决方案。
+5. 快速高效 – 开发配置可以选择不同环境的配置模式，可选择的打包文件，使用异步 I/O 和多级缓存提高运行效率。
+6. 功能全面 — 最主流的前端模块打包工具，社区全面。
+
+缺点：
+
+1. 配置复杂。
+2. 不分包 bundele.js 体积庞大。
+3. 只能用于采用模块化开发的项目。
+4. 打包慢。
+5. ES 模块除 Module 外全用 babel 转换，但是一部分 ES2015 语法的 firefox 与 chrome 浏览器中能直接跑的代码，无法用 webpack 编译。

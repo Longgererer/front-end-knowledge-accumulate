@@ -148,7 +148,7 @@ BFC 的生成条件：
 
 默认情况下，一个元素的 `margin-top` 会和它普通流中的第一个子元素(非浮动元素等)的 `margin-top` 相邻。只有在一个元素的 `height` 是 `auto` 的情况下，它的 `margin-bottom` 才会和它普通流中的最后一个子元素(非浮动元素等)的 `margin-bottom` 相邻。
 
-根据 BFC 的定义，**两个元素只有在同一 BFC 内，才有可能发生垂直外边距的重叠，包括相邻元素、嵌套元素**。要解决 `margin` 重叠问题，**只要让它们不在同一个 BFC 内就行。**对于相邻元素，只要给它们加上 BFC 的外壳，就能使它们的 `margin` 不重叠。对于嵌套元素，只要让父级元素触发 BFC，就能使父级 `margin` 和当前元素的 `margin` 不重叠。
+根据 BFC 的定义，**两个元素只有在同一 BFC 内，才有可能发生垂直外边距的重叠，包括相邻元素、嵌套元素**。要解决 `margin` 重叠问题，**只要让它们不在同一个 BFC 内就行**。对于相邻元素，只要给它们加上 BFC 的外壳，就能使它们的 `margin` 不重叠。对于嵌套元素，只要让父级元素触发 BFC，就能使父级 `margin` 和当前元素的 `margin` 不重叠。
 
 下面就是使用 `display: flex` 生成新的 BFC，将本会导致外边距重叠的两个元素 `div1` 和 `div2` 隔开：
 
@@ -1068,3 +1068,58 @@ WebP 的优势体现在它具有更优的图像数据压缩算法，能带来更
 是一个元素脱离文档流之后，其他的元素在定位的不会被它影响，两者位置重叠都是可以的。但是脱离文档流的元素仍然在 dom 树中。
 
 目前：`position` 为 `absolute` 和 `fixed`，`float` 为 `left` 和 `right` 的元素会脱离文档流。
+
+## 68. 什么是 BEM？
+
+BEM 命名法，是对 CSS 命名的一种规范，将页面模块化，隔离样式，提高代码的复用性，减少后期的维护成本。
+
+BEM 的意思就是 Block(块)、Element(元素)、Modifier(修饰符)，通过双下划线 `__` 或者双中划 `--` 连接。
+
+命名约定的模式如下：
+
+```css
+/* 代表更高级别的抽象或组件 */
+.block{}
+
+/* 代表 block 的后代，用于形成一个完整的 block 的整体 */
+.block__element{}
+
+/* 代表 block 的不同状态或不同版本 */
+.block--modifier{}
+```
+
+1. BEM 中包含多个单词时，用一个中划线 `-` 连接，例如：`el-dropdown-menu`。
+2. B 和 E 之间用双下划线 `__` 连接，例如：表单项 `form__item`。
+3. E 和 M 之间用双中划线 `--` 连接，例如：`el-button--success`。
+4. 用 JS 控制样式时，CSS 命名用 `is-` 开头，例如：`is-success`。
+
+## 69. 为什么 CSS3 动画性能比较好？
+
+1. CSS3 动画大多数都是补间动画，而 JS 动画是逐帧动画；
+2. CSS3 动画使用 `transition` 和 `animation` 配合 `transform`、`opacity` 等样式的过度会开启硬件加速，不会导致回流和重绘。
+
+## 70. CSS 选择器解析方向？
+
+CSS 选择器是从右往左解析的，如果采用 left-to-right 的方式读取 CSS 规则，那么大多数规则读到最后（最右）才会发现是不匹配的，这样会做费时耗能，最后有很多都是无用的；而如果采取 right-to-left 的方式，那么只要发现最右边选择器不匹配，就可以直接舍弃了，避免了许多无效匹配。
+
+## 71. CSS 有哪些颜色处理函数？
+
+1. `rgb(red,green,blue)`，色彩三原色。
+2. `rgba(red,green,blue,alpha)`，加了个透明度。
+3. `hsl(hue,saturation,lightness)`，色调(hue),饱和度(saturation),亮度(lightness)。
+4. `hsla(hue,saturation,lightness,alpha)`，加了个透明度。
+
+其他的请看：[CSS 函数那些事（六）多姿多彩颜色函数](https://juejin.cn/post/7003259855926460429)
+
+## 72. 过多的为元素添加 id 属性有什么副作用？
+
+1. 增加内存负担。
+2. 会创建同名的全局变量。
+
+```html
+<div id="example">some text</div>
+```
+
+```js
+alert(example.innerHTML); //=> 'some text'
+```
