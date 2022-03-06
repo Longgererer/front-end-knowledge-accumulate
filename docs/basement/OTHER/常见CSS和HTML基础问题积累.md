@@ -1079,13 +1079,16 @@ BEM 的意思就是 Block(块)、Element(元素)、Modifier(修饰符)，通过�
 
 ```css
 /* 代表更高级别的抽象或组件 */
-.block{}
+.block {
+}
 
 /* 代表 block 的后代，用于形成一个完整的 block 的整体 */
-.block__element{}
+.block__element {
+}
 
 /* 代表 block 的不同状态或不同版本 */
-.block--modifier{}
+.block--modifier {
+}
 ```
 
 1. BEM 中包含多个单词时，用一个中划线 `-` 连接，例如：`el-dropdown-menu`。
@@ -1121,5 +1124,33 @@ CSS 选择器是从右往左解析的，如果采用 left-to-right 的方式读�
 ```
 
 ```js
-alert(example.innerHTML); //=> 'some text'
+alert(example.innerHTML) //=> 'some text'
 ```
+
+## 73. CSS 伪类的原理是什么？
+
+伪类对元素进行分类是基于特征(characteristics)而不是它们的名字、属性或者内容。
+
+原则上特征是不可以从文档树上推断得到的。在感觉上伪类可以是动态的，当用户和文档进行交互的时候一个元素可以获取或者失去一个伪类。
+
+## 74. meta 标签的干什么的？有什么属性？
+
+`meta` 是文档级元数据元素，表示那些不能由其它 HTML 元相关（meta-related）元素 `<base>`、`<link>`, `<script>`、`<style>` 或 `<title>` 之一表示的任何元数据信息。
+
+`meta` 元素定义的元数据的类型包括以下几种：
+
+如果设置了 `name` 属性，`meta` 元素提供的是文档级别（document-level）的元数据，应用于整个页面。
+如果设置了 `http-equiv` 属性，`meta` 元素则是编译指令，提供的信息与类似命名的 HTTP 头部相同。
+如果设置了 `charset` 属性，`meta` 元素是一个字符集声明，告诉文档使用哪种字符编码。
+如果设置了 `itemprop` 属性，`meta` 元素提供用户定义的元数据。
+
+常见属性有下：
+
+1. `charset`：声明了文档的字符编码。
+2. `content`：此属性包含 `http-equiv` 或 `name` 属性的值，具体取决于所使用的值。
+3. `http-equiv`：属性定义了一个编译指示指令。这个属性叫做 http-equiv(alent) 是因为所有允许的值都是特定 HTTP 头部的名称。
+4. `name`：`name` 和 `content` 属性可以一起使用，以名 - 值对的方式给文档提供元数据，其中 `name` 作为元数据的名称，`content` 作为元数据的值。
+
+## 75. 什么是元数据？
+
+简单的来说就是描述数据的数据。例如, 一个 HTML 文件是一种数据, 但 HTML 文件也能在 `<head>` 元素中包含描述该文档的元数据，比如该文件的作者和概要。

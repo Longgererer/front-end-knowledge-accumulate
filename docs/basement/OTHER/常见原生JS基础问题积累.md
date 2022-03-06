@@ -569,7 +569,7 @@ arr.reduce((prev, cur) => (prev.includes(cur) ? prev : [...prev, cur]), [])
 
 修改、删除 `cookie` 时，除 `value`、`maxAge` 之外的所有属性如 `name`、`path`、`domain` 等，都要与原 `cookie` 完全一样，否则，浏览器将视为两个不同的 `cookie`。
 
-`localStorage` 除非被手动清除，否则将会永久保存；有专门的监听变化事件：`setItemEvent`，可以用 `addEventListener` 监听。页面必须来自同一个域名（子域名无效）和端口。
+`localStorage` 除非被手动清除，否则将会永久保存；它和 `sessionStorage` 有专门的监听变化事件：`storage`，可以用 `addEventListener` 监听。页面必须来自同一个域名（子域名无效）和端口。
 
 `sessionStorage` 仅在当前网页会话下有效，关闭页面或浏览器后就会被清除，不同页面间无法共享 `sessionStorage` 的信息；如果一个页面包含多个 `iframe` 且他们属于同源页面，那么他们之间是可以共享(不是拷贝) `sessionStorage` 的。
 
@@ -2589,3 +2589,22 @@ Array.isArray = function (value) {
 ## 115. 为什么 var 可以重复声明？
 
 因为编辑器会在判断有已经声明的同名变量时忽略 `var`，然后直接赋值。
+
+## 116. postMessage 的安全问题？
+
+```js
+window.addEventListener('message', receiveMessage, false)
+
+function receiveMessage(event) {
+  // For Chrome, the origin property is in the event.originalEvent
+  // object.
+  // 这里不准确，chrome没有这个属性
+  // var origin = event.origin || event.originalEvent.origin;
+  var origin = event.origin
+  if (origin !== 'http://example.org:8080') return
+
+  // ...
+}
+```
+
+`postMessage` 在于需要验证发送方的身份，如果您确实希望从其他网站接收 `message`，请始终使用 `origin` 和 `source` 属性验证发件人的身份。当您使用 `postMessage` 将数据发送到其他窗口时，始终指定精确的目标 `origin`，而不是 `*`。
